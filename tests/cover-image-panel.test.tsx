@@ -26,6 +26,7 @@ describe("CoverImagePanel", () => {
     });
 
     render(<CoverImagePanel markdown="# Launch Notes" />);
+    fireEvent.click(screen.getByRole("button", { name: /Cover Image/ }));
 
     fireEvent.change(screen.getByLabelText("API Key"), {
       target: { value: "sk-user" },
@@ -36,7 +37,7 @@ describe("CoverImagePanel", () => {
     fireEvent.change(screen.getByLabelText("Base URL"), {
       target: { value: "https://api.example.com/v1" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
+    fireEvent.click(screen.getByRole("button", { name: "Generate Cover" }));
 
     await waitFor(() => {
       expect(generateCoverImage).toHaveBeenCalledWith("# Launch Notes", {
@@ -57,8 +58,9 @@ describe("CoverImagePanel", () => {
     );
 
     render(<CoverImagePanel markdown="# Launch Notes" />);
+    fireEvent.click(screen.getByRole("button", { name: /Cover Image/ }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
+    fireEvent.click(screen.getByRole("button", { name: "Generate Cover" }));
 
     expect(await screen.findByText("API Key is required.")).toBeVisible();
   });

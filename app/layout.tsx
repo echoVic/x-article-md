@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { buildPageMetadata, getHtmlLangForPath } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,20 +15,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const defaultMetadata = buildPageMetadata("home");
+
 export const metadata: Metadata = {
-  title: "MD2X — Markdown to X Articles",
-  description: "Write Markdown, publish to X Articles. Code blocks, tables, and Mermaid diagrams — all in one click.",
+  ...defaultMetadata,
+  applicationName: "MD2X",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icon",
+    apple: "/apple-icon",
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const requestHeaders = await headers();
+  const htmlLang = getHtmlLangForPath(requestHeaders.get("x-pathname"));
+  const initialLocale = htmlLang === "zh-CN" ? "zh" : "en";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={htmlLang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>{children}</Providers>
+        <Providers
+          initialLocale={initialLocale}
+          persistLocale={initialLocale === "en"}
+        >
+          {children}
+        </Providers>
       </body>
     </html>
   );

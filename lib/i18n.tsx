@@ -270,21 +270,42 @@ const I18nContext = createContext<I18nContextValue>({
   t: en,
 });
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+export function I18nProvider({
+  children,
+  initialLocale = "en",
+  persistLocale = true,
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+  persistLocale?: boolean;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey) as Locale | null;
-    if (saved && (saved === "en" || saved === "zh")) {
-      setLocaleState(saved);
+    if (!persistLocale) {
+      return;
     }
-  }, []);
+
+    const frame = window.requestAnimationFrame(() => {
+      const saved = window.localStorage.getItem(storageKey) as Locale | null;
+      if (saved && (saved === "en" || saved === "zh")) {
+        setLocaleState(saved);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [persistLocale]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
+  }, [locale]);
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
-    localStorage.setItem(storageKey, newLocale);
-    document.documentElement.lang = newLocale === "zh" ? "zh-CN" : "en";
-  }, []);
+    if (persistLocale) {
+      localStorage.setItem(storageKey, newLocale);
+    }
+  }, [persistLocale]);
 
   const t = dictionaries[locale];
 
