@@ -60,9 +60,16 @@ export async function renderCodeToPng(
   const lines = code.split("\n");
   const scale = window.devicePixelRatio || 2;
   const fontSize = 16;
-  const lineHeight = 26;
-  const padding = 28;
-  const headerHeight = language ? 34 : 0;
+  const lineHeight = 28;
+  const cardPadding = 22;
+  const panelPaddingX = 18;
+  const lineNumberWidth = Math.max(
+    34,
+    String(lines.length || 1).length * 12 + 16,
+  );
+  const headerHeight = 42;
+  const bodyPaddingY = 16;
+  const topChromeHeight = 28;
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
 
@@ -73,12 +80,17 @@ export async function renderCodeToPng(
   context.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
   const maxLineWidth = Math.max(
     ...lines.map((line) => context.measureText(line || " ").width),
-    320,
+    360,
   );
-  const width = Math.ceil(maxLineWidth + padding * 2);
-  const height = Math.ceil(
-    padding * 2 + headerHeight + Math.max(lines.length, 1) * lineHeight,
+  const panelWidth = Math.ceil(
+    maxLineWidth + lineNumberWidth + panelPaddingX * 2 + 36,
   );
+  const width = Math.ceil(Math.max(540, panelWidth + cardPadding * 2));
+  const panelX = cardPadding;
+  const panelY = cardPadding + topChromeHeight;
+  const panelHeight =
+    headerHeight + bodyPaddingY * 2 + Math.max(lines.length, 1) * lineHeight;
+  const height = Math.ceil(panelY + panelHeight + cardPadding);
 
   canvas.width = width * scale;
   canvas.height = height * scale;
@@ -86,23 +98,74 @@ export async function renderCodeToPng(
   canvas.style.height = `${height}px`;
   context.scale(scale, scale);
 
-  roundRect(context, 0, 0, width, height, 14);
-  context.fillStyle = "#101820";
-  context.fill();
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, width, height);
 
-  if (language) {
-    context.fillStyle = "#8aa3b1";
-    context.font = `600 13px Arial, sans-serif`;
-    context.fillText(language, padding, 24);
-  }
+  context.shadowColor = "rgba(15, 20, 25, 0.10)";
+  context.shadowBlur = 18;
+  context.shadowOffsetY = 6;
+  roundRect(context, 0, 0, width, height, 14);
+  context.fillStyle = "#ffffff";
+  context.fill();
+  context.shadowColor = "transparent";
+  context.shadowBlur = 0;
+  context.shadowOffsetY = 0;
+
+  context.strokeStyle = "#d8e0e5";
+  context.lineWidth = 1;
+  roundRect(context, 0.5, 0.5, width - 1, height - 1, 14);
+  context.stroke();
+
+  drawCodeCardControls(context, width - cardPadding - 44, cardPadding + 1);
+
+  roundRect(context, panelX, panelY, width - cardPadding * 2, panelHeight, 12);
+  context.fillStyle = "#f7f9fa";
+  context.fill();
+  context.strokeStyle = "#d8e0e5";
+  context.lineWidth = 1;
+  context.stroke();
+
+  context.save();
+  roundRect(context, panelX, panelY, width - cardPadding * 2, headerHeight, 12);
+  context.clip();
+  context.fillStyle = "#eff3f4";
+  context.fillRect(panelX, panelY, width - cardPadding * 2, headerHeight);
+  context.restore();
+
+  context.strokeStyle = "#d8e0e5";
+  context.beginPath();
+  context.moveTo(panelX, panelY + headerHeight + 0.5);
+  context.lineTo(width - cardPadding, panelY + headerHeight + 0.5);
+  context.stroke();
+
+  context.fillStyle = "#536471";
+  context.font = `600 14px Arial, sans-serif`;
+  context.textBaseline = "middle";
+  context.fillText(
+    language || "plain text",
+    panelX + panelPaddingX,
+    panelY + headerHeight / 2,
+  );
+  drawCopyGlyph(context, width - cardPadding - panelPaddingX - 22, panelY + 11);
 
   context.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
-  context.fillStyle = "#e6edf3";
+  context.textBaseline = "alphabetic";
   lines.forEach((line, index) => {
+    const baseline =
+      panelY + headerHeight + bodyPaddingY + fontSize + index * lineHeight;
+    context.fillStyle = "#f58b23";
+    context.textAlign = "right";
+    context.fillText(
+      String(index + 1),
+      panelX + panelPaddingX + lineNumberWidth - 14,
+      baseline,
+    );
+    context.textAlign = "left";
+    context.fillStyle = "#0f1419";
     context.fillText(
       line || " ",
-      padding,
-      padding + headerHeight + fontSize + index * lineHeight,
+      panelX + panelPaddingX + lineNumberWidth,
+      baseline,
     );
   });
 
@@ -238,6 +301,46 @@ function roundRect(
   context.arcTo(x, y + height, x, y, radius);
   context.arcTo(x, y, x + width, y, radius);
   context.closePath();
+}
+
+function drawCodeCardControls(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+) {
+  context.strokeStyle = "#8a99a3";
+  context.lineWidth = 1.8;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+
+  context.beginPath();
+  context.moveTo(x + 2, y + 17);
+  context.lineTo(x + 6, y + 17);
+  context.lineTo(x + 18, y + 5);
+  context.lineTo(x + 15, y + 2);
+  context.lineTo(x + 3, y + 14);
+  context.closePath();
+  context.stroke();
+
+  const closeX = x + 32;
+  context.beginPath();
+  context.moveTo(closeX, y + 4);
+  context.lineTo(closeX + 12, y + 16);
+  context.moveTo(closeX + 12, y + 4);
+  context.lineTo(closeX, y + 16);
+  context.stroke();
+}
+
+function drawCopyGlyph(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+) {
+  context.strokeStyle = "#536471";
+  context.lineWidth = 1.7;
+  context.lineJoin = "round";
+  context.strokeRect(x + 5, y + 3, 12, 14);
+  context.strokeRect(x + 1, y + 7, 12, 14);
 }
 
 function drawTableRow(
