@@ -3,11 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
 
+const draftStorageKey = "x-article-md:draft";
+
 export default function Home() {
   const [markdown, setMarkdown] = useState(sampleMarkdown);
+  const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
   const [copyState, setCopyState] = useState<
     "idle" | "title" | "body" | "manual"
@@ -24,6 +28,28 @@ export default function Home() {
     () => toXArticleClipboard(markdown, { codeMode }),
     [codeMode, markdown],
   );
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const savedDraft = window.localStorage.getItem(draftStorageKey);
+
+      if (savedDraft) {
+        setMarkdown(savedDraft);
+      }
+
+      setDraftReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!draftReady) {
+      return;
+    }
+
+    window.localStorage.setItem(draftStorageKey, markdown);
+  }, [draftReady, markdown]);
 
   useEffect(() => {
     if (!manualCopy) {
@@ -71,6 +97,11 @@ export default function Home() {
   function markCopied(target: "title" | "body") {
     setCopyState(target);
     window.setTimeout(() => setCopyState("idle"), 1800);
+  }
+
+  function resetDraft() {
+    setMarkdown(sampleMarkdown);
+    window.localStorage.removeItem(draftStorageKey);
   }
 
   return (
@@ -138,19 +169,12 @@ export default function Home() {
       </header>
 
       <section className="mx-auto grid max-w-[1440px] gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[minmax(320px,0.92fr)_minmax(420px,1.08fr)]">
-        <div className="min-h-[calc(100vh-108px)] overflow-hidden rounded-md border border-[#d8e0e5] bg-white">
-          <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
-            <h2 className="text-sm font-semibold text-[#536471]">Markdown</h2>
-            <span className="text-xs text-[#71808a]">{markdown.length} chars</span>
-          </div>
-          <textarea
-            value={markdown}
-            onChange={(event) => setMarkdown(event.target.value)}
-            spellCheck={false}
-            className="h-[calc(100vh-153px)] min-h-[460px] w-full resize-none border-0 bg-white p-4 font-mono text-sm leading-6 text-[#0f1419] outline-none"
-            aria-label="Markdown editor"
-          />
-        </div>
+        <MarkdownEditor
+          value={markdown}
+          onChange={setMarkdown}
+          onReset={resetDraft}
+          draftReady={draftReady}
+        />
 
         <div>
           <div className="min-h-[calc(100vh-108px)] overflow-hidden rounded-md border border-[#d8e0e5] bg-white">
