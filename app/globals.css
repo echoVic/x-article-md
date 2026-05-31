@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #f6f8fa;
+  color: #0f1419;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: #bfe8dc;
+}
