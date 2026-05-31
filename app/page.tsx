@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
+import { CoverImagePanel } from "@/components/cover-image-panel";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
@@ -188,6 +189,7 @@ export default function Home() {
               <ArticlePreview blocks={blocks} />
             </div>
           </div>
+          <CoverImagePanel markdown={markdown} />
           <ArticleAssets assets={clipboard.assets} />
         </div>
       </section>
