@@ -11,25 +11,39 @@ import {
   renderSvgToPng,
 } from "@/lib/image-copy";
 import type { XArticleAsset } from "@/lib/markdown";
+import { useI18n } from "@/lib/i18n";
 
 type ArticleAssetsProps = {
   assets: XArticleAsset[];
+  inline?: boolean;
 };
 
 type ActionState = "idle" | "done" | "failed";
 
-export function ArticleAssets({ assets }: ArticleAssetsProps) {
+export function ArticleAssets({ assets, inline }: ArticleAssetsProps) {
+  const { t } = useI18n();
+
   if (assets.length === 0) {
     return null;
   }
 
-  return (
-    <aside className="mt-5 rounded-md border border-[#d8e0e5] bg-white">
-      <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
-        <h2 className="text-sm font-semibold text-[#536471]">X assets</h2>
-        <span className="text-xs text-[#71808a]">{assets.length}</span>
+  if (inline) {
+    return (
+      <div className="divide-y divide-[var(--border)]">
+        {assets.map((asset) => (
+          <AssetRow key={asset.placeholder} asset={asset} />
+        ))}
       </div>
-      <div className="divide-y divide-[#edf1f4]">
+    );
+  }
+
+  return (
+    <aside className="mt-8 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
+      <div className="flex items-center justify-between px-4 h-10 border-b border-[var(--border)]">
+        <span className="text-xs font-medium text-[var(--muted)]">{t.assetsTitle}</span>
+        <span className="font-mono text-[10px] text-[var(--muted)] tabular-nums">{assets.length}</span>
+      </div>
+      <div className="divide-y divide-[var(--border)]">
         {assets.map((asset) => (
           <AssetRow key={asset.placeholder} asset={asset} />
         ))}
@@ -39,6 +53,7 @@ export function ArticleAssets({ assets }: ArticleAssetsProps) {
 }
 
 function AssetRow({ asset }: { asset: XArticleAsset }) {
+  const { t } = useI18n();
   const [placeholderState, setPlaceholderState] =
     useState<ActionState>("idle");
   const [imageState, setImageState] = useState<ActionState>("idle");
@@ -91,30 +106,30 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
     <div className="grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <code className="rounded bg-[#eef2f5] px-2 py-1 font-mono text-xs font-semibold text-[#0f1419]">
+          <code className="rounded-[var(--radius-xs)] bg-[var(--fg-soft)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--fg)]">
             {asset.placeholder}
           </code>
-          <span className="text-sm font-medium text-[#0f1419]">
+          <span className="text-xs font-medium text-[var(--fg)]">
             {asset.label}
           </span>
         </div>
-        <p className="mt-1 truncate font-mono text-xs text-[#71808a]">
+        <p className="mt-1 truncate font-mono text-[11px] text-[var(--muted)]">
           {assetDescription(asset)}
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {asset.type === "tweet" ? null : (
           <AssetButton onClick={copyPlaceholder} state={placeholderState}>
-            Placeholder
+            {t.assetsPlaceholder}
           </AssetButton>
         )}
         {asset.type === "tweet" ? null : (
           <AssetButton onClick={downloadImage} state={downloadState}>
-            Download PNG
+            {t.assetsDownloadPng}
           </AssetButton>
         )}
         <AssetButton onClick={copyImage} state={imageState} primary>
-          {asset.type === "tweet" ? "Copy URL" : "Copy image"}
+          {asset.type === "tweet" ? t.assetsCopyUrl : t.assetsCopyImage}
         </AssetButton>
       </div>
     </div>
@@ -140,7 +155,7 @@ async function copyImageAsset(asset: XArticleAsset): Promise<boolean> {
 function assetDescription(asset: XArticleAsset) {
   if (asset.type === "code") return asset.language || "code";
   if (asset.type === "table") {
-    return `${asset.headers.length} columns, ${asset.rows.length} rows`;
+    return `${asset.headers.length} cols, ${asset.rows.length} rows`;
   }
   if (asset.type === "tweet") return asset.url;
   return "mermaid";
@@ -158,7 +173,7 @@ function AssetButton({
   primary?: boolean;
 }) {
   const label =
-    state === "done" ? "Done" : state === "failed" ? "Blocked" : children;
+    state === "done" ? "✓" : state === "failed" ? "✗" : children;
 
   return (
     <button
@@ -166,8 +181,8 @@ function AssetButton({
       onClick={onClick}
       className={
         primary
-          ? "rounded-md bg-[#0f1419] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#26323a] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2"
-          : "rounded-md border border-[#cfd9de] bg-white px-3 py-1.5 text-xs font-semibold text-[#0f1419] transition hover:bg-[#f6f8fa] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2"
+          ? "rounded-[var(--radius-xs)] bg-[var(--accent)] px-2.5 py-1 text-[11px] font-medium text-white transition hover:bg-[var(--accent-hover)] active:scale-[0.97]"
+          : "rounded-[var(--radius-xs)] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-[11px] font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)] active:scale-[0.97]"
       }
     >
       {label}

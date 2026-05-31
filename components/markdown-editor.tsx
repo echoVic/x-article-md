@@ -8,6 +8,7 @@ import {
   type EditorUpdate,
   type MarkdownAction,
 } from "@/lib/editor-actions";
+import { useI18n } from "@/lib/i18n";
 
 type MarkdownEditorProps = {
   value: string;
@@ -16,21 +17,24 @@ type MarkdownEditorProps = {
   draftReady: boolean;
 };
 
-const toolbar: Array<{
+type ToolbarItem = {
   action: MarkdownAction;
-  label: string;
+  labelKey: string;
   shortcut?: string;
   icon: string;
-}> = [
-  { action: "heading2", label: "Heading", icon: "H2" },
-  { action: "bold", label: "Bold", shortcut: "Mod+B", icon: "B" },
-  { action: "inlineCode", label: "Inline code", shortcut: "Mod+E", icon: "<>" },
-  { action: "link", label: "Link", shortcut: "Mod+K", icon: "link" },
-  { action: "bulletList", label: "Bullet list", shortcut: "Mod+Shift+8", icon: "ul" },
-  { action: "orderedList", label: "Ordered list", shortcut: "Mod+Shift+7", icon: "ol" },
-  { action: "codeFence", label: "Code block", icon: "{ }" },
-  { action: "mermaid", label: "Mermaid", icon: "flow" },
-  { action: "table", label: "Table", icon: "grid" },
+  group?: number;
+};
+
+const toolbarItems: ToolbarItem[] = [
+  { action: "heading2", labelKey: "toolHeading", icon: "H2", group: 1 },
+  { action: "bold", labelKey: "toolBold", shortcut: "⌘B", icon: "B", group: 1 },
+  { action: "inlineCode", labelKey: "toolInlineCode", shortcut: "⌘E", icon: "code", group: 1 },
+  { action: "link", labelKey: "toolLink", shortcut: "⌘K", icon: "link", group: 2 },
+  { action: "bulletList", labelKey: "toolBulletList", shortcut: "⌘⇧8", icon: "ul", group: 2 },
+  { action: "orderedList", labelKey: "toolOrderedList", shortcut: "⌘⇧7", icon: "ol", group: 2 },
+  { action: "codeFence", labelKey: "toolCodeFence", icon: "fence", group: 3 },
+  { action: "mermaid", labelKey: "toolMermaid", icon: "flow", group: 3 },
+  { action: "table", labelKey: "toolTable", icon: "grid", group: 3 },
 ];
 
 export function MarkdownEditor({
@@ -39,8 +43,13 @@ export function MarkdownEditor({
   onReset,
   draftReady,
 }: MarkdownEditorProps) {
+  const { t } = useI18n();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const stats = useMemo(() => getStats(value), [value]);
+  const lineNumbers = useMemo(() => {
+    const count = value ? value.split("\n").length : 1;
+    return Array.from({ length: count }, (_, i) => i + 1);
+  }, [value]);
 
   function applyAction(action: MarkdownAction) {
     const textarea = textareaRef.current;
@@ -118,59 +127,90 @@ export function MarkdownEditor({
     }
   }
 
+  // Group toolbar items with separators
+  const toolbarGroups: Array<Array<ToolbarItem>> = [];
+  let currentGroup = toolbarItems[0]?.group;
+  let currentItems: ToolbarItem[] = [];
+  for (const item of toolbarItems) {
+    if (item.group !== currentGroup) {
+      toolbarGroups.push(currentItems);
+      currentItems = [];
+      currentGroup = item.group;
+    }
+    currentItems.push(item);
+  }
+  if (currentItems.length > 0) toolbarGroups.push(currentItems);
+
   return (
-    <div className="min-h-[calc(100vh-108px)] overflow-hidden rounded-md border border-[#d8e0e5] bg-white">
-      <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-[#e6ecf0] px-3 py-2">
-        <div className="flex items-center gap-2">
-          <h2 className="px-1 text-sm font-semibold text-[#536471]">
-            Markdown
-          </h2>
-          <span className="hidden text-xs text-[#71808a] sm:inline">
-            {draftReady ? "Draft saved locally" : "Loading draft"}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
-          {toolbar.map((item) => (
-            <button
-              key={item.action}
-              type="button"
-              onClick={() => applyAction(item.action)}
-              title={
-                item.shortcut ? `${item.label} (${item.shortcut})` : item.label
-              }
-              aria-label={item.label}
-              className="inline-flex size-8 items-center justify-center rounded-md border border-transparent bg-white text-xs font-bold text-[#536471] transition hover:border-[#cfd9de] hover:bg-[#f6f8fa] hover:text-[#0f1419] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2"
-            >
-              <ToolbarIcon icon={item.icon} />
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={onReset}
-            title="Reset to sample"
-            aria-label="Reset to sample"
-            className="ml-1 inline-flex size-8 items-center justify-center rounded-md border border-[#cfd9de] bg-white text-[#536471] transition hover:bg-[#f6f8fa] hover:text-[#0f1419] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2"
-          >
-            <ResetIcon />
-          </button>
-        </div>
+    <div className="flex flex-col overflow-hidden bg-[var(--surface)]">
+      {/* Toolbar */}
+      <div className="flex items-center gap-[2px] px-[10px] py-[5px] border-b border-[var(--border)] min-h-[38px]">
+        {toolbarGroups.map((group, groupIndex) => (
+          <div key={groupIndex} className="contents">
+            {groupIndex > 0 && (
+              <div className="w-px h-[18px] bg-[var(--border)] mx-[6px]" />
+            )}
+            <div className="flex items-center gap-[1px]">
+              {group.map((item) => {
+                const label = t[item.labelKey as keyof typeof t] || item.labelKey;
+                return (
+                <button
+                  key={item.action}
+                  type="button"
+                  onClick={() => applyAction(item.action)}
+                  title={item.shortcut ? `${label} (${item.shortcut})` : label}
+                  aria-label={label}
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
+                >
+                  <ToolbarIcon icon={item.icon} />
+                </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={onReset}
+          title={t.toolReset}
+          aria-label={t.toolReset}
+          className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
+        >
+          <ResetIcon />
+        </button>
       </div>
 
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-        spellCheck={false}
-        className="h-[calc(100vh-197px)] min-h-[414px] w-full resize-none border-0 bg-white p-4 font-mono text-sm leading-6 text-[#0f1419] outline-none"
-        aria-label="Markdown editor"
-      />
+      {/* Editor area */}
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-12 shrink-0 pt-[14px] pr-3 text-right font-mono text-xs leading-[1.714] text-[color-mix(in_oklch,var(--muted)_40%,transparent)] select-none overflow-hidden border-r border-[var(--border)]">
+          {lineNumbers.map((n) => (
+            <span key={n} className="block tabular-nums">{n}</span>
+          ))}
+        </div>
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={handleKeyDown}
+          spellCheck={false}
+          className="flex-1 resize-none border-0 outline-none py-[14px] px-3 font-mono text-[13.5px] leading-[1.714] text-[var(--fg)] bg-[var(--surface)] overflow-y-auto selection:bg-[var(--accent-soft)]"
+          style={{ tabSize: 2 }}
+          aria-label="Markdown editor"
+          placeholder={draftReady ? t.editorPlaceholder : ""}
+        />
+      </div>
 
-      <div className="flex h-11 items-center justify-between border-t border-[#e6ecf0] px-4 text-xs text-[#71808a]">
-        <span>
-          {stats.lines} lines / {stats.words} words
-        </span>
-        <span>{stats.characters} chars</span>
+      {/* Footer */}
+      <div className="flex items-center justify-between px-[14px] h-[30px] border-t border-[var(--border)] font-mono text-[11px] text-[var(--muted)]">
+        <div className="flex items-center gap-1 tabular-nums">
+          <span>{stats.lines} {t.footerLines}</span>
+          <span className="opacity-40">·</span>
+          <span>{stats.words} {t.footerWords}</span>
+          <span className="opacity-40">·</span>
+          <span>{stats.characters} {t.footerChars}</span>
+        </div>
+        <span className="opacity-60 text-[10px]">{t.footerShortcuts}</span>
       </div>
     </div>
   );
@@ -188,62 +228,75 @@ function getStats(value: string) {
 
 function ToolbarIcon({ icon }: { icon: string }) {
   switch (icon) {
-    case "link":
+    case "code":
       return (
-        <svg viewBox="0 0 20 20" className="size-4" fill="none" aria-hidden="true">
-          <path
-            d="M8.5 6.5 10 5a3.2 3.2 0 0 1 4.5 4.5L13 11"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="1.8"
-          />
-          <path
-            d="m11.5 13.5-1.5 1.5A3.2 3.2 0 0 1 5.5 10.5L7 9"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="1.8"
-          />
-          <path
-            d="m8 12 4-4"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="1.8"
-          />
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+          <path d="M5.5 4.5L2.5 8l3 3.5" />
+          <path d="M10.5 4.5l3 3.5-3 3.5" />
         </svg>
       );
-    case "grid":
+    case "link":
       return (
-        <svg viewBox="0 0 20 20" className="size-4" fill="none" aria-hidden="true">
-          <path d="M4 5h12M4 10h12M4 15h12M8 5v10" stroke="currentColor" strokeWidth="1.6" />
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+          <path d="M7 5.5L8.5 4a2.5 2.5 0 013.5 3.5L10.5 9" />
+          <path d="M9 10.5L7.5 12A2.5 2.5 0 014 8.5L5.5 7" />
+          <path d="M6.5 9.5l3-3" />
+        </svg>
+      );
+    case "ul":
+      return (
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+          <path d="M6 4h7M6 8h7M6 12h7" />
+          <circle cx="3.5" cy="4" r="0.8" fill="currentColor" stroke="none" />
+          <circle cx="3.5" cy="8" r="0.8" fill="currentColor" stroke="none" />
+          <circle cx="3.5" cy="12" r="0.8" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "ol":
+      return (
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+          <path d="M6 4h7M6 8h7M6 12h7" />
+          <text x="2.5" y="5.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">1</text>
+          <text x="2.5" y="9.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">2</text>
+          <text x="2.5" y="13.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">3</text>
+        </svg>
+      );
+    case "fence":
+      return (
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+          <rect x="2" y="2" width="12" height="12" rx="2" />
+          <path d="M5 6h6M5 8.5h4M5 11h5" />
         </svg>
       );
     case "flow":
       return (
-        <svg viewBox="0 0 20 20" className="size-4" fill="none" aria-hidden="true">
-          <path d="M5 5h4v4H5zM11 11h4v4h-4zM9 7h2.5v6H11" stroke="currentColor" strokeWidth="1.6" />
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+          <rect x="2" y="2" width="5" height="4" rx="1" />
+          <rect x="9" y="10" width="5" height="4" rx="1" />
+          <path d="M7 4h2v8H9" />
         </svg>
       );
+    case "grid":
+      return (
+        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+          <rect x="2" y="2" width="12" height="12" rx="1.5" />
+          <path d="M2 6h12M2 10h12M6 2v12M10 2v12" />
+        </svg>
+      );
+    case "H2":
+      return <span className="text-[11px] font-bold font-mono" aria-hidden="true">H2</span>;
+    case "B":
+      return <span className="text-[12px] font-bold" aria-hidden="true">B</span>;
     default:
-      return <span aria-hidden="true">{icon}</span>;
+      return <span className="text-[11px] font-mono" aria-hidden="true">{icon}</span>;
   }
 }
 
 function ResetIcon() {
   return (
-    <svg viewBox="0 0 20 20" className="size-4" fill="none" aria-hidden="true">
-      <path
-        d="M5 7a6 6 0 1 1 .6 6.4"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M5 3v4h4"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
+    <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+      <path d="M3.5 5.5a5 5 0 11.5 5.3" />
+      <path d="M3.5 2v3.5H7" strokeLinejoin="round" />
     </svg>
   );
 }

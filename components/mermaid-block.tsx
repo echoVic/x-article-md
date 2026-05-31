@@ -53,7 +53,7 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
         }
       } catch {
         if (!cancelled) {
-          setError("Mermaid preview unavailable for this diagram.");
+          setError("Mermaid 图表预览不可用");
         }
       }
     }
@@ -67,9 +67,9 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
 
   if (error) {
     return (
-      <div className="rounded-md border border-dashed border-[#8aa3b1] bg-[#f7fafb] p-4">
-        <p className="text-sm font-medium text-[#536471]">{error}</p>
-        <pre className="mt-3 overflow-auto whitespace-pre-wrap font-mono text-sm text-[#0f1419]">
+      <div className="rounded-[var(--radius)] border border-dashed border-[var(--muted)] bg-[var(--fg-soft)] p-4">
+        <p className="text-sm font-medium text-[var(--muted)]">{error}</p>
+        <pre className="mt-3 overflow-auto whitespace-pre-wrap font-mono text-sm text-[var(--fg)]">
           {code}
         </pre>
       </div>
@@ -78,8 +78,8 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
 
   if (!svg) {
     return (
-      <div className="flex min-h-40 items-center justify-center rounded-md border border-dashed border-[#8aa3b1] bg-[#f7fafb] text-sm text-[#536471]">
-        Rendering Mermaid preview...
+      <div className="flex min-h-40 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-[var(--fg-soft)] text-sm text-[var(--muted)]">
+        渲染 Mermaid 图表中...
       </div>
     );
   }
@@ -93,23 +93,23 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
   return (
     <figure className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <figcaption className="text-xs font-semibold uppercase tracking-normal text-[#71808a]">
-          Mermaid image
+        <figcaption className="font-mono text-[11px] uppercase tracking-wider text-[var(--muted)]">
+          Mermaid
         </figcaption>
         <button
           type="button"
           onClick={copyImage}
-          className="rounded-md border border-[#cfd9de] bg-white px-3 py-1.5 text-xs font-semibold text-[#0f1419] transition hover:bg-[#f6f8fa] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2"
+          className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-[11px] font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)] active:scale-[0.97]"
         >
           {copyState === "copied"
-            ? "Copied image"
+            ? "已复制"
             : copyState === "failed"
-              ? "Copy blocked"
-              : "Copy image"}
+              ? "复制失败"
+              : "复制图片"}
         </button>
       </div>
       <div
-        className="overflow-auto rounded-md border border-[#cfd9de] bg-white p-4 [&_svg]:mx-auto [&_svg]:max-w-full"
+        className="overflow-auto rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] p-4 [&_svg]:mx-auto [&_svg]:max-w-full"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
     </figure>

@@ -7,9 +7,11 @@ import {
   type GeneratedCoverImage,
 } from "@/lib/cover-image";
 import { copyPngBlob, downloadBlob } from "@/lib/image-copy";
+import { useI18n } from "@/lib/i18n";
 
 type CoverImagePanelProps = {
   markdown: string;
+  inline?: boolean;
 };
 
 type ActionState = "idle" | "loading" | "done" | "failed";
@@ -21,7 +23,8 @@ const defaultConfig: CoverImageConfig = {
   model: "gpt-image-2",
 };
 
-export function CoverImagePanel({ markdown }: CoverImagePanelProps) {
+export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
+  const { t } = useI18n();
   const [config, setConfig] = useState<CoverImageConfig>(defaultConfig);
   const [configReady, setConfigReady] = useState(false);
   const [cover, setCover] = useState<GeneratedCoverImage | null>(null);
@@ -29,6 +32,7 @@ export function CoverImagePanel({ markdown }: CoverImagePanelProps) {
   const [copyState, setCopyState] = useState<ActionState>("idle");
   const [downloadState, setDownloadState] = useState<ActionState>("idle");
   const [error, setError] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -68,7 +72,7 @@ export function CoverImagePanel({ markdown }: CoverImagePanelProps) {
       setCover(result);
       setGenerateState("done");
     } catch (err) {
-      setError(getErrorMessage(err));
+      setError(getErrorMessage(err, t.coverNetworkError, t.coverGenericError));
       setGenerateState("failed");
     }
   }
@@ -106,98 +110,126 @@ export function CoverImagePanel({ markdown }: CoverImagePanelProps) {
 
   const generateLabel =
     generateState === "loading"
-      ? "Generating"
+      ? t.coverGenerating
       : generateState === "done"
-        ? "Generated"
-        : "Generate";
+        ? t.coverGenerated
+        : t.coverGenerate;
 
-  return (
-    <aside className="mt-5 rounded-md border border-[#d8e0e5] bg-white">
-      <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
-        <h2 className="text-sm font-semibold text-[#536471]">Cover image</h2>
-        <span className="text-xs text-[#71808a]">
-          {cover ? "Ready" : "Optional"}
-        </span>
+  const formContent = (
+    <div className="grid gap-4">
+      <div className="grid gap-3">
+        <label className="grid gap-1.5 text-[11px] font-medium text-[var(--muted)]">
+          {t.coverApiKey}
+          <input
+            type="password"
+            value={config.apiKey}
+            onChange={(event) => updateConfig("apiKey", event.target.value)}
+            className="h-9 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--fg)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
+            placeholder="sk-..."
+          />
+        </label>
+        <label className="grid gap-1.5 text-[11px] font-medium text-[var(--muted)]">
+          {t.coverModel}
+          <input
+            type="text"
+            value={config.model}
+            onChange={(event) => updateConfig("model", event.target.value)}
+            className="h-9 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--fg)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
+          />
+        </label>
+        <label className="grid gap-1.5 text-[11px] font-medium text-[var(--muted)]">
+          {t.coverBaseUrl}
+          <input
+            type="url"
+            value={config.baseUrl}
+            onChange={(event) => updateConfig("baseUrl", event.target.value)}
+            className="h-9 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--fg)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
+          />
+        </label>
       </div>
 
-      <div className="grid gap-4 p-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr]">
-          <label className="grid gap-1 text-xs font-semibold text-[#536471]">
-            API Key
-            <input
-              type="password"
-              value={config.apiKey}
-              onChange={(event) => updateConfig("apiKey", event.target.value)}
-              className="h-10 rounded-md border border-[#cfd9de] bg-white px-3 text-sm font-medium text-[#0f1419] outline-none focus:ring-2 focus:ring-[#1d9bf0]"
-              placeholder="sk-..."
-            />
-          </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#536471]">
-            Model
-            <input
-              type="text"
-              value={config.model}
-              onChange={(event) => updateConfig("model", event.target.value)}
-              className="h-10 rounded-md border border-[#cfd9de] bg-white px-3 text-sm font-medium text-[#0f1419] outline-none focus:ring-2 focus:ring-[#1d9bf0]"
-            />
-          </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#536471] sm:col-span-2">
-            Base URL
-            <input
-              type="url"
-              value={config.baseUrl}
-              onChange={(event) => updateConfig("baseUrl", event.target.value)}
-              className="h-10 rounded-md border border-[#cfd9de] bg-white px-3 text-sm font-medium text-[#0f1419] outline-none focus:ring-2 focus:ring-[#1d9bf0]"
-            />
-          </label>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <PanelButton
-            onClick={generate}
-            state={generateState}
-            primary
-            disabled={generateState === "loading"}
-          >
-            {generateLabel}
-          </PanelButton>
-          {cover ? (
-            <>
-              <PanelButton
-                onClick={downloadImage}
-                state={downloadState}
-                disabled={downloadState === "loading"}
-              >
-                Download PNG
-              </PanelButton>
-              <PanelButton
-                onClick={copyImage}
-                state={copyState}
-                disabled={copyState === "loading"}
-              >
-                Copy image
-              </PanelButton>
-            </>
-          ) : null}
-        </div>
-
-        {error ? (
-          <p className="rounded-md border border-[#ffd8c2] bg-[#fff7f2] px-3 py-2 text-sm text-[#8a3d12]">
-            {error}
-          </p>
-        ) : null}
-
+      <div className="flex flex-wrap items-center gap-2">
+        <PanelButton
+          onClick={generate}
+          state={generateState}
+          primary
+          disabled={generateState === "loading"}
+        >
+          {generateLabel}
+        </PanelButton>
         {cover ? (
-          <div className="overflow-hidden rounded-md border border-[#d8e0e5] bg-[#f6f8fa]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={cover.src}
-              alt="Generated article cover"
-              className="aspect-[3/2] w-full object-cover"
-            />
-          </div>
+          <>
+            <PanelButton
+              onClick={downloadImage}
+              state={downloadState}
+              disabled={downloadState === "loading"}
+            >
+              {t.coverDownload}
+            </PanelButton>
+            <PanelButton
+              onClick={copyImage}
+              state={copyState}
+              disabled={copyState === "loading"}
+            >
+              {t.coverCopyImage}
+            </PanelButton>
+          </>
         ) : null}
       </div>
+
+      {error ? (
+        <p className="rounded-[var(--radius-sm)] border border-[color-mix(in_oklch,var(--danger)_30%,transparent)] bg-[color-mix(in_oklch,var(--danger)_5%,transparent)] px-3 py-2 text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      ) : null}
+
+      {cover ? (
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={cover.src}
+            alt="Generated article cover"
+            className="aspect-[16/9] w-full object-cover"
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+
+  // Inline mode: no wrapper, used inside the drawer
+  if (inline) {
+    return formContent;
+  }
+
+  // Standalone mode: collapsible panel (legacy, kept for flexibility)
+  return (
+    <aside className="mt-8 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between px-4 h-10 text-left transition-colors hover:bg-[var(--fg-soft)] rounded-t-[var(--radius-lg)]"
+      >
+        <span className="text-xs font-medium text-[var(--muted)]">{t.coverTitle}</span>
+        <span className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-[var(--muted)] opacity-60">
+            {cover ? t.coverReady : t.coverOptional}
+          </span>
+          <svg
+            width="12" height="12" viewBox="0 0 12 12" fill="none"
+            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+            className={`transition-transform ${expanded ? "rotate-180" : ""}`}
+            aria-hidden="true"
+          >
+            <path d="M3 4.5l3 3 3-3" />
+          </svg>
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-[var(--border)] p-4">
+          {formContent}
+        </div>
+      )}
     </aside>
   );
 }
@@ -215,13 +247,14 @@ function PanelButton({
   primary?: boolean;
   state: ActionState;
 }) {
+  // Labels are passed from the parent which already uses t.*
   const label =
     state === "loading"
-      ? "Working"
+      ? "…"
       : state === "done"
-        ? "Done"
+        ? "✓"
         : state === "failed"
-          ? "Failed"
+          ? "✗"
           : children;
 
   return (
@@ -231,8 +264,8 @@ function PanelButton({
       disabled={disabled}
       className={
         primary
-          ? "rounded-md bg-[#0f1419] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#26323a] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-          : "rounded-md border border-[#cfd9de] bg-white px-3 py-2 text-sm font-semibold text-[#0f1419] transition hover:bg-[#f6f8fa] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          ? "rounded-[var(--radius-sm)] bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.97]"
+          : "rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)] disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.97]"
       }
     >
       {label}
@@ -263,11 +296,11 @@ function resetState(setter: (state: ActionState) => void) {
   window.setTimeout(() => setter("idle"), 1600);
 }
 
-function getErrorMessage(err: unknown): string {
+function getErrorMessage(err: unknown, networkMsg: string, genericMsg: string): string {
   const message = err instanceof Error ? err.message : String(err);
   if (/failed to fetch|load failed|network/i.test(message)) {
-    return "Image request failed. Check the Base URL, network access, and whether the provider allows browser CORS requests.";
+    return networkMsg;
   }
 
-  return message || "Image generation failed.";
+  return message || genericMsg;
 }

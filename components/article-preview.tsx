@@ -9,34 +9,34 @@ type ArticlePreviewProps = {
 export function ArticlePreview({ blocks }: ArticlePreviewProps) {
   if (blocks.length === 0) {
     return (
-      <div className="flex h-full min-h-64 items-center justify-center rounded-md border border-dashed border-[#cfd9de] text-sm text-[#536471]">
-        Start writing Markdown to see the article preview.
+      <div className="flex h-full min-h-64 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-sm text-[var(--muted)]">
+        开始编写 Markdown 即可看到预览
       </div>
     );
   }
 
   return (
-    <article className="mx-auto max-w-[720px] space-y-6 text-[#0f1419]">
+    <article className="mx-auto max-w-[640px] space-y-6 text-[var(--fg)]">
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading": {
             const Tag = block.level === 1 ? "h1" : block.level === 2 ? "h2" : "h3";
             const size =
               block.level === 1
-                ? "text-3xl leading-tight"
+                ? "text-[28px] leading-[1.2] tracking-[-0.02em]"
                 : block.level === 2
-                  ? "text-2xl leading-snug"
-                  : "text-xl leading-snug";
+                  ? "text-[22px] leading-[1.25] tracking-[-0.01em]"
+                  : "text-[18px] leading-[1.3]";
 
             return (
-              <Tag key={index} className={`${size} font-bold tracking-normal`}>
+              <Tag key={index} className={`${size} font-semibold`}>
                 <InlineContent tokens={block.content} />
               </Tag>
             );
           }
           case "paragraph":
             return (
-              <p key={index} className="text-[17px] leading-8 text-[#0f1419]">
+              <p key={index} className="text-[16px] leading-[1.75]">
                 <InlineContent tokens={block.content} />
               </p>
             );
@@ -44,7 +44,7 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
             return block.ordered ? (
               <ol
                 key={index}
-                className="list-decimal space-y-2 pl-6 text-[17px] leading-8"
+                className="list-decimal space-y-2 pl-6 text-[16px] leading-[1.75]"
               >
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
@@ -55,7 +55,7 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
             ) : (
               <ul
                 key={index}
-                className="list-disc space-y-2 pl-6 text-[17px] leading-8"
+                className="list-disc space-y-2 pl-6 text-[16px] leading-[1.75]"
               >
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
@@ -76,14 +76,14 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
             return <MermaidBlock key={index} code={block.code} />;
           case "table":
             return (
-              <div key={index} className="overflow-auto">
+              <div key={index} className="overflow-auto rounded-[var(--radius)] border border-[var(--border)]">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
                     <tr>
                       {block.headers.map((header, headerIndex) => (
                         <th
                           key={headerIndex}
-                          className="border border-[#cfd9de] bg-[#eef2f5] px-3 py-2 font-semibold"
+                          className="border-b border-[var(--border)] bg-[var(--fg-soft)] px-3 py-2.5 text-xs font-semibold text-[var(--muted)] uppercase tracking-wider"
                         >
                           {header}
                         </th>
@@ -92,11 +92,11 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
                   </thead>
                   <tbody>
                     {block.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
+                      <tr key={rowIndex} className="transition-colors hover:bg-[var(--fg-soft)]">
                         {block.headers.map((_, cellIndex) => (
                           <td
                             key={cellIndex}
-                            className="border border-[#cfd9de] px-3 py-2"
+                            className="border-b border-[var(--border)] px-3 py-2 text-[13px] font-mono tabular-nums"
                           >
                             {row[cellIndex] ?? ""}
                           </td>
@@ -111,16 +111,16 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
             return (
               <div
                 key={index}
-                className="rounded-md border border-dashed border-[#8aa3b1] bg-[#f7fafb] p-4"
+                className="rounded-[var(--radius)] border border-dashed border-[var(--muted)] bg-[var(--fg-soft)] p-4"
               >
-                <p className="text-sm font-semibold text-[#536471]">
-                  Tweet embed candidate
+                <p className="text-xs font-medium text-[var(--muted)]">
+                  Tweet embed
                 </p>
                 <a
                   href={block.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-2 block break-all text-sm font-medium text-[#1d9bf0] underline decoration-[#8ecdf8] underline-offset-4"
+                  className="mt-2 block break-all text-sm font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-4"
                 >
                   {block.url}
                 </a>
@@ -140,12 +140,12 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
           case "text":
             return token.text;
           case "strong":
-            return <strong key={index}>{token.text}</strong>;
+            return <strong key={index} className="font-semibold">{token.text}</strong>;
           case "code":
             return (
               <code
                 key={index}
-                className="rounded bg-[#eef2f5] px-1.5 py-0.5 font-mono text-[0.92em]"
+                className="rounded-[var(--radius-xs)] bg-[var(--fg-soft)] px-1.5 py-0.5 font-mono text-[0.88em]"
               >
                 {token.text}
               </code>
@@ -155,7 +155,7 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
               <a
                 key={index}
                 href={token.href}
-                className="font-medium text-[#1d9bf0] underline decoration-[#8ecdf8] underline-offset-4"
+                className="font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-3"
                 target="_blank"
                 rel="noreferrer"
               >
