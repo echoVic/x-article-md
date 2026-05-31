@@ -92,7 +92,7 @@ graph TD
 });
 
 describe("toXArticleClipboard", () => {
-  it("splits the first h1 into title and rich body content for X Articles", () => {
+  it("renders code blocks as X-friendly blockquotes by default", () => {
     const clipboard = toXArticleClipboard(`# Launch Notes
 
 This is **bold** with [a link](https://x.com).
@@ -117,7 +117,8 @@ const ship = true;
         "- First point",
         "- Second point",
         "",
-        "[Insert code image 1]",
+        "[ts]",
+        "const ship = true;",
       ].join("\n"),
     );
     expect(clipboard.bodyHtml).toContain("<p>This is <strong>bold</strong>");
@@ -128,9 +129,39 @@ const ship = true;
     expect(clipboard.bodyHtml).toContain("<ul>");
     expect(clipboard.bodyHtml).toContain("<li>First point</li>");
     expect(clipboard.bodyHtml).toContain(
-      "<p><em>[Insert code image 1]</em></p>",
+      "<blockquote><strong>[ts]</strong><br>const ship = true;</blockquote>",
     );
     expect(clipboard.bodyHtml).not.toContain("<pre><code>");
+    expect(clipboard.assets).toEqual([]);
+  });
+
+  it("can render code blocks as image placeholders when requested", () => {
+    const clipboard = toXArticleClipboard(
+      `# Launch Notes
+
+\`\`\`ts
+const ship = true;
+\`\`\`
+`,
+      {
+        codeMode: "image",
+      },
+    );
+
+    expect(clipboard.bodyText).toBe("XIMGPH_1");
+    expect(clipboard.bodyHtml).toContain(
+      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
+    );
+    expect(clipboard.assets).toEqual([
+      {
+        id: 1,
+        placeholder: "XIMGPH_1",
+        type: "code",
+        label: "Code image 1",
+        code: "const ship = true;",
+        language: "ts",
+      },
+    ]);
   });
 
   it("marks Mermaid blocks as image insertion points instead of raw diagram source", () => {
@@ -143,11 +174,20 @@ graph TD
 `);
 
     expect(clipboard.bodyText).toBe(
-      ["Intro paragraph.", "", "[Insert Mermaid image 1]"].join("\n"),
+      ["Intro paragraph.", "", "XIMGPH_1"].join("\n"),
     );
     expect(clipboard.bodyHtml).toContain(
-      "<p><em>[Insert Mermaid image 1]</em></p>",
+      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
     );
     expect(clipboard.bodyHtml).not.toContain("graph TD");
+    expect(clipboard.assets).toEqual([
+      {
+        id: 1,
+        placeholder: "XIMGPH_1",
+        type: "mermaid",
+        label: "Mermaid image 1",
+        code: "graph TD\n  A --> B",
+      },
+    ]);
   });
 });

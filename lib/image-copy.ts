@@ -8,7 +8,19 @@ export async function copySvgImage(svg: string): Promise<boolean> {
   return copyPngBlob(blob);
 }
 
-async function copyPngBlob(blob: Blob): Promise<boolean> {
+export async function downloadCodeImage(
+  code: string,
+  language: string,
+  filename: string,
+): Promise<void> {
+  downloadBlob(await renderCodeToPng(code, language), filename);
+}
+
+export async function downloadSvgImage(svg: string, filename: string): Promise<void> {
+  downloadBlob(await renderSvgToPng(svg), filename);
+}
+
+export async function copyPngBlob(blob: Blob): Promise<boolean> {
   if (!("ClipboardItem" in window) || !navigator.clipboard?.write) {
     return false;
   }
@@ -25,7 +37,10 @@ async function copyPngBlob(blob: Blob): Promise<boolean> {
   }
 }
 
-async function renderCodeToPng(code: string, language: string): Promise<Blob> {
+export async function renderCodeToPng(
+  code: string,
+  language: string,
+): Promise<Blob> {
   const lines = code.split("\n");
   const scale = window.devicePixelRatio || 2;
   const fontSize = 16;
@@ -78,7 +93,7 @@ async function renderCodeToPng(code: string, language: string): Promise<Blob> {
   return canvasToBlob(canvas);
 }
 
-async function renderSvgToPng(svg: string): Promise<Blob> {
+export async function renderSvgToPng(svg: string): Promise<Blob> {
   const image = new Image();
   const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(svgBlob);
@@ -123,6 +138,17 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
       }
     }, "image/png");
   });
+}
+
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function roundRect(

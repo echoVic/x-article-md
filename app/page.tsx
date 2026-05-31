@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
 
 export default function Home() {
   const [markdown, setMarkdown] = useState(sampleMarkdown);
+  const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
   const [copyState, setCopyState] = useState<
     "idle" | "title" | "body" | "manual"
   >("idle");
@@ -18,7 +20,10 @@ export default function Home() {
   const manualCopyRef = useRef<HTMLTextAreaElement>(null);
   const manualRichCopyRef = useRef<HTMLDivElement>(null);
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
-  const clipboard = useMemo(() => toXArticleClipboard(markdown), [markdown]);
+  const clipboard = useMemo(
+    () => toXArticleClipboard(markdown, { codeMode }),
+    [codeMode, markdown],
+  );
 
   useEffect(() => {
     if (!manualCopy) {
@@ -80,7 +85,34 @@ export default function Home() {
               Copy the title, then paste the rich body into X Articles.
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div
+              className="flex h-10 rounded-md border border-[#cfd9de] bg-[#f6f8fa] p-1"
+              aria-label="Code block copy mode"
+            >
+              <button
+                type="button"
+                onClick={() => setCodeMode("quote")}
+                className={`rounded px-3 text-sm font-semibold transition ${
+                  codeMode === "quote"
+                    ? "bg-white text-[#0f1419] shadow-sm"
+                    : "text-[#536471] hover:text-[#0f1419]"
+                }`}
+              >
+                Code as quote
+              </button>
+              <button
+                type="button"
+                onClick={() => setCodeMode("image")}
+                className={`rounded px-3 text-sm font-semibold transition ${
+                  codeMode === "image"
+                    ? "bg-white text-[#0f1419] shadow-sm"
+                    : "text-[#536471] hover:text-[#0f1419]"
+                }`}
+              >
+                Code as image
+              </button>
+            </div>
             <button
               type="button"
               onClick={copyTitle}
@@ -120,16 +152,19 @@ export default function Home() {
           />
         </div>
 
-        <div className="min-h-[calc(100vh-108px)] overflow-hidden rounded-md border border-[#d8e0e5] bg-white">
-          <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
-            <h2 className="text-sm font-semibold text-[#536471]">
-              X Articles preview
-            </h2>
-            <span className="text-xs text-[#71808a]">Live</span>
+        <div>
+          <div className="min-h-[calc(100vh-108px)] overflow-hidden rounded-md border border-[#d8e0e5] bg-white">
+            <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
+              <h2 className="text-sm font-semibold text-[#536471]">
+                X Articles preview
+              </h2>
+              <span className="text-xs text-[#71808a]">Live</span>
+            </div>
+            <div className="h-[calc(100vh-153px)] min-h-[460px] overflow-auto p-5 sm:p-8">
+              <ArticlePreview blocks={blocks} />
+            </div>
           </div>
-          <div className="h-[calc(100vh-153px)] min-h-[460px] overflow-auto p-5 sm:p-8">
-            <ArticlePreview blocks={blocks} />
-          </div>
+          <ArticleAssets assets={clipboard.assets} />
         </div>
       </section>
 

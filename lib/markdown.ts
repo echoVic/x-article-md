@@ -11,6 +11,15 @@ export type ArticleBlock =
   | { type: "code"; language: string; code: string }
   | { type: "mermaid"; code: string };
 
+export type XArticleAsset = {
+  id: number;
+  placeholder: string;
+  type: "code" | "mermaid";
+  label: string;
+  code: string;
+  language?: string;
+};
+
 export type XArticleClipboard = {
   title: string;
   titleHtml: string;
@@ -18,6 +27,11 @@ export type XArticleClipboard = {
   bodyHtml: string;
   fullText: string;
   fullHtml: string;
+  assets: XArticleAsset[];
+};
+
+export type XArticleClipboardOptions = {
+  codeMode?: "quote" | "image";
 };
 
 const headingPattern = /^(#{1,3})\s+(.+)$/;
@@ -114,7 +128,10 @@ export function toXArticleText(source: string): string {
   return blocksToText(parseMarkdown(source), "source");
 }
 
-export function toXArticleClipboard(source: string): XArticleClipboard {
+export function toXArticleClipboard(
+  source: string,
+  options: XArticleClipboardOptions = {},
+): XArticleClipboard {
   const blocks = parseMarkdown(source);
   const firstBlock = blocks[0];
   const titleBlock =
@@ -126,8 +143,11 @@ export function toXArticleClipboard(source: string): XArticleClipboard {
     ? `<h1>${inlineToHtml(titleBlock.content)}</h1>`
     : "";
   const bodyBlocks = titleBlock ? blocks.slice(1) : blocks;
-  const bodyText = blocksToText(bodyBlocks, "placeholder");
-  const bodyHtml = blocksToHtml(bodyBlocks);
+  const body = blocksToXArticleBody(bodyBlocks, {
+    codeMode: options.codeMode ?? "quote",
+  });
+  const bodyText = body.text;
+  const bodyHtml = body.html;
   const fullText = [title, bodyText].filter(Boolean).join("\n\n");
   const fullHtml = [titleHtml, bodyHtml].filter(Boolean).join("");
 
@@ -138,6 +158,7 @@ export function toXArticleClipboard(source: string): XArticleClipboard {
     bodyHtml,
     fullText,
     fullHtml,
+    assets: body.assets,
   };
 }
 
@@ -178,32 +199,95 @@ function blocksToText(
     .join("\n\n");
 }
 
-function blocksToHtml(blocks: ArticleBlock[]): string {
-  const assetCounts = { code: 0, mermaid: 0 };
+function blocksToXArticleBody(
+  blocks: ArticleBlock[],
+  options: Required<XArticleClipboardOptions>,
+): {
+  text: string;
+  html: string;
+  assets: XArticleAsset[];
+} {
+  const textParts: string[] = [];
+  const htmlParts: string[] = [];
+  const assets: XArticleAsset[] = [];
 
-  return blocks
-    .map((block) => {
-      switch (block.type) {
-        case "heading":
-          return `<h${block.level}>${inlineToHtml(block.content)}</h${block.level}>`;
-        case "paragraph":
-          return `<p>${inlineToHtml(block.content)}</p>`;
-        case "list": {
-          const tag = block.ordered ? "ol" : "ul";
-          const items = block.items
-            .map((item) => `<li>${inlineToHtml(item)}</li>`)
-            .join("");
-          return `<${tag}>${items}</${tag}>`;
-        }
-        case "code":
-          assetCounts.code += 1;
-          return `<p><em>[Insert code image ${assetCounts.code}]</em></p>`;
-        case "mermaid":
-          assetCounts.mermaid += 1;
-          return `<p><em>[Insert Mermaid image ${assetCounts.mermaid}]</em></p>`;
+  for (const block of blocks) {
+    switch (block.type) {
+      case "heading":
+        textParts.push(inlineToText(block.content));
+        htmlParts.push(
+          `<h${block.level}>${inlineToHtml(block.content)}</h${block.level}>`,
+        );
+        break;
+      case "paragraph":
+        textParts.push(inlineToText(block.content));
+        htmlParts.push(`<p>${inlineToHtml(block.content)}</p>`);
+        break;
+      case "list": {
+        textParts.push(
+          block.items
+            .map((item, index) => {
+              const marker = block.ordered ? `${index + 1}.` : "-";
+              return `${marker} ${inlineToText(item)}`;
+            })
+            .join("\n"),
+        );
+
+        const tag = block.ordered ? "ol" : "ul";
+        const items = block.items
+          .map((item) => `<li>${inlineToHtml(item)}</li>`)
+          .join("");
+        htmlParts.push(`<${tag}>${items}</${tag}>`);
+        break;
       }
-    })
-    .join("");
+      case "code":
+        if (options.codeMode === "quote") {
+          textParts.push(
+            [block.language ? `[${block.language}]` : "", block.code]
+              .filter(Boolean)
+              .join("\n"),
+          );
+          htmlParts.push(codeBlockToQuoteHtml(block));
+          break;
+        }
+      // Fall through when code blocks should become image placeholders.
+      case "mermaid": {
+        const id = assets.length + 1;
+        const placeholder = `XIMGPH_${id}`;
+        const label =
+          block.type === "code" ? `Code image ${id}` : `Mermaid image ${id}`;
+        assets.push({
+          id,
+          placeholder,
+          type: block.type,
+          label,
+          code: block.code,
+          ...(block.type === "code" ? { language: block.language } : {}),
+        });
+        textParts.push(placeholder);
+        htmlParts.push(
+          `<p><span data-x-asset-placeholder="${placeholder}">${placeholder}</span></p>`,
+        );
+        break;
+      }
+    }
+  }
+
+  return {
+    text: textParts.filter(Boolean).join("\n\n"),
+    html: htmlParts.join(""),
+    assets,
+  };
+}
+
+function codeBlockToQuoteHtml(block: Extract<ArticleBlock, { type: "code" }>) {
+  const label = block.language
+    ? `<strong>[${escapeHtml(block.language)}]</strong><br>`
+    : "";
+  return `<blockquote>${label}${escapeHtml(block.code).replaceAll(
+    "\n",
+    "<br>",
+  )}</blockquote>`;
 }
 
 export function parseInline(text: string): InlineToken[] {
