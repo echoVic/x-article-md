@@ -57,6 +57,29 @@ graph TD
       { type: "mermaid", code: "graph TD\n  A[Markdown] --> B[X Articles]" },
     ]);
   });
+
+  it("parses markdown tables and standalone X status URLs", () => {
+    const blocks = parseMarkdown(`| Name | Value |
+| --- | ---: |
+| Alpha | 42 |
+
+https://x.com/jack/status/20
+`);
+
+    expect(blocks).toEqual([
+      {
+        type: "table",
+        headers: ["Name", "Value"],
+        alignments: ["left", "right"],
+        rows: [["Alpha", "42"]],
+      },
+      {
+        type: "tweet",
+        url: "https://x.com/jack/status/20",
+        tweetId: "20",
+      },
+    ]);
+  });
 });
 
 describe("toXArticleText", () => {
@@ -187,6 +210,46 @@ graph TD
         type: "mermaid",
         label: "Mermaid image 1",
         code: "graph TD\n  A --> B",
+      },
+    ]);
+  });
+
+  it("turns markdown tables into PNG assets and keeps tweet URLs as embed hints", () => {
+    const clipboard = toXArticleClipboard(`# Mixed Assets
+
+| Name | Value |
+| --- | ---: |
+| Alpha | 42 |
+
+https://twitter.com/jack/status/20
+`);
+
+    expect(clipboard.bodyText).toBe(
+      ["XIMGPH_1", "", "https://twitter.com/jack/status/20"].join("\n"),
+    );
+    expect(clipboard.bodyHtml).toContain(
+      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
+    );
+    expect(clipboard.bodyHtml).toContain(
+      '<p><a href="https://twitter.com/jack/status/20">https://twitter.com/jack/status/20</a></p>',
+    );
+    expect(clipboard.assets).toEqual([
+      {
+        id: 1,
+        placeholder: "XIMGPH_1",
+        type: "table",
+        label: "Table image 1",
+        headers: ["Name", "Value"],
+        alignments: ["left", "right"],
+        rows: [["Alpha", "42"]],
+      },
+      {
+        id: 2,
+        placeholder: "XTWEET_2",
+        type: "tweet",
+        label: "Tweet embed 2",
+        url: "https://twitter.com/jack/status/20",
+        tweetId: "20",
       },
     ]);
   });

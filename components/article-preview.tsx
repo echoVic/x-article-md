@@ -74,6 +74,58 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
             );
           case "mermaid":
             return <MermaidBlock key={index} code={block.code} />;
+          case "table":
+            return (
+              <div key={index} className="overflow-auto">
+                <table className="w-full border-collapse text-left text-sm">
+                  <thead>
+                    <tr>
+                      {block.headers.map((header, headerIndex) => (
+                        <th
+                          key={headerIndex}
+                          className="border border-[#cfd9de] bg-[#eef2f5] px-3 py-2 font-semibold"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {block.headers.map((_, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            className="border border-[#cfd9de] px-3 py-2"
+                          >
+                            {row[cellIndex] ?? ""}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          case "tweet":
+            return (
+              <div
+                key={index}
+                className="rounded-md border border-dashed border-[#8aa3b1] bg-[#f7fafb] p-4"
+              >
+                <p className="text-sm font-semibold text-[#536471]">
+                  Tweet embed candidate
+                </p>
+                <a
+                  href={block.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 block break-all text-sm font-medium text-[#1d9bf0] underline decoration-[#8ecdf8] underline-offset-4"
+                >
+                  {block.url}
+                </a>
+              </div>
+            );
         }
       })}
     </article>

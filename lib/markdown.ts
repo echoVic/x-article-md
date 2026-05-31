@@ -9,16 +9,43 @@ export type ArticleBlock =
   | { type: "paragraph"; content: InlineToken[] }
   | { type: "list"; ordered: boolean; items: InlineToken[][] }
   | { type: "code"; language: string; code: string }
-  | { type: "mermaid"; code: string };
+  | { type: "mermaid"; code: string }
+  | {
+      type: "table";
+      headers: string[];
+      alignments: TableAlignment[];
+      rows: string[][];
+    }
+  | { type: "tweet"; url: string; tweetId: string };
 
-export type XArticleAsset = {
-  id: number;
-  placeholder: string;
-  type: "code" | "mermaid";
-  label: string;
-  code: string;
-  language?: string;
-};
+export type TableAlignment = "left" | "center" | "right";
+
+export type XArticleAsset =
+  | {
+      id: number;
+      placeholder: string;
+      type: "code" | "mermaid";
+      label: string;
+      code: string;
+      language?: string;
+    }
+  | {
+      id: number;
+      placeholder: string;
+      type: "table";
+      label: string;
+      headers: string[];
+      alignments: TableAlignment[];
+      rows: string[][];
+    }
+  | {
+      id: number;
+      placeholder: string;
+      type: "tweet";
+      label: string;
+      url: string;
+      tweetId: string;
+    };
 
 export type XArticleClipboard = {
   title: string;
@@ -38,6 +65,8 @@ const headingPattern = /^(#{1,3})\s+(.+)$/;
 const unorderedListPattern = /^[-*]\s+(.+)$/;
 const orderedListPattern = /^\d+[.)]\s+(.+)$/;
 const fencePattern = /^```([a-zA-Z0-9_-]*)\s*$/;
+const tweetUrlPattern =
+  /^https?:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/[A-Za-z0-9_]+\/status\/(\d+)(?:[?#][^\s]*)?$/;
 
 export function parseMarkdown(source: string): ArticleBlock[] {
   const lines = source.replace(/\r\n/g, "\n").split("\n");
@@ -106,6 +135,20 @@ export function parseMarkdown(source: string): ArticleBlock[] {
       }
 
       blocks.push({ type: "list", ordered, items });
+      continue;
+    }
+
+    const table = parseTableAt(lines, index);
+    if (table) {
+      blocks.push(table.block);
+      index = table.nextIndex;
+      continue;
+    }
+
+    const tweet = line.trim().match(tweetUrlPattern);
+    if (tweet) {
+      blocks.push({ type: "tweet", url: line.trim(), tweetId: tweet[1] });
+      index += 1;
       continue;
     }
 
@@ -189,10 +232,18 @@ function blocksToText(
           return `[Insert code image ${assetCounts.code}]`;
         case "mermaid":
           if (assetMode === "source") {
-            return `[Mermaid diagram]\n${block.code}`;
-          }
+          return `[Mermaid diagram]\n${block.code}`;
+        }
           assetCounts.mermaid += 1;
           return `[Insert Mermaid image ${assetCounts.mermaid}]`;
+        case "table":
+          return [
+            `| ${block.headers.join(" | ")} |`,
+            `| ${block.alignments.map(alignmentToMarkdown).join(" | ")} |`,
+            ...block.rows.map((row) => `| ${row.join(" | ")} |`),
+          ].join("\n");
+        case "tweet":
+          return block.url;
       }
     })
     .filter(Boolean)
@@ -251,22 +302,53 @@ function blocksToXArticleBody(
           break;
         }
       // Fall through when code blocks should become image placeholders.
+      case "table":
       case "mermaid": {
         const id = assets.length + 1;
         const placeholder = `XIMGPH_${id}`;
-        const label =
-          block.type === "code" ? `Code image ${id}` : `Mermaid image ${id}`;
-        assets.push({
-          id,
-          placeholder,
-          type: block.type,
-          label,
-          code: block.code,
-          ...(block.type === "code" ? { language: block.language } : {}),
-        });
+        const label = imageAssetLabel(block.type, id);
+        if (block.type === "table") {
+          assets.push({
+            id,
+            placeholder,
+            type: "table",
+            label,
+            headers: block.headers,
+            alignments: block.alignments,
+            rows: block.rows,
+          });
+        } else {
+          assets.push({
+            id,
+            placeholder,
+            type: block.type,
+            label,
+            code: block.code,
+            ...(block.type === "code" ? { language: block.language } : {}),
+          });
+        }
         textParts.push(placeholder);
         htmlParts.push(
           `<p><span data-x-asset-placeholder="${placeholder}">${placeholder}</span></p>`,
+        );
+        break;
+      }
+      case "tweet": {
+        const id = assets.length + 1;
+        const placeholder = `XTWEET_${id}`;
+        assets.push({
+          id,
+          placeholder,
+          type: "tweet",
+          label: `Tweet embed ${id}`,
+          url: block.url,
+          tweetId: block.tweetId,
+        });
+        textParts.push(block.url);
+        htmlParts.push(
+          `<p><a href="${escapeAttribute(block.url)}">${escapeHtml(
+            block.url,
+          )}</a></p>`,
         );
         break;
       }
@@ -278,6 +360,12 @@ function blocksToXArticleBody(
     html: htmlParts.join(""),
     assets,
   };
+}
+
+function imageAssetLabel(type: "code" | "mermaid" | "table", id: number) {
+  if (type === "code") return `Code image ${id}`;
+  if (type === "table") return `Table image ${id}`;
+  return `Mermaid image ${id}`;
 }
 
 function codeBlockToQuoteHtml(block: Extract<ArticleBlock, { type: "code" }>) {
@@ -360,8 +448,78 @@ function isParagraphLine(line: string): boolean {
     !headingPattern.test(line) &&
     !fencePattern.test(line) &&
     !unorderedListPattern.test(line) &&
-    !orderedListPattern.test(line)
+    !orderedListPattern.test(line) &&
+    !tweetUrlPattern.test(line.trim())
   );
+}
+
+function parseTableAt(
+  lines: string[],
+  index: number,
+): { block: Extract<ArticleBlock, { type: "table" }>; nextIndex: number } | null {
+  const headerLine = lines[index]?.trim() ?? "";
+  const separatorLine = lines[index + 1]?.trim() ?? "";
+  if (!isTableRow(headerLine) || !isTableSeparator(separatorLine)) {
+    return null;
+  }
+
+  const headers = splitTableRow(headerLine);
+  const separator = splitTableRow(separatorLine);
+  if (headers.length < 2 || separator.length !== headers.length) {
+    return null;
+  }
+
+  const rows: string[][] = [];
+  let cursor = index + 2;
+  while (cursor < lines.length && isTableRow(lines[cursor].trim())) {
+    const cells = splitTableRow(lines[cursor].trim());
+    rows.push(padRow(cells, headers.length));
+    cursor += 1;
+  }
+
+  return {
+    block: {
+      type: "table",
+      headers,
+      alignments: separator.map(parseAlignment),
+      rows,
+    },
+    nextIndex: cursor,
+  };
+}
+
+function isTableRow(line: string) {
+  return line.includes("|") && splitTableRow(line).length >= 2;
+}
+
+function isTableSeparator(line: string) {
+  if (!isTableRow(line)) return false;
+  return splitTableRow(line).every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
+function splitTableRow(line: string) {
+  let value = line.trim();
+  if (value.startsWith("|")) value = value.slice(1);
+  if (value.endsWith("|")) value = value.slice(0, -1);
+  return value.split("|").map((cell) => cell.trim());
+}
+
+function padRow(row: string[], length: number) {
+  return Array.from({ length }, (_, index) => row[index] ?? "");
+}
+
+function parseAlignment(cell: string): TableAlignment {
+  const left = cell.startsWith(":");
+  const right = cell.endsWith(":");
+  if (left && right) return "center";
+  if (right) return "right";
+  return "left";
+}
+
+function alignmentToMarkdown(alignment: TableAlignment) {
+  if (alignment === "center") return ":---:";
+  if (alignment === "right") return "---:";
+  return "---";
 }
 
 function trimCodeBlock(lines: string[]): string {

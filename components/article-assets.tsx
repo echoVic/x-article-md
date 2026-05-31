@@ -4,8 +4,10 @@ import { useState } from "react";
 import {
   copyCodeImage,
   copyPngBlob,
+  copyTableImage,
   downloadBlob,
   downloadCodeImage,
+  downloadTableImage,
   renderSvgToPng,
 } from "@/lib/image-copy";
 import type { XArticleAsset } from "@/lib/markdown";
@@ -24,7 +26,7 @@ export function ArticleAssets({ assets }: ArticleAssetsProps) {
   return (
     <aside className="mt-5 rounded-md border border-[#d8e0e5] bg-white">
       <div className="flex h-11 items-center justify-between border-b border-[#e6ecf0] px-4">
-        <h2 className="text-sm font-semibold text-[#536471]">XIMG assets</h2>
+        <h2 className="text-sm font-semibold text-[#536471]">X assets</h2>
         <span className="text-xs text-[#71808a]">{assets.length}</span>
       </div>
       <div className="divide-y divide-[#edf1f4]">
@@ -53,10 +55,14 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
   }
 
   async function copyImage() {
-    const ok =
-      asset.type === "code"
-        ? await copyCodeImage(asset.code, asset.language ?? "")
-        : await copyMermaidImage(asset.code);
+    if (asset.type === "tweet") {
+      const ok = copyText(asset.url);
+      setImageState(ok ? "done" : "failed");
+      reset(setImageState);
+      return;
+    }
+
+    const ok = await copyImageAsset(asset);
     setImageState(ok ? "done" : "failed");
     reset(setImageState);
   }
@@ -66,6 +72,11 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
       const filename = `${asset.placeholder.toLowerCase()}-${asset.type}.png`;
       if (asset.type === "code") {
         await downloadCodeImage(asset.code, asset.language ?? "", filename);
+      } else if (asset.type === "table") {
+        await downloadTableImage(asset.headers, asset.rows, filename);
+      } else if (asset.type === "tweet") {
+        const ok = copyText(asset.url);
+        if (!ok) throw new Error("Copy blocked.");
       } else {
         downloadBlob(await renderMermaidToPng(asset.code), filename);
       }
@@ -88,22 +99,51 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
           </span>
         </div>
         <p className="mt-1 truncate font-mono text-xs text-[#71808a]">
-          {asset.type === "code" ? asset.language || "code" : "mermaid"}
+          {assetDescription(asset)}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <AssetButton onClick={copyPlaceholder} state={placeholderState}>
-          Placeholder
-        </AssetButton>
-        <AssetButton onClick={downloadImage} state={downloadState}>
-          Download PNG
-        </AssetButton>
+        {asset.type === "tweet" ? null : (
+          <AssetButton onClick={copyPlaceholder} state={placeholderState}>
+            Placeholder
+          </AssetButton>
+        )}
+        {asset.type === "tweet" ? null : (
+          <AssetButton onClick={downloadImage} state={downloadState}>
+            Download PNG
+          </AssetButton>
+        )}
         <AssetButton onClick={copyImage} state={imageState} primary>
-          Copy image
+          {asset.type === "tweet" ? "Copy URL" : "Copy image"}
         </AssetButton>
       </div>
     </div>
   );
+}
+
+async function copyImageAsset(asset: XArticleAsset): Promise<boolean> {
+  if (asset.type === "code") {
+    return copyCodeImage(asset.code, asset.language ?? "");
+  }
+
+  if (asset.type === "table") {
+    return copyTableImage(asset.headers, asset.rows);
+  }
+
+  if (asset.type === "mermaid") {
+    return copyMermaidImage(asset.code);
+  }
+
+  return false;
+}
+
+function assetDescription(asset: XArticleAsset) {
+  if (asset.type === "code") return asset.language || "code";
+  if (asset.type === "table") {
+    return `${asset.headers.length} columns, ${asset.rows.length} rows`;
+  }
+  if (asset.type === "tweet") return asset.url;
+  return "mermaid";
 }
 
 function AssetButton({
