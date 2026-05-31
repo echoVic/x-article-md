@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { buildPageMetadata, getHtmlLangForPath } from "@/lib/seo";
@@ -45,6 +46,7 @@ export default async function RootLayout({
         >
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
