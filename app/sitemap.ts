@@ -16,6 +16,13 @@ const editorAlternates = {
     "x-default": absoluteUrl("/editor"),
   },
 };
+const threadAlternates = {
+  languages: {
+    en: absoluteUrl("/thread"),
+    "zh-CN": absoluteUrl("/zh/thread"),
+    "x-default": absoluteUrl("/thread"),
+  },
+};
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -46,6 +53,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
       alternates: editorAlternates,
+    },
+    {
+      url: absoluteUrl("/thread"),
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
+      alternates: threadAlternates,
+    },
+    {
+      url: absoluteUrl("/zh/thread"),
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.8,
+      alternates: threadAlternates,
     },
   ];
 }

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://www.markdown2x.com";
 export const githubRepoUrl = "https://github.com/echoVic/x-article-md";
 
-export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor";
+export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread";
 
 type PageSeo = {
   title: string;
@@ -28,6 +28,15 @@ const editorAlternates: Metadata["alternates"] = {
     en: "/editor",
     "zh-CN": "/zh/editor",
     "x-default": "/editor",
+  },
+};
+
+const threadAlternates: Metadata["alternates"] = {
+  canonical: "/thread",
+  languages: {
+    en: "/thread",
+    "zh-CN": "/zh/thread",
+    "x-default": "/thread",
   },
 };
 
@@ -68,6 +77,25 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     alternates: {
       ...editorAlternates,
       canonical: "/zh/editor",
+    },
+  },
+  thread: {
+    title: "Free Twitter Thread Generator from Markdown | MD2X",
+    description:
+      "Convert Markdown to Twitter/X threads. Auto-split into 280-character tweets with numbering. Free, no sign-up, runs in browser.",
+    path: "/thread",
+    locale: "en",
+    alternates: threadAlternates,
+  },
+  zhThread: {
+    title: "免费 Markdown 转 Twitter Thread 生成器 | MD2X",
+    description:
+      "将 Markdown 转换为 Twitter/X Thread。自动拆分为 280 字符推文并添加编号。免费、无需注册、浏览器端运行。",
+    path: "/zh/thread",
+    locale: "zh-CN",
+    alternates: {
+      ...threadAlternates,
+      canonical: "/zh/thread",
     },
   },
 };
