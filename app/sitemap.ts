@@ -1,12 +1,19 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
 
-const lastModified = new Date("2026-05-31");
+const lastModified = new Date("2026-06-01");
 const homeAlternates = {
   languages: {
     en: absoluteUrl("/"),
     "zh-CN": absoluteUrl("/zh"),
     "x-default": absoluteUrl("/"),
+  },
+};
+const editorAlternates = {
+  languages: {
+    en: absoluteUrl("/editor"),
+    "zh-CN": absoluteUrl("/zh/editor"),
+    "x-default": absoluteUrl("/editor"),
   },
 };
 
@@ -29,8 +36,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: absoluteUrl("/editor"),
       lastModified,
-      changeFrequency: "monthly",
+      changeFrequency: "weekly",
+      priority: 0.9,
+      alternates: editorAlternates,
+    },
+    {
+      url: absoluteUrl("/zh/editor"),
+      lastModified,
+      changeFrequency: "weekly",
       priority: 0.8,
+      alternates: editorAlternates,
     },
   ];
 }

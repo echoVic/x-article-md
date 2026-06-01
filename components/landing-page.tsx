@@ -5,6 +5,7 @@ import { buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
 
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
+  const editorHref = locale === "zh" ? "/zh/editor" : "/editor";
 
   return (
     <div className="landing">
@@ -26,7 +27,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
           <nav className="topnav-links">
             <a href="#features">{t.navFeatures}</a>
             <a href="#workflow">{t.navWorkflow}</a>
-            <Link href="/editor">{t.navOpenEditor}</Link>
+            <Link href={editorHref}>{t.navOpenEditor}</Link>
           </nav>
           <div className="topnav-actions">
             <Link
@@ -41,7 +42,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
               </svg>
               {locale === "en" ? "中文" : "EN"}
             </Link>
-            <Link href="/editor" className="btn btn-primary">
+            <Link href={editorHref} className="btn btn-primary">
               {t.navGetStarted}
             </Link>
           </div>
@@ -56,7 +57,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
             <h1>{t.heroTitle}</h1>
             <p className="lead">{t.heroLead}</p>
             <div className="hero-cta">
-              <Link href="/editor" className="btn btn-primary">
+              <Link href={editorHref} className="btn btn-primary">
                 {t.heroOpenEditor}
               </Link>
               <a
@@ -206,7 +207,7 @@ type Op = {
           <div className="container">
             <h2>{t.ctaTitle}</h2>
             <p className="lead">{t.ctaDesc}</p>
-            <Link href="/editor" className="btn btn-primary">
+            <Link href={editorHref} className="btn btn-primary">
               {t.ctaOpenEditor}
             </Link>
           </div>

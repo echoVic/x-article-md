@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://www.markdown2x.com";
 export const githubRepoUrl = "https://github.com/echoVic/x-article-md";
 
-export type SeoPage = "home" | "zhHome" | "editor";
+export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor";
 
 type PageSeo = {
   title: string;
@@ -19,6 +19,15 @@ const homeAlternates: Metadata["alternates"] = {
     en: "/",
     "zh-CN": "/zh",
     "x-default": "/",
+  },
+};
+
+const editorAlternates: Metadata["alternates"] = {
+  canonical: "/editor",
+  languages: {
+    en: "/editor",
+    "zh-CN": "/zh/editor",
+    "x-default": "/editor",
   },
 };
 
@@ -43,13 +52,22 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     },
   },
   editor: {
-    title: "Markdown to X Articles Editor - MD2X",
+    title: "Free Markdown to X Articles Converter - Online Editor | MD2X",
     description:
-      "Write Markdown and copy polished rich text into X Articles. Code blocks, tables, and diagrams stay ready to publish.",
+      "Convert Markdown to X Articles rich text online. Code blocks render as images, tables and Mermaid diagrams copy in one click. Free, no sign-up, runs in browser.",
     path: "/editor",
     locale: "en",
+    alternates: editorAlternates,
+  },
+  zhEditor: {
+    title: "免费 Markdown 转 X Articles 在线编辑器 | MD2X",
+    description:
+      "在线将 Markdown 转换为 X Articles 富文本。代码块渲染为图片，表格和 Mermaid 图表一键复制。免费、无需注册、浏览器端运行。",
+    path: "/zh/editor",
+    locale: "zh-CN",
     alternates: {
-      canonical: "/editor",
+      ...editorAlternates,
+      canonical: "/zh/editor",
     },
   },
 };
@@ -111,5 +129,22 @@ export function buildWebApplicationJsonLd() {
       priceCurrency: "USD",
     },
     codeRepository: githubRepoUrl,
+  };
+}
+
+export function buildFaqJsonLd(
+  faqs: readonly { question: string; answer: string }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 }

@@ -112,7 +112,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="grid h-screen h-[100dvh] grid-rows-[auto_1fr]">
+    <div className="grid h-full grid-rows-[auto_1fr]">
       {/* ═══ Header ═══ */}
       <header className="flex h-12 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-4 relative z-10">
         <div className="flex items-center gap-3 min-w-0">
