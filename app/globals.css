@@ -438,6 +438,44 @@ input {
   border-top: 1px solid var(--border);
 }
 
+/* FAQ */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+  transition: background 0.15s;
+}
+
+.faq-question:hover {
+  background: var(--fg-soft);
+}
+
+.faq-answer {
+  padding: 0 20px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .pagefoot-inner {
   display: flex;
   align-items: center;

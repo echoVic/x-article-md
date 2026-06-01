@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
-import { buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
+import { buildWebApplicationJsonLd, buildFaqJsonLd, githubRepoUrl } from "@/lib/seo";
 
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
@@ -16,6 +16,13 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
           __html: JSON.stringify(buildWebApplicationJsonLd()),
         }}
       />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildFaqJsonLd(t.faqs)),
+        }}
+      />
       {/* ═══ Top Nav ═══ */}
       <header className="topnav">
         <div className="container topnav-inner">
@@ -26,7 +33,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
           </span>
           <nav className="topnav-links">
             <a href="#features">{t.navFeatures}</a>
-            <a href="#workflow">{t.navWorkflow}</a>
+            <a href="#faq">FAQ</a>
             <Link href={editorHref}>{t.navOpenEditor}</Link>
           </nav>
           <div className="topnav-actions">
@@ -210,6 +217,25 @@ type Op = {
             <Link href={editorHref} className="btn btn-primary">
               {t.ctaOpenEditor}
             </Link>
+          </div>
+        </section>
+        {/* ═══ FAQ ═══ */}
+        <section className="section" id="faq">
+          <div className="container section-col">
+            <div className="section-header">
+              <h2>{t.faqTitle}</h2>
+            </div>
+            <div className="faq-list">
+              {t.faqs.map((faq, i) => (
+                <details
+                  key={i}
+                  className="faq-item"
+                >
+                  <summary className="faq-question">{faq.question}</summary>
+                  <p className="faq-answer">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
       </main>

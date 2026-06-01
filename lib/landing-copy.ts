@@ -38,6 +38,29 @@ export const landingCopy = {
     ctaDesc: "Runs entirely in the browser. No sign-up required. Data stays local.",
     ctaOpenEditor: "Open Editor",
     footerTagline: "MD2X · Markdown → X Articles · Open Source",
+    faqTitle: "Frequently Asked Questions",
+    faqs: [
+      {
+        question: "Does X Articles support Markdown?",
+        answer:
+          "No. X Articles uses its own rich-text editor with no native Markdown support. MD2X converts your Markdown into formatted rich text you can paste directly into the X Articles editor.",
+      },
+      {
+        question: "How do I paste Markdown into X Articles?",
+        answer:
+          "Write or paste Markdown in the MD2X editor, click 'Copy Body', then Cmd+V (or Ctrl+V) into the X Articles editor. All formatting — headings, bold, links, lists — is preserved.",
+      },
+      {
+        question: "How are code blocks handled?",
+        answer:
+          "X Articles cannot display formatted code. MD2X automatically renders code blocks as syntax-highlighted PNG images that paste cleanly into your article.",
+      },
+      {
+        question: "Is my content uploaded to any server?",
+        answer:
+          "No. MD2X runs entirely in your browser. Your Markdown drafts are saved to localStorage and never leave your device.",
+      },
+    ],
   },
   zh: {
     navFeatures: "功能",
@@ -76,5 +99,28 @@ export const landingCopy = {
     ctaDesc: "纯浏览器端运行，无需注册，数据保存在本地。",
     ctaOpenEditor: "打开编辑器",
     footerTagline: "MD2X · Markdown → X Articles · 开源项目",
+    faqTitle: "常见问题",
+    faqs: [
+      {
+        question: "X Articles 支持 Markdown 吗？",
+        answer:
+          "不支持。X Articles 使用自有的富文本编辑器，没有原生 Markdown 支持。MD2X 将你的 Markdown 转换为格式化富文本，可直接粘贴到 X Articles 编辑器中。",
+      },
+      {
+        question: "如何把 Markdown 粘贴到 X Articles？",
+        answer:
+          "在 MD2X 编辑器中编写或粘贴 Markdown，点击「复制正文」，然后在 X Articles 编辑器中 Cmd+V（或 Ctrl+V）。所有格式——标题、粗体、链接、列表——都会保留。",
+      },
+      {
+        question: "代码块是怎么处理的？",
+        answer:
+          "X Articles 无法显示格式化代码。MD2X 自动将代码块渲染为带语法高亮的 PNG 图片，可以干净地粘贴到文章中。",
+      },
+      {
+        question: "我的内容会上传到服务器吗？",
+        answer:
+          "不会。MD2X 完全在浏览器中运行。你的 Markdown 草稿保存在 localStorage 中，不会离开你的设备。",
+      },
+    ],
   },
 } as const;

@@ -52,6 +52,78 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
         </div>
       </section>
 
+      {/* What This Supports + Limitations */}
+      <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-12">
+        <div className="mx-auto max-w-4xl grid gap-10 md:grid-cols-2">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--fg)] mb-4">
+              {copy.supportsTitle}
+            </h2>
+            <ul className="space-y-2">
+              {copy.supports.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-[var(--muted)]">
+                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--fg)] mb-4">
+              {copy.limitsTitle}
+            </h2>
+            <ul className="space-y-2">
+              {copy.limits.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-[var(--muted)]">
+                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[var(--danger)] shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Input → Output */}
+      <section className="border-t border-[var(--border)] bg-[var(--bg)] px-6 py-12">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-lg font-semibold text-[var(--fg)] mb-6">
+            {copy.ioTitle}
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-[var(--radius)] border border-[var(--border)] p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] mb-2">Input</p>
+              <p className="text-sm text-[var(--muted)]">{copy.ioInput}</p>
+            </div>
+            <div className="rounded-[var(--radius)] border border-[var(--border)] p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] mb-2">Output</p>
+              <p className="text-sm text-[var(--muted)]">{copy.ioOutput}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who Is This For */}
+      <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-12">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-lg font-semibold text-[var(--fg)] mb-6">
+            {copy.whoTitle}
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {copy.whoItems.map((item, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
+                <span className="mt-0.5 text-[var(--accent)]">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M2 8.5l4 4 8-9" />
+                  </svg>
+                </span>
+                <p className="text-sm text-[var(--muted)]">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <EditorFaq faqs={copy.faqs} title={copy.faqTitle} />
     </div>
