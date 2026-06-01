@@ -1,12 +1,10 @@
-"use client";
-
 import Link from "next/link";
-import { useI18n } from "@/lib/i18n";
-import { LanguageToggle } from "@/components/language-toggle";
+import type { LandingLocale } from "@/lib/landing-copy";
+import { landingCopy } from "@/lib/landing-copy";
 import { buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
 
-export default function LandingPage() {
-  const { locale, t } = useI18n();
+export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
+  const t = landingCopy[locale];
 
   return (
     <div className="landing">
@@ -31,7 +29,18 @@ export default function LandingPage() {
             <Link href="/editor">{t.navOpenEditor}</Link>
           </nav>
           <div className="topnav-actions">
-            <LanguageToggle href={locale === "en" ? "/zh" : "/"} />
+            <Link
+              href={locale === "en" ? "/zh" : "/"}
+              className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] no-underline"
+              aria-label={locale === "en" ? "切换到中文" : "Switch to English"}
+              title={locale === "en" ? "切换到中文" : "Switch to English"}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" />
+                <path d="M1.5 8h13M8 1.5c-2 2-2.5 4-2.5 6.5s.5 4.5 2.5 6.5M8 1.5c2 2 2.5 4 2.5 6.5s-.5 4.5-2.5 6.5" />
+              </svg>
+              {locale === "en" ? "中文" : "EN"}
+            </Link>
             <Link href="/editor" className="btn btn-primary">
               {t.navGetStarted}
             </Link>

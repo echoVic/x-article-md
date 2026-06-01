@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { Providers } from "@/components/providers";
-import { buildPageMetadata, getHtmlLangForPath } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,25 +28,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const requestHeaders = await headers();
-  const htmlLang = getHtmlLangForPath(requestHeaders.get("x-pathname"));
-  const initialLocale = htmlLang === "zh-CN" ? "zh" : "en";
-
   return (
-    <html lang={htmlLang} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers
-          initialLocale={initialLocale}
-          persistLocale={initialLocale === "en"}
-        >
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );
