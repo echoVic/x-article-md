@@ -120,6 +120,7 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
                   href={block.url}
                   target="_blank"
                   rel="noreferrer"
+                  title={block.url}
                   className="mt-2 block break-all text-sm font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-4"
                 >
                   {block.url}
@@ -158,6 +159,7 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
                 className="font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-3"
                 target="_blank"
                 rel="noreferrer"
+                title={token.text || token.href}
               >
                 {token.text}
               </a>

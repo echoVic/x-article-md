@@ -27,9 +27,11 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
       <header className="topnav">
         <div className="container topnav-inner">
           <span className="logo">
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em' }}>MD</span>
-            <span style={{ color: 'var(--accent)', fontSize: '12px', margin: '0 2px' }}>→</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em' }}>X</span>
+            <Link href="/" title="MD2X - Markdown to X Articles Converter" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em' }}>MD</span>
+              <span style={{ color: 'var(--accent)', fontSize: '12px', margin: '0 2px' }}>→</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '15px', letterSpacing: '-0.03em' }}>X</span>
+            </Link>
           </span>
           <nav className="topnav-links">
             <a href="#features">{t.navFeatures}</a>
@@ -72,6 +74,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
                 className="btn btn-secondary"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="MD2X source code on GitHub"
               >
                 {t.heroGitHub}
               </a>
