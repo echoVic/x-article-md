@@ -6,6 +6,7 @@ import { buildWebApplicationJsonLd, buildFaqJsonLd, githubRepoUrl } from "@/lib/
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
   const editorHref = locale === "zh" ? "/zh/editor" : "/editor";
+  const threadHref = locale === "zh" ? "/zh/thread" : "/thread";
 
   return (
     <div className="landing">
@@ -35,8 +36,9 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
           </span>
           <nav className="topnav-links">
             <a href="#features">{t.navFeatures}</a>
-            <a href="#faq">FAQ</a>
             <Link href={editorHref}>{t.navOpenEditor}</Link>
+            <Link href={threadHref}>{t.navThread}</Link>
+            <a href="#faq">FAQ</a>
           </nav>
           <div className="topnav-actions">
             <Link
