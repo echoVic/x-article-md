@@ -50,6 +50,15 @@ export function MarkdownEditor({
   const [isTranslating, setIsTranslating] = useState(false);
   const [showTranslateMenu, setShowTranslateMenu] = useState(false);
   const translateButtonRef = useRef<HTMLButtonElement>(null);
+  const [isPolishing, setIsPolishing] = useState(false);
+  const [showPolishMenu, setShowPolishMenu] = useState(false);
+  const [polishComparison, setPolishComparison] = useState<{
+    original: string;
+    polished: string;
+    start: number;
+    end: number;
+  } | null>(null);
+  const polishButtonRef = useRef<HTMLButtonElement>(null);
 
   function applyAction(action: MarkdownAction) {
     const editor = editorRef.current;
@@ -114,6 +123,69 @@ export function MarkdownEditor({
     }
   }
 
+  async function handlePolish(style?: "concise" | "professional" | "casual" | "engaging") {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selection = editor.getSelection();
+    const selectedText = value.substring(selection.start, selection.end);
+
+    if (!selectedText || selectedText.trim().length === 0) {
+      alert(t.polishSelectText);
+      return;
+    }
+
+    setShowPolishMenu(false);
+    setIsPolishing(true);
+
+    try {
+      const response = await fetch("/api/polish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: selectedText,
+          style,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Polish failed");
+      }
+
+      const data = await response.json();
+
+      // Show comparison
+      setPolishComparison({
+        original: selectedText,
+        polished: data.polishedText,
+        start: selection.start,
+        end: selection.end,
+      });
+    } catch (error) {
+      console.error("Polish error:", error);
+      alert(t.polishError + ": " + (error instanceof Error ? error.message : "Unknown error"));
+    } finally {
+      setIsPolishing(false);
+    }
+  }
+
+  function acceptPolish() {
+    if (!polishComparison) return;
+
+    const newValue =
+      value.substring(0, polishComparison.start) +
+      polishComparison.polished +
+      value.substring(polishComparison.end);
+
+    onChange(newValue);
+    setPolishComparison(null);
+  }
+
+  function rejectPolish() {
+    setPolishComparison(null);
+  }
+
   // Close translate menu when clicking outside
   useEffect(() => {
     if (!showTranslateMenu) return;
@@ -127,6 +199,20 @@ export function MarkdownEditor({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showTranslateMenu]);
+
+  // Close polish menu when clicking outside
+  useEffect(() => {
+    if (!showPolishMenu) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (polishButtonRef.current && !polishButtonRef.current.contains(event.target as Node)) {
+        setShowPolishMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPolishMenu]);
 
   function handleKeyDown(event: KeyboardEvent): boolean {
     // Handle custom shortcuts for markdown actions
@@ -178,7 +264,7 @@ export function MarkdownEditor({
   if (currentItems.length > 0) toolbarGroups.push(currentItems);
 
   return (
-    <div className="flex flex-col overflow-hidden bg-[var(--surface)]">
+    <div className="flex flex-col overflow-hidden bg-[var(--surface)] relative">
       {/* Toolbar */}
       <div className="flex items-center gap-[2px] px-[10px] py-[5px] border-b border-[var(--border)] min-h-[38px]">
         {toolbarGroups.map((group, groupIndex) => (
@@ -206,6 +292,76 @@ export function MarkdownEditor({
           </div>
         ))}
         <div className="flex-1" />
+
+        {/* Polish button with dropdown */}
+        <div className="relative">
+          <button
+            ref={polishButtonRef}
+            type="button"
+            onClick={() => setShowPolishMenu(!showPolishMenu)}
+            disabled={isPolishing}
+            title={t.toolPolish}
+            aria-label={t.toolPolish}
+            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPolishing ? (
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="8" cy="8" r="6" opacity="0.25" />
+                <path d="M8 2a6 6 0 016 6" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+                <path d="M3 8l3 3 7-7" />
+                <path d="M13 3L7.5 8.5" opacity="0.5" />
+              </svg>
+            )}
+          </button>
+
+          {showPolishMenu && (
+            <div className="absolute top-full right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-md)] py-1 z-10 min-w-[180px]">
+              <button
+                type="button"
+                onClick={() => handlePolish()}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>✨</span>
+                <span>{t.polishDefault}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePolish("concise")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>📝</span>
+                <span>{t.polishConcise}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePolish("professional")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>💼</span>
+                <span>{t.polishProfessional}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePolish("casual")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>💬</span>
+                <span>{t.polishCasual}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePolish("engaging")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>🎯</span>
+                <span>{t.polishEngaging}</span>
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Translate button with dropdown */}
         <div className="relative">
@@ -276,6 +432,59 @@ export function MarkdownEditor({
           placeholder={draftReady ? t.editorPlaceholder : ""}
         />
       </div>
+
+      {/* Polish comparison overlay */}
+      {polishComparison && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 p-4">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-lg)] max-w-4xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+              <h3 className="text-sm font-medium text-[var(--fg)]">{t.polishComparing}</h3>
+              <button
+                type="button"
+                onClick={rejectPolish}
+                className="text-[var(--muted)] hover:text-[var(--fg)] transition-colors"
+                aria-label="Close"
+              >
+                <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M12 4L4 12M4 4l8 8" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Original</div>
+                  <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
+                    {polishComparison.original}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Polished</div>
+                  <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
+                    {polishComparison.polished}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-[var(--border)]">
+              <button
+                type="button"
+                onClick={rejectPolish}
+                className="px-4 py-2 text-sm text-[var(--fg)] hover:bg-[var(--fg-soft)] rounded-[var(--radius-sm)] transition-colors"
+              >
+                {t.polishReject}
+              </button>
+              <button
+                type="button"
+                onClick={acceptPolish}
+                className="px-4 py-2 text-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-[var(--radius-sm)] transition-colors"
+              >
+                {t.polishAccept}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="flex items-center justify-between px-[14px] h-[30px] border-t border-[var(--border)] font-mono text-[11px] text-[var(--muted)]">
