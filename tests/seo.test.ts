@@ -35,7 +35,7 @@ describe("SEO configuration", () => {
   it("uses focused metadata for the editor page", () => {
     const metadata = buildPageMetadata("editor");
 
-    expect(metadata.title).toBe("Markdown to X Articles Editor - MD2X");
+    expect(metadata.title).toBe("Free Markdown to X Articles Converter - Online Editor | MD2X");
     expect(metadata.alternates?.canonical).toBe("/editor");
     expect(metadata.openGraph?.url).toBe("/editor");
   });
@@ -81,8 +81,54 @@ describe("SEO configuration", () => {
       {
         url: absoluteUrl("/editor"),
         lastModified: expect.any(Date),
-        changeFrequency: "monthly",
+        changeFrequency: "weekly",
+        priority: 0.9,
+        alternates: {
+          languages: {
+            en: absoluteUrl("/editor"),
+            "zh-CN": absoluteUrl("/zh/editor"),
+            "x-default": absoluteUrl("/editor"),
+          },
+        },
+      },
+      {
+        url: absoluteUrl("/zh/editor"),
+        lastModified: expect.any(Date),
+        changeFrequency: "weekly",
         priority: 0.8,
+        alternates: {
+          languages: {
+            en: absoluteUrl("/editor"),
+            "zh-CN": absoluteUrl("/zh/editor"),
+            "x-default": absoluteUrl("/editor"),
+          },
+        },
+      },
+      {
+        url: absoluteUrl("/thread"),
+        lastModified: expect.any(Date),
+        changeFrequency: "weekly",
+        priority: 0.9,
+        alternates: {
+          languages: {
+            en: absoluteUrl("/thread"),
+            "zh-CN": absoluteUrl("/zh/thread"),
+            "x-default": absoluteUrl("/thread"),
+          },
+        },
+      },
+      {
+        url: absoluteUrl("/zh/thread"),
+        lastModified: expect.any(Date),
+        changeFrequency: "weekly",
+        priority: 0.8,
+        alternates: {
+          languages: {
+            en: absoluteUrl("/thread"),
+            "zh-CN": absoluteUrl("/zh/thread"),
+            "x-default": absoluteUrl("/thread"),
+          },
+        },
       },
     ]);
   });

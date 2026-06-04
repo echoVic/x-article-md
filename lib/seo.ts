@@ -44,7 +44,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   home: {
     title: "MD2X - Markdown to X Articles Converter",
     description:
-      "Convert Markdown to X Articles rich text. Copy code blocks, tables, and Mermaid diagrams with a browser-based editor.",
+      "Online Markdown to X Articles converter. Code blocks become images, Mermaid diagrams and tables copy in one click. Free, no sign-up, runs in your browser.",
     path: "/",
     locale: "en",
     alternates: homeAlternates,
@@ -52,7 +52,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhHome: {
     title: "MD2X - Markdown 转 X Articles 编辑器",
     description:
-      "将 Markdown 转换为 X Articles 富文本格式，代码块、表格和 Mermaid 图表可一键复制。",
+      "将 Markdown 一键转为 X Articles 富文本格式在线工具。代码块自动渲染为语法高亮 PNG 图片，Mermaid 图表和表格可一键复制粘贴到文章中。AI 智能生成封面图，支持 OpenAI 兼容接口。完全免费，无需注册，纯浏览器端运行，你的数据绝对不离开本地设备。",
     path: "/zh",
     locale: "zh-CN",
     alternates: {
@@ -71,7 +71,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhEditor: {
     title: "免费 Markdown 转 X Articles 在线编辑器 | MD2X",
     description:
-      "在线将 Markdown 转换为 X Articles 富文本。代码块渲染为图片，表格和 Mermaid 图表一键复制。免费、无需注册、浏览器端运行。",
+      "免费在线 Markdown 编辑器，实时预览 X Articles 长文发布效果。代码块自动渲染为带语法高亮的 PNG 图片，Mermaid 图表和表格支持一键复制粘贴。AI 封面图生成器让你的长文从第一眼就抓住读者注意力。完全免费，无需注册，所有数据都安全保存在你的本地浏览器中。",
     path: "/zh/editor",
     locale: "zh-CN",
     alternates: {
@@ -82,7 +82,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   thread: {
     title: "Free Twitter Thread Generator from Markdown | MD2X",
     description:
-      "Convert Markdown to Twitter/X threads. Auto-split into 280-character tweets with numbering. Free, no sign-up, runs in browser.",
+      "Turn Markdown into Twitter/X threads. Rule-based and AI-powered splitting into 280-character tweets with auto-numbering. Free, no sign-up, runs in your browser.",
     path: "/thread",
     locale: "en",
     alternates: threadAlternates,
@@ -90,7 +90,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhThread: {
     title: "免费 Markdown 转 Twitter Thread 生成器 | MD2X",
     description:
-      "将 Markdown 转换为 Twitter/X Thread。自动拆分为 280 字符推文并添加编号。免费、无需注册、浏览器端运行。",
+      "将 Markdown 一键转换为 Twitter/X 推文流的免费在线工具。支持基于段落结构的规则拆分和 AI 智能断句两种灵活模式，自动适配每条约 280 字符限制并自动添加序号标注。支持逐条复制和全部内容一键复制到剪贴板。完全免费，无需注册，纯浏览器端运行，数据不会离开本地设备。",
     path: "/zh/thread",
     locale: "zh-CN",
     alternates: {
