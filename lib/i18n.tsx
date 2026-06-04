@@ -133,6 +133,20 @@ const en = {
 
   // Manual copy
   manualClose: "Close",
+
+  // Thread page
+  threadMarkdownInput: "Markdown Input",
+  threadAiSplit: "✨ AI Split",
+  threadSplitting: "Splitting...",
+  threadResetToRules: "Reset to Rules",
+  threadCopyAll: "Copy All",
+  threadCopied: "Copied!",
+  threadCopy: "Copy",
+  threadChars: "chars",
+  threadPlaceholder: "Paste or write your Markdown here...",
+  threadEmpty: "Your thread will appear here...",
+  threadTweet: "tweet",
+  threadTweets: "tweets",
 } as const;
 
 // ─── Chinese ───────────────────────────────────────────────────────────────────
@@ -253,6 +267,20 @@ const zh: Translations = {
 
   // Manual copy
   manualClose: "关闭",
+
+  // Thread page
+  threadMarkdownInput: "Markdown 输入",
+  threadAiSplit: "✨ AI 拆分",
+  threadSplitting: "拆分中...",
+  threadResetToRules: "恢复规则拆分",
+  threadCopyAll: "全部复制",
+  threadCopied: "已复制!",
+  threadCopy: "复制",
+  threadChars: "字符",
+  threadPlaceholder: "粘贴或编写你的 Markdown...",
+  threadEmpty: "推文流将在这里显示...",
+  threadTweet: "条推文",
+  threadTweets: "条推文",
 };
 
 // ─── Context ───────────────────────────────────────────────────────────────────
@@ -290,6 +318,8 @@ export function I18nProvider({
       const saved = window.localStorage.getItem(storageKey) as Locale | null;
       if (saved && (saved === "en" || saved === "zh")) {
         setLocaleState(saved);
+      } else if (window.location.pathname.startsWith("/zh")) {
+        setLocaleState("zh");
       }
     });
 

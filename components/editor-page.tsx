@@ -14,7 +14,7 @@ import { sampleMarkdown } from "@/lib/sample";
 const draftStorageKey = "x-article-md:draft";
 
 export default function EditorPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [markdown, setMarkdown] = useState(sampleMarkdown);
   const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
@@ -116,11 +116,16 @@ export default function EditorPage() {
       {/* ═══ Header ═══ */}
       <header className="flex h-12 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-4 relative z-10">
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/" className="flex items-center gap-1.5 no-underline hover:opacity-70 transition-opacity">
+          <Link href={locale === "zh" ? "/zh" : "/"} className="flex items-center gap-1.5 no-underline hover:opacity-70 transition-opacity" title="MD2X - Markdown to X Articles">
             <span className="font-mono font-extrabold text-sm tracking-tight text-[var(--fg)]">MD</span>
             <span className="text-[var(--accent)] text-xs">→</span>
             <span className="font-mono font-extrabold text-sm tracking-tight text-[var(--fg)]">X</span>
           </Link>
+          <div className="w-px h-[18px] bg-[var(--border)]" />
+          <nav className="flex items-center gap-1">
+            <span className="px-2 py-1 rounded-[var(--radius-sm)] text-xs font-medium text-[var(--fg)] bg-[var(--fg-soft)]">Editor</span>
+            <Link href={locale === "zh" ? "/zh/thread" : "/thread"} title="Markdown to X Thread Splitter" className="px-2 py-1 rounded-[var(--radius-sm)] text-xs font-medium no-underline text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors">Thread</Link>
+          </nav>
           <div className="w-px h-[18px] bg-[var(--border)]" />
           <span className="flex items-center gap-[5px] font-mono text-[11px] text-[var(--muted)]">
             <span className="w-[5px] h-[5px] rounded-full bg-[var(--success)]" />
@@ -184,7 +189,7 @@ export default function EditorPage() {
             {t.coverTitle}
           </button>
           <div className="w-px h-[18px] bg-[var(--border)]" />
-          <LanguageToggle />
+          <LanguageToggle href={locale === "zh" ? "/editor" : "/zh/editor"} />
           <button
             type="button"
             onClick={copyTitle}

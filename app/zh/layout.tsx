@@ -3,14 +3,5 @@ export default function ZhLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `document.documentElement.lang="zh-CN"`,
-        }}
-      />
-      {children}
-    </>
-  );
+  return children;
 }

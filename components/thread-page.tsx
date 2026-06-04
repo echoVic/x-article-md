@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { splitThread } from "@/lib/thread";
+import { useI18n } from "@/lib/i18n";
+import { AppHeader } from "@/components/app-header";
 
 const defaultMarkdown = `# Why Every Developer Should Write
 
@@ -20,6 +22,7 @@ You don't need to write a masterpiece. Start with a TIL (Today I Learned) post. 
 Writing forces you to structure your thoughts. That same skill makes you better at code reviews, design docs, and technical discussions. Writing is thinking made visible.`;
 
 export default function ThreadPage() {
+  const { t } = useI18n();
   const [markdown, setMarkdown] = useState(defaultMarkdown);
   const [copied, setCopied] = useState<number | null>(null);
   const [aiThreads, setAiThreads] = useState<string[] | null>(null);
@@ -75,89 +78,92 @@ export default function ThreadPage() {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100dvh-8rem)] border-t border-[var(--border)]">
-      {/* Left: Editor */}
-      <div className="flex-1 flex flex-col border-r border-[var(--border)] min-w-0">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]">
-          <span className="text-xs font-medium text-[var(--muted)]">Markdown Input</span>
-          <div className="flex items-center gap-2">
-            {aiThreads && (
+    <div className="grid h-full grid-rows-[auto_1fr]">
+      <AppHeader activePage="thread" />
+      <div className="flex flex-col md:flex-row h-full border-t border-[var(--border)]">
+        {/* Left: Editor */}
+        <div className="flex-1 flex flex-col border-r border-[var(--border)] min-w-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]">
+            <span className="text-xs font-medium text-[var(--muted)]">{t.threadMarkdownInput}</span>
+            <div className="flex items-center gap-2">
+              {aiThreads && (
+                <button
+                  onClick={handleReset}
+                  className="text-xs px-2 py-1 rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors"
+                >
+                  {t.threadResetToRules}
+                </button>
+              )}
               <button
-                onClick={handleReset}
+                onClick={handleAiSplit}
+                disabled={aiLoading || !markdown.trim()}
+                className="text-xs px-2 py-1 rounded-[var(--radius-sm)] border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {aiLoading ? t.threadSplitting : t.threadAiSplit}
+              </button>
+            </div>
+          </div>
+          <textarea
+            className="flex-1 p-4 bg-[var(--bg)] text-[var(--fg)] text-sm font-mono resize-none focus:outline-none"
+            placeholder={t.threadPlaceholder}
+            value={markdown}
+            onChange={(e) => {
+              setMarkdown(e.target.value);
+              setAiThreads(null);
+              setAiError(null);
+            }}
+          />
+        </div>
+
+        {/* Right: Thread Preview */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]">
+            <span className="text-xs font-medium text-[var(--muted)]">
+              {aiThreads ? "✨ AI" : "Rules"} — {threads.length} {threads.length !== 1 ? t.threadTweets : t.threadTweet}
+            </span>
+            {threads.length > 1 && (
+              <button
+                onClick={copyAll}
                 className="text-xs px-2 py-1 rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors"
               >
-                Reset to Rules
+                {copied === -1 ? t.threadCopied : t.threadCopyAll}
               </button>
             )}
-            <button
-              onClick={handleAiSplit}
-              disabled={aiLoading || !markdown.trim()}
-              className="text-xs px-2 py-1 rounded-[var(--radius-sm)] border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {aiLoading ? "Splitting..." : "✨ AI Split"}
-            </button>
           </div>
-        </div>
-        <textarea
-          className="flex-1 p-4 bg-[var(--bg)] text-[var(--fg)] text-sm font-mono resize-none focus:outline-none"
-          placeholder="Paste or write your Markdown here..."
-          value={markdown}
-          onChange={(e) => {
-            setMarkdown(e.target.value);
-            setAiThreads(null);
-            setAiError(null);
-          }}
-        />
-      </div>
-
-      {/* Right: Thread Preview */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]">
-          <span className="text-xs font-medium text-[var(--muted)]">
-            {aiThreads ? "✨ AI" : "Rules"} — {threads.length} tweet{threads.length !== 1 ? "s" : ""}
-          </span>
-          {threads.length > 1 && (
-            <button
-              onClick={copyAll}
-              className="text-xs px-2 py-1 rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors"
-            >
-              {copied === -1 ? "Copied!" : "Copy All"}
-            </button>
-          )}
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {aiError && (
-            <div className="rounded-[var(--radius)] border border-red-400/30 bg-red-400/5 p-3 text-xs text-red-400">
-              {aiError}
-            </div>
-          )}
-          {threads.length === 0 ? (
-            <p className="text-sm text-[var(--muted)] italic">
-              Your thread will appear here...
-            </p>
-          ) : (
-            threads.map((tweet, i) => (
-              <div
-                key={i}
-                className="group relative rounded-[var(--radius)] border border-[var(--border)] p-4 bg-[var(--surface)] hover:border-[var(--accent)] transition-colors"
-              >
-                <pre className="text-sm text-[var(--fg)] whitespace-pre-wrap font-sans leading-relaxed">
-                  {tweet}
-                </pre>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
-                  <span className="text-xs text-[var(--muted)]">
-                    {tweet.length} chars
-                  </span>
-                  <button
-                    onClick={() => copyTweet(tweet, i)}
-                    className="text-xs px-2 py-0.5 rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    {copied === i ? "Copied!" : "Copy"}
-                  </button>
-                </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {aiError && (
+              <div className="rounded-[var(--radius)] border border-red-400/30 bg-red-400/5 p-3 text-xs text-red-400">
+                {aiError}
               </div>
-            ))
-          )}
+            )}
+            {threads.length === 0 ? (
+              <p className="text-sm text-[var(--muted)] italic">
+                {t.threadEmpty}
+              </p>
+            ) : (
+              threads.map((tweet, i) => (
+                <div
+                  key={i}
+                  className="group relative rounded-[var(--radius)] border border-[var(--border)] p-4 bg-[var(--surface)] hover:border-[var(--accent)] transition-colors"
+                >
+                  <pre className="text-sm text-[var(--fg)] whitespace-pre-wrap font-sans leading-relaxed">
+                    {tweet}
+                  </pre>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
+                    <span className="text-xs text-[var(--muted)]">
+                      {tweet.length} {t.threadChars}
+                    </span>
+                    <button
+                      onClick={() => copyTweet(tweet, i)}
+                      className="text-xs px-2 py-0.5 rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      {copied === i ? t.threadCopied : t.threadCopy}
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
