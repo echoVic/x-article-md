@@ -58,6 +58,86 @@ graph TD
     ]);
   });
 
+  it("parses italic and bold-italic combinations", () => {
+    const blocks = parseMarkdown(`This is *italic* text.
+
+This is **bold** and *italic* mixed.
+
+This is **bold with *italic* inside**.`);
+
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "This is " },
+          { type: "em", text: "italic" },
+          { type: "text", text: " text." },
+        ],
+      },
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "This is " },
+          { type: "strong", text: "bold" },
+          { type: "text", text: " and " },
+          { type: "em", text: "italic" },
+          { type: "text", text: " mixed." },
+        ],
+      },
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "This is " },
+          { type: "strong", text: "bold with *italic* inside" },
+          { type: "text", text: "." },
+        ],
+      },
+    ]);
+  });
+
+  it("parses h4-h6 headings correctly", () => {
+    const blocks = parseMarkdown(`# H1 Heading
+## H2 Heading
+### H3 Heading
+#### H4 Heading
+##### H5 Heading
+###### H6 Heading
+`);
+
+    expect(blocks).toEqual([
+      {
+        type: "heading",
+        level: 1,
+        content: [{ type: "text", text: "H1 Heading" }],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: [{ type: "text", text: "H2 Heading" }],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: [{ type: "text", text: "H3 Heading" }],
+      },
+      {
+        type: "heading",
+        level: 4,
+        content: [{ type: "text", text: "H4 Heading" }],
+      },
+      {
+        type: "heading",
+        level: 5,
+        content: [{ type: "text", text: "H5 Heading" }],
+      },
+      {
+        type: "heading",
+        level: 6,
+        content: [{ type: "text", text: "H6 Heading" }],
+      },
+    ]);
+  });
+
   it("parses markdown tables and standalone X status URLs", () => {
     const blocks = parseMarkdown(`| Name | Value |
 | --- | ---: |
@@ -77,6 +157,115 @@ https://x.com/jack/status/20
         type: "tweet",
         url: "https://x.com/jack/status/20",
         tweetId: "20",
+      },
+    ]);
+  });
+
+  it("parses single-line blockquote", () => {
+    const blocks = parseMarkdown(`> This is a quote`);
+
+    expect(blocks).toEqual([
+      {
+        type: "blockquote",
+        content: [{ type: "text", text: "This is a quote" }],
+      },
+    ]);
+  });
+
+  it("parses multi-line blockquote", () => {
+    const blocks = parseMarkdown(`> First line
+> Second line
+> Third line`);
+
+    expect(blocks).toEqual([
+      {
+        type: "blockquote",
+        content: [
+          { type: "text", text: "First line Second line Third line" },
+        ],
+      },
+    ]);
+  });
+
+  it("parses blockquote with inline formatting", () => {
+    const blocks = parseMarkdown(
+      `> This is **bold** and *italic* with [a link](https://x.com) and \`code\`.`,
+    );
+
+    expect(blocks).toEqual([
+      {
+        type: "blockquote",
+        content: [
+          { type: "text", text: "This is " },
+          { type: "strong", text: "bold" },
+          { type: "text", text: " and " },
+          { type: "em", text: "italic" },
+          { type: "text", text: " with " },
+          { type: "link", text: "a link", href: "https://x.com" },
+          { type: "text", text: " and " },
+          { type: "code", text: "code" },
+          { type: "text", text: "." },
+        ],
+      },
+    ]);
+  });
+
+  it("parses inline images", () => {
+    const blocks = parseMarkdown(
+      `This is text with ![an image](https://example.com/image.png) inline.`,
+    );
+
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "This is text with " },
+          { type: "image", alt: "an image", url: "https://example.com/image.png" },
+          { type: "text", text: " inline." },
+        ],
+      },
+    ]);
+  });
+
+  it("parses block-level images", () => {
+    const blocks = parseMarkdown(`![Block image](https://example.com/photo.jpg)`);
+
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        content: [
+          { type: "image", alt: "Block image", url: "https://example.com/photo.jpg" },
+        ],
+      },
+    ]);
+  });
+
+  it("parses images with empty alt text", () => {
+    const blocks = parseMarkdown(`![](https://example.com/image.png)`);
+
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        content: [
+          { type: "image", alt: "", url: "https://example.com/image.png" },
+        ],
+      },
+    ]);
+  });
+
+  it("parses multiple images in the same paragraph", () => {
+    const blocks = parseMarkdown(
+      `![First](https://example.com/1.png) and ![Second](https://example.com/2.png)`,
+    );
+
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        content: [
+          { type: "image", alt: "First", url: "https://example.com/1.png" },
+          { type: "text", text: " and " },
+          { type: "image", alt: "Second", url: "https://example.com/2.png" },
+        ],
       },
     ]);
   });

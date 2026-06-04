@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   applyMarkdownAction,
   handleMarkdownEnter,
@@ -9,6 +9,7 @@ import {
   type MarkdownAction,
 } from "@/lib/editor-actions";
 import { useI18n } from "@/lib/i18n";
+import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
 
 type MarkdownEditorProps = {
   value: string;
@@ -43,68 +44,100 @@ export function MarkdownEditor({
   onReset,
   draftReady,
 }: MarkdownEditorProps) {
-  const { t } = useI18n();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { t, locale } = useI18n();
+  const editorRef = useRef<CodeMirrorEditorHandle>(null);
   const stats = useMemo(() => getStats(value), [value]);
-  const lineNumbers = useMemo(() => {
-    const count = value ? value.split("\n").length : 1;
-    return Array.from({ length: count }, (_, i) => i + 1);
-  }, [value]);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [showTranslateMenu, setShowTranslateMenu] = useState(false);
+  const translateButtonRef = useRef<HTMLButtonElement>(null);
 
   function applyAction(action: MarkdownAction) {
-    const textarea = textareaRef.current;
-    if (!textarea) {
+    const editor = editorRef.current;
+    if (!editor) {
       return;
     }
 
-    applyUpdate(
-      applyMarkdownAction(
-        {
-          value,
-          selectionStart: textarea.selectionStart,
-          selectionEnd: textarea.selectionEnd,
-        },
-        action,
-      ),
+    const selection = editor.getSelection();
+    const currentValue = editor.getValue();
+
+    const update = applyMarkdownAction(
+      {
+        value: currentValue,
+        selectionStart: selection.start,
+        selectionEnd: selection.end,
+      },
+      action
     );
+
+    applyUpdate(update);
   }
 
   function applyUpdate(update: EditorUpdate) {
-    onChange(update.value);
+    const editor = editorRef.current;
+    if (!editor) {
+      return;
+    }
+
+    editor.setValue(update.value);
     window.requestAnimationFrame(() => {
-      textareaRef.current?.focus();
-      textareaRef.current?.setSelectionRange(
-        update.selectionStart,
-        update.selectionEnd,
-      );
+      editor.focus();
+      // CodeMirror will handle selection positioning
     });
   }
 
-  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    const textarea = event.currentTarget;
-    const state = {
-      value,
-      selectionStart: textarea.selectionStart,
-      selectionEnd: textarea.selectionEnd,
-    };
+  async function handleTranslate(targetLang: "en" | "zh") {
+    setShowTranslateMenu(false);
+    setIsTranslating(true);
 
-    if (event.key === "Tab") {
-      event.preventDefault();
-      applyUpdate(insertTab(state));
-      return;
+    try {
+      const response = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          markdown: value,
+          targetLang,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Translation failed");
+      }
+
+      const data = await response.json();
+      onChange(data.translatedText);
+    } catch (error) {
+      console.error("Translation error:", error);
+      alert(t.translateError + ": " + (error instanceof Error ? error.message : "Unknown error"));
+    } finally {
+      setIsTranslating(false);
+    }
+  }
+
+  // Close translate menu when clicking outside
+  useEffect(() => {
+    if (!showTranslateMenu) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (translateButtonRef.current && !translateButtonRef.current.contains(event.target as Node)) {
+        setShowTranslateMenu(false);
+      }
     }
 
-    if (event.key === "Enter") {
-      const update = handleMarkdownEnter(state);
-      if (update) {
-        event.preventDefault();
-        applyUpdate(update);
-      }
-      return;
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showTranslateMenu]);
+
+  function handleKeyDown(event: KeyboardEvent): boolean {
+    // Handle custom shortcuts for markdown actions
+    if (event.key === "Tab") {
+      event.preventDefault();
+      // Tab is handled by CodeMirror
+      return true;
     }
 
     if (!(event.metaKey || event.ctrlKey)) {
-      return;
+      return false;
     }
 
     const key = event.key.toLowerCase();
@@ -123,8 +156,11 @@ export function MarkdownEditor({
 
     if (shortcutAction) {
       event.preventDefault();
-      applyUpdate(applyMarkdownAction(state, shortcutAction));
+      applyAction(shortcutAction);
+      return true;
     }
+
+    return false;
   }
 
   // Group toolbar items with separators
@@ -170,6 +206,55 @@ export function MarkdownEditor({
           </div>
         ))}
         <div className="flex-1" />
+
+        {/* Translate button with dropdown */}
+        <div className="relative">
+          <button
+            ref={translateButtonRef}
+            type="button"
+            onClick={() => setShowTranslateMenu(!showTranslateMenu)}
+            disabled={isTranslating}
+            title={t.toolTranslate}
+            aria-label={t.toolTranslate}
+            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isTranslating ? (
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="8" cy="8" r="6" opacity="0.25" />
+                <path d="M8 2a6 6 0 016 6" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+                <path d="M2 5h6M5 2v3" />
+                <path d="M4 9l2-2 2 2" />
+                <path d="M14 11H8M11 14v-3" />
+                <path d="M12 7l-2 2-2-2" />
+              </svg>
+            )}
+          </button>
+
+          {showTranslateMenu && (
+            <div className="absolute top-full right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-md)] py-1 z-10 min-w-[160px]">
+              <button
+                type="button"
+                onClick={() => handleTranslate("en")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>🇬🇧</span>
+                <span>{t.translateToEnglish}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTranslate("zh")}
+                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
+              >
+                <span>🇨🇳</span>
+                <span>{t.translateToChinese}</span>
+              </button>
+            </div>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={onReset}
@@ -183,20 +268,11 @@ export function MarkdownEditor({
 
       {/* Editor area */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-12 shrink-0 pt-[14px] pr-3 text-right font-mono text-xs leading-[1.714] text-[color-mix(in_oklch,var(--muted)_40%,transparent)] select-none overflow-hidden border-r border-[var(--border)]">
-          {lineNumbers.map((n) => (
-            <span key={n} className="block tabular-nums">{n}</span>
-          ))}
-        </div>
-        <textarea
-          ref={textareaRef}
+        <CodeMirrorEditor
+          ref={editorRef}
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={onChange}
           onKeyDown={handleKeyDown}
-          spellCheck={false}
-          className="flex-1 resize-none border-0 outline-none py-[14px] px-3 font-mono text-[13.5px] leading-[1.714] text-[var(--fg)] bg-[var(--surface)] overflow-y-auto selection:bg-[var(--accent-soft)]"
-          style={{ tabSize: 2 }}
-          aria-label="Markdown editor"
           placeholder={draftReady ? t.editorPlaceholder : ""}
         />
       </div>

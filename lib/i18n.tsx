@@ -74,6 +74,10 @@ const en = {
   copied: "Copied",
   copyBody: "Copy Body",
   selectText: "Select Text",
+  importFile: "Import",
+  exportFile: "Export",
+  importError: "Import failed",
+  fileTooLarge: "File exceeds 1MB limit",
 
   // Editor — toolbar
   toolHeading: "Heading",
@@ -86,6 +90,12 @@ const en = {
   toolMermaid: "Mermaid",
   toolTable: "Table",
   toolReset: "Reset to sample",
+  toolTranslate: "Translate",
+  translateToEnglish: "Translate to English",
+  translateToChinese: "Translate to Chinese",
+  translating: "Translating...",
+  translateError: "Translation failed",
+  translateSuccess: "Translation completed",
 
   // Editor — footer
   footerLines: "lines",
@@ -208,6 +218,10 @@ const zh: Translations = {
   copied: "已复制",
   copyBody: "复制正文",
   selectText: "选择文本",
+  importFile: "导入",
+  exportFile: "导出",
+  importError: "导入失败",
+  fileTooLarge: "文件超过 1MB 限制",
 
   // Editor — toolbar
   toolHeading: "标题",
@@ -220,6 +234,12 @@ const zh: Translations = {
   toolMermaid: "Mermaid",
   toolTable: "表格",
   toolReset: "重置为示例",
+  toolTranslate: "翻译",
+  translateToEnglish: "翻译为英文",
+  translateToChinese: "翻译为中文",
+  translating: "翻译中...",
+  translateError: "翻译失败",
+  translateSuccess: "翻译完成",
 
   // Editor — footer
   footerLines: "行",

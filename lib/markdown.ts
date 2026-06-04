@@ -1,12 +1,15 @@
 export type InlineToken =
   | { type: "text"; text: string }
   | { type: "strong"; text: string }
+  | { type: "em"; text: string }
   | { type: "link"; text: string; href: string }
-  | { type: "code"; text: string };
+  | { type: "code"; text: string }
+  | { type: "image"; alt: string; url: string };
 
 export type ArticleBlock =
-  | { type: "heading"; level: 1 | 2 | 3; content: InlineToken[] }
+  | { type: "heading"; level: 1 | 2 | 3 | 4 | 5 | 6; content: InlineToken[] }
   | { type: "paragraph"; content: InlineToken[] }
+  | { type: "blockquote"; content: InlineToken[] }
   | { type: "list"; ordered: boolean; items: InlineToken[][] }
   | { type: "code"; language: string; code: string }
   | { type: "mermaid"; code: string }
@@ -61,9 +64,10 @@ export type XArticleClipboardOptions = {
   codeMode?: "quote" | "image";
 };
 
-const headingPattern = /^(#{1,3})\s+(.+)$/;
+const headingPattern = /^(#{1,6})\s+(.+)$/;
 const unorderedListPattern = /^[-*]\s+(.+)$/;
 const orderedListPattern = /^\d+[.)]\s+(.+)$/;
+const blockquotePattern = /^>\s?(.*)$/;
 const fencePattern = /^```([a-zA-Z0-9_-]*)\s*$/;
 const tweetUrlPattern =
   /^https?:\/\/(?:www\.)?(?:x\.com|twitter\.com)\/[A-Za-z0-9_]+\/status\/(\d+)(?:[?#][^\s]*)?$/;
@@ -109,10 +113,32 @@ export function parseMarkdown(source: string): ArticleBlock[] {
     if (heading) {
       blocks.push({
         type: "heading",
-        level: heading[1].length as 1 | 2 | 3,
+        level: heading[1].length as 1 | 2 | 3 | 4 | 5 | 6,
         content: parseInline(heading[2].trim()),
       });
       index += 1;
+      continue;
+    }
+
+    if (blockquotePattern.test(line)) {
+      const quoteLines: string[] = [];
+
+      while (index < lines.length) {
+        const current = lines[index];
+        const match = current.match(blockquotePattern);
+
+        if (!match) {
+          break;
+        }
+
+        quoteLines.push(match[1].trim());
+        index += 1;
+      }
+
+      blocks.push({
+        type: "blockquote",
+        content: parseInline(quoteLines.join(" ")),
+      });
       continue;
     }
 
@@ -216,6 +242,7 @@ function blocksToText(
       switch (block.type) {
         case "heading":
         case "paragraph":
+        case "blockquote":
           return inlineToText(block.content);
         case "list":
           return block.items
@@ -273,6 +300,10 @@ function blocksToXArticleBody(
       case "paragraph":
         textParts.push(inlineToText(block.content));
         htmlParts.push(`<p>${inlineToHtml(block.content)}</p>`);
+        break;
+      case "blockquote":
+        textParts.push(inlineToText(block.content));
+        htmlParts.push(`<blockquote>${inlineToHtml(block.content)}</blockquote>`);
         break;
       case "list": {
         textParts.push(
@@ -380,7 +411,8 @@ function codeBlockToQuoteHtml(block: Extract<ArticleBlock, { type: "code" }>) {
 
 export function parseInline(text: string): InlineToken[] {
   const tokens: InlineToken[] = [];
-  const tokenPattern = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
+  // Match **bold** (with greedy match including internal *), then *italic*, then code, images and links
+  const tokenPattern = /(\*\*(?:[^*]|\*(?!\*))+?\*\*|\*[^*]+?\*|`[^`]+`|!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\))/g;
   let cursor = 0;
   let match: RegExpExecArray | null;
 
@@ -390,10 +422,17 @@ export function parseInline(text: string): InlineToken[] {
     }
 
     const raw = match[0];
-    if (raw.startsWith("**")) {
+    if (raw.startsWith("**") && raw.endsWith("**")) {
       tokens.push({ type: "strong", text: raw.slice(2, -2) });
+    } else if (raw.startsWith("*") && raw.endsWith("*")) {
+      tokens.push({ type: "em", text: raw.slice(1, -1) });
     } else if (raw.startsWith("`")) {
       tokens.push({ type: "code", text: raw.slice(1, -1) });
+    } else if (raw.startsWith("![")) {
+      const image = raw.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (image) {
+        tokens.push({ type: "image", alt: image[1], url: image[2] });
+      }
     } else {
       const link = raw.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
       if (link) {
@@ -418,6 +457,10 @@ export function inlineToText(tokens: InlineToken[]): string {
         return `${token.text} (${token.href})`;
       }
 
+      if (token.type === "image") {
+        return token.alt;
+      }
+
       return token.text;
     })
     .join("");
@@ -431,12 +474,16 @@ export function inlineToHtml(tokens: InlineToken[]): string {
           return escapeHtml(token.text);
         case "strong":
           return `<strong>${escapeHtml(token.text)}</strong>`;
+        case "em":
+          return `<em>${escapeHtml(token.text)}</em>`;
         case "code":
           return `<code>${escapeHtml(token.text)}</code>`;
         case "link":
           return `<a href="${escapeAttribute(token.href)}">${escapeHtml(
             token.text,
           )}</a>`;
+        case "image":
+          return `<img src="${escapeAttribute(token.url)}" alt="${escapeAttribute(token.alt)}" style="max-width: 100%;" />`;
       }
     })
     .join("");
@@ -449,6 +496,7 @@ function isParagraphLine(line: string): boolean {
     !fencePattern.test(line) &&
     !unorderedListPattern.test(line) &&
     !orderedListPattern.test(line) &&
+    !blockquotePattern.test(line) &&
     !tweetUrlPattern.test(line.trim())
   );
 }

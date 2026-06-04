@@ -20,13 +20,19 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading": {
-            const Tag = block.level === 1 ? "h1" : block.level === 2 ? "h2" : "h3";
+            const Tag = `h${block.level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
             const size =
               block.level === 1
                 ? "text-[28px] leading-[1.2] tracking-[-0.02em]"
                 : block.level === 2
                   ? "text-[22px] leading-[1.25] tracking-[-0.01em]"
-                  : "text-[18px] leading-[1.3]";
+                  : block.level === 3
+                    ? "text-[18px] leading-[1.3]"
+                    : block.level === 4
+                      ? "text-[16px] leading-[1.35]"
+                      : block.level === 5
+                        ? "text-[14px] leading-[1.4]"
+                        : "text-[13px] leading-[1.4]";
 
             return (
               <Tag key={index} className={`${size} font-semibold`}>
@@ -39,6 +45,15 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
               <p key={index} className="text-[16px] leading-[1.75]">
                 <InlineContent tokens={block.content} />
               </p>
+            );
+          case "blockquote":
+            return (
+              <blockquote
+                key={index}
+                className="border-l-4 border-[var(--border)] bg-[var(--fg-soft)] pl-4 py-3 text-[15px] leading-[1.7] text-[var(--muted)] italic"
+              >
+                <InlineContent tokens={block.content} />
+              </blockquote>
             );
           case "list":
             return block.ordered ? (
@@ -142,6 +157,8 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
             return token.text;
           case "strong":
             return <strong key={index} className="font-semibold">{token.text}</strong>;
+          case "em":
+            return <em key={index} className="italic">{token.text}</em>;
           case "code":
             return (
               <code
@@ -163,6 +180,16 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
               >
                 {token.text}
               </a>
+            );
+          case "image":
+            return (
+              <img
+                key={index}
+                src={token.url}
+                alt={token.alt}
+                className="max-w-full h-auto rounded-[var(--radius)]"
+                loading="lazy"
+              />
             );
         }
       })}

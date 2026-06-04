@@ -28,8 +28,12 @@ export default function EditorPage() {
     text: string;
     html?: string;
   } | null>(null);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50); // percentage
+  const [isResizing, setIsResizing] = useState(false);
   const manualCopyRef = useRef<HTMLTextAreaElement>(null);
   const manualRichCopyRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
   const clipboard = useMemo(
     () => toXArticleClipboard(markdown, { codeMode }),
@@ -75,6 +79,44 @@ export default function EditorPage() {
     }
   }, [manualCopy]);
 
+  // Handle resize drag
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    if (!isResizing) {
+      return;
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) {
+        return;
+      }
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const offsetX = e.clientX - containerRect.left;
+      const percentage = (offsetX / containerRect.width) * 100;
+
+      // Constrain between 20% and 80%
+      const constrainedPercentage = Math.min(Math.max(percentage, 20), 80);
+      setLeftPanelWidth(constrainedPercentage);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
+
   async function copyTitle() {
     const title = clipboard.title || clipboard.fullText.split("\n")[0] || "";
 
@@ -111,8 +153,59 @@ export default function EditorPage() {
     window.localStorage.removeItem(draftStorageKey);
   }
 
+  function handleImportClick() {
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    // Check file size (1MB = 1024 * 1024 bytes)
+    const maxSize = 1024 * 1024;
+    if (file.size > maxSize) {
+      alert(t.fileTooLarge);
+      e.target.value = ""; // Reset input
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result;
+      if (typeof content === "string") {
+        setMarkdown(content);
+      }
+      e.target.value = ""; // Reset input for next import
+    };
+    reader.onerror = () => {
+      alert(t.importError);
+      e.target.value = ""; // Reset input
+    };
+    reader.readAsText(file);
+  }
+
+  function handleExport() {
+    // Extract filename from first line (title) or use default
+    const firstLine = markdown.split("\n")[0].trim();
+    const filename = firstLine
+      ? firstLine.replace(/^#+\s*/, "").replace(/[^a-zA-Z0-9一-龥_-]/g, "_").substring(0, 50) || "untitled"
+      : "untitled";
+
+    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
-    <div className="grid h-full grid-rows-[auto_1fr]">
+    <div className="grid h-full grid-rows-[auto_1fr]" style={{ userSelect: isResizing ? 'none' : 'auto' }}>
       {/* ═══ Header ═══ */}
       <header className="flex h-12 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-4 relative z-10">
         <div className="flex items-center gap-3 min-w-0">
@@ -167,6 +260,23 @@ export default function EditorPage() {
         <div className="flex items-center gap-[6px] flex-shrink-0">
           <button
             type="button"
+            onClick={handleImportClick}
+            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 11V3M5 6l3-3 3 3M3 13h10"/></svg>
+            {t.importFile}
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 3v8M5 8l3 3 3-3M3 13h10"/></svg>
+            {t.exportFile}
+          </button>
+          <div className="w-px h-[18px] bg-[var(--border)]" />
+          <button
+            type="button"
             onClick={() => setAssetsOpen(true)}
             className={`inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium transition-all active:scale-[0.97] ${
               clipboard.assets.length > 0
@@ -213,8 +323,24 @@ export default function EditorPage() {
         </div>
       </header>
 
+      {/* ═══ Hidden file input for import ═══ */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".md"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        aria-label="Import Markdown file"
+      />
+
       {/* ═══ Main: Editor + Preview ═══ */}
-      <main className="grid grid-cols-[1fr_1px_1fr] overflow-hidden">
+      <main
+        ref={containerRef}
+        className="grid overflow-hidden"
+        style={{
+          gridTemplateColumns: `${leftPanelWidth}% 1px ${100 - leftPanelWidth}%`,
+        }}
+      >
         <MarkdownEditor
           value={markdown}
           onChange={setMarkdown}
@@ -223,8 +349,17 @@ export default function EditorPage() {
         />
 
         {/* Resize handle */}
-        <div className="relative cursor-col-resize group">
-          <div className="absolute inset-y-0 left-0 w-px bg-[var(--border)] group-hover:bg-[var(--accent)] transition-colors" />
+        <div
+          className="relative cursor-col-resize group select-none"
+          onMouseDown={handleResizeMouseDown}
+        >
+          <div
+            className={`absolute inset-y-0 left-0 w-px transition-colors ${
+              isResizing
+                ? "bg-[var(--accent)] shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                : "bg-[var(--border)] group-hover:bg-[var(--accent)]"
+            }`}
+          />
         </div>
 
         {/* Preview pane */}
