@@ -1,4 +1,4 @@
-import { parseMarkdown, inlineToText, toXArticleText } from "@/lib/markdown";
+import { inlineToText, parseMarkdown, toXArticleText } from "@/lib/markdown";
 
 export type CoverImageConfig = {
   apiKey: string;
@@ -9,10 +9,6 @@ export type CoverImageConfig = {
 export type GeneratedCoverImage = {
   src: string;
   revisedPrompt?: string;
-};
-
-export type GenerateCoverImageOptions = {
-  fetcher?: typeof fetch;
 };
 
 const defaultBaseUrl = "https://api.openai.com/v1";
@@ -41,6 +37,7 @@ export function buildCoverImagePrompt(markdown: string): string {
 
   return [
     "Create a landscape editorial cover image for an X Article.",
+    "The image will be cropped to a 5:2 aspect ratio (wide banner), so keep the focal point centered and avoid important details near the top/bottom edges.",
     "The image should feel modern, sharp, and publication-ready, with strong composition and clear visual hierarchy.",
     "Do not include readable text, captions, logos, UI chrome, watermarks, or social media branding.",
     `Article title: ${title}`,
@@ -51,88 +48,47 @@ export function buildCoverImagePrompt(markdown: string): string {
 export async function generateCoverImage(
   markdown: string,
   rawConfig: CoverImageConfig,
-  options: GenerateCoverImageOptions = {},
 ): Promise<GeneratedCoverImage> {
   const config = normalizeCoverImageConfig(rawConfig);
-  const fetcher = options.fetcher ?? fetch;
-  const response = await fetcher(`${config.baseUrl}/images/generations`, {
+  const prompt = buildCoverImagePrompt(markdown);
+
+  const res = await fetch(`${config.baseUrl}/images/generations`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
+      Authorization: `Bearer ${config.apiKey}`,
     },
-    cache: "no-store",
     body: JSON.stringify({
       model: config.model,
-      prompt: buildCoverImagePrompt(markdown),
-      size: "1536x1024",
-      quality: "medium",
-      output_format: "png",
-      response_format: "b64_json",
+      prompt,
       n: 1,
+      size: "1792x1024",
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(await getApiErrorMessage(response));
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Image generation failed (${res.status}): ${body}`);
   }
 
-  const payload = (await response.json()) as {
-    data?: Array<{
-      b64_json?: string;
-      url?: string;
-      revised_prompt?: string;
-    }>;
-  };
-  const image = payload.data?.[0];
-  if (!image) {
-    throw new Error("The image API did not return image data.");
+  const json = await res.json();
+  const imageData = json.data?.[0];
+
+  if (!imageData) {
+    throw new Error("No image returned from API.");
   }
 
-  const src = image.b64_json
-    ? normalizeBase64Image(image.b64_json, "image/png")
-    : image.url;
+  const src = imageData.b64_json
+    ? `data:image/png;base64,${imageData.b64_json}`
+    : imageData.url || "";
 
   if (!src) {
-    throw new Error("The image API response did not include b64_json or url.");
+    throw new Error("No image data in API response.");
   }
 
-  return {
-    src,
-    revisedPrompt: image.revised_prompt,
-  };
-}
-
-function normalizeBase64Image(value: string, mime: string): string {
-  return value.startsWith("data:") ? value : `data:${mime};base64,${value}`;
+  return { src, revisedPrompt: imageData.revised_prompt };
 }
 
 function compactWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
-}
-
-async function getApiErrorMessage(response: Response): Promise<string> {
-  try {
-    const payload = await response.json();
-    if (typeof payload?.error?.message === "string") {
-      return payload.error.message;
-    }
-    if (typeof payload?.message === "string") {
-      return payload.message;
-    }
-    if (typeof payload?.error === "string") {
-      return payload.error;
-    }
-  } catch {
-    try {
-      const text = await response.text();
-      if (text.trim()) {
-        return text.trim();
-      }
-    } catch {
-      // Fall through to the HTTP status when the response body is unavailable.
-    }
-  }
-
-  return `Image API request failed with HTTP ${response.status}.`;
 }
