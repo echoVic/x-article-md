@@ -29,6 +29,28 @@
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
 }
 
+.dark {
+  color-scheme: dark;
+
+  --bg:      oklch(14% 0.005 250);
+  --surface: oklch(18% 0.008 250);
+  --fg:      oklch(92% 0.008 250);
+  --muted:   oklch(58% 0.010 250);
+  --border:  oklch(26% 0.008 250);
+  --accent:  oklch(68% 0.17 255);
+
+  --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+  --accent-hover: color-mix(in oklch, var(--accent) 88%, white);
+  --fg-soft: color-mix(in oklch, var(--fg) 6%, transparent);
+  --success: oklch(65% 0.14 155);
+  --warning: oklch(74% 0.12 80);
+  --danger:  oklch(62% 0.16 25);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.20);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.30);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.40);
+}
+
 * {
   box-sizing: border-box;
 }

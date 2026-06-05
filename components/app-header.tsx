@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Page = "editor" | "thread";
 
@@ -60,8 +61,9 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
         </nav>
       </div>
 
-      {/* Right: Language toggle */}
+      {/* Right: Theme + Language toggle */}
       <div className="flex items-center gap-[6px] flex-shrink-0">
+        <ThemeToggle />
         <Link
           href={langHref}
           onClick={() => setLocale(nextLocale)}

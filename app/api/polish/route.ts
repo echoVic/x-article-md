@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       styleInstruction = "\n\nStyle: Make the text more engaging and compelling. Use vivid language and strong hooks.";
     }
 
-    const prompt = `Polish and improve the following text${styleInstruction ? ` (${style} style)` : ""}:\n\n${text}`;
+    const prompt = `Polish and improve the following text:\n\n${text}`;
 
     const { text: polishedText } = await generateText({
       model: provider(resolvedModel),

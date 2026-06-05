@@ -1,7 +1,8 @@
-import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
-import { buildWebApplicationJsonLd, buildFaqJsonLd, githubRepoUrl } from "@/lib/seo";
+import { buildFaqJsonLd, buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
+import Link from "next/link";
 
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
@@ -41,6 +42,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
             <a href="#faq">FAQ</a>
           </nav>
           <div className="topnav-actions">
+            <ThemeToggle />
             <Link
               href={locale === "en" ? "/zh" : "/"}
               className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] no-underline"

@@ -7,6 +7,7 @@ import { ArticlePreview } from "@/components/article-preview";
 import { CoverImagePanel } from "@/components/cover-image-panel";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { LanguageToggle } from "@/components/language-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
@@ -299,6 +300,7 @@ export default function EditorPage() {
             {t.coverTitle}
           </button>
           <div className="w-px h-[18px] bg-[var(--border)]" />
+          <ThemeToggle />
           <LanguageToggle href={locale === "zh" ? "/editor" : "/zh/editor"} />
           <button
             type="button"
