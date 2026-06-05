@@ -8,6 +8,7 @@ import {
   downloadBlob,
   downloadCodeImage,
   downloadTableImage,
+  renderMermaidToPng,
   renderSvgToPng,
 } from "@/lib/image-copy";
 import type { XArticleAsset } from "@/lib/markdown";
@@ -54,19 +55,11 @@ export function ArticleAssets({ assets, inline }: ArticleAssetsProps) {
 
 function AssetRow({ asset }: { asset: XArticleAsset }) {
   const { t } = useI18n();
-  const [placeholderState, setPlaceholderState] =
-    useState<ActionState>("idle");
   const [imageState, setImageState] = useState<ActionState>("idle");
   const [downloadState, setDownloadState] = useState<ActionState>("idle");
 
   function reset(setter: (state: ActionState) => void) {
     window.setTimeout(() => setter("idle"), 1600);
-  }
-
-  function copyPlaceholder() {
-    const ok = copyText(asset.placeholder);
-    setPlaceholderState(ok ? "done" : "failed");
-    reset(setPlaceholderState);
   }
 
   async function copyImage() {
@@ -106,9 +99,9 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
     <div className="grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <code className="rounded-[var(--radius-xs)] bg-[var(--fg-soft)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--fg)]">
-            {asset.placeholder}
-          </code>
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[var(--accent)] text-[10px] font-bold text-white">
+            {asset.id}
+          </span>
           <span className="text-xs font-medium text-[var(--fg)]">
             {asset.label}
           </span>
@@ -118,11 +111,6 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
         </p>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {asset.type === "tweet" ? null : (
-          <AssetButton onClick={copyPlaceholder} state={placeholderState}>
-            {t.assetsPlaceholder}
-          </AssetButton>
-        )}
         {asset.type === "tweet" ? null : (
           <AssetButton onClick={downloadImage} state={downloadState}>
             {t.assetsDownloadPng}
@@ -213,25 +201,4 @@ async function copyMermaidImage(code: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-async function renderMermaidToPng(code: string): Promise<Blob> {
-  const mermaid = (await import("mermaid")).default;
-  mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "strict",
-    theme: "base",
-    themeVariables: {
-      primaryColor: "#d9f3ea",
-      primaryTextColor: "#0f1419",
-      primaryBorderColor: "#4aa384",
-      lineColor: "#536471",
-      secondaryColor: "#eef2f5",
-      tertiaryColor: "#ffffff",
-      fontFamily: "Arial, sans-serif",
-    },
-  });
-
-  const result = await mermaid.render(`ximg-${Date.now()}`, code);
-  return renderSvgToPng(result.svg);
 }

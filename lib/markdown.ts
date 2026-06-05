@@ -358,9 +358,9 @@ function blocksToXArticleBody(
             ...(block.type === "code" ? { language: block.language } : {}),
           });
         }
-        textParts.push(placeholder);
+        textParts.push(`\n📷 [${label} — paste from Assets panel]\n`);
         htmlParts.push(
-          `<p><span data-x-asset-placeholder="${placeholder}">${placeholder}</span></p>`,
+          `<p>📷 <em>[${label} — paste from Assets panel]</em></p>`,
         );
         break;
       }

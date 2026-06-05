@@ -134,7 +134,10 @@ export default function EditorPage() {
 
   async function copyBody() {
     trackEvent("copy_body");
-    if (await copyRichText(clipboard.bodyHtml, clipboard.bodyText)) {
+
+    const htmlToWrite = clipboard.bodyHtml;
+
+    if (await copyRichText(htmlToWrite, clipboard.bodyText)) {
       markCopied("body");
       return;
     }
@@ -142,7 +145,7 @@ export default function EditorPage() {
     setManualCopy({
       label: "Manual rich body copy",
       text: clipboard.bodyText,
-      html: clipboard.bodyHtml,
+      html: htmlToWrite,
     });
     setCopyState("manual");
   }

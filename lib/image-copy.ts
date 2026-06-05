@@ -286,6 +286,27 @@ export function downloadBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+export async function renderMermaidToPng(code: string): Promise<Blob> {
+  const mermaid = (await import("mermaid")).default;
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    theme: "base",
+    themeVariables: {
+      primaryColor: "#d9f3ea",
+      primaryTextColor: "#0f1419",
+      primaryBorderColor: "#4aa384",
+      lineColor: "#536471",
+      secondaryColor: "#eef2f5",
+      tertiaryColor: "#ffffff",
+      fontFamily: "Arial, sans-serif",
+    },
+  });
+
+  const result = await mermaid.render(`ximg-${Date.now()}`, code);
+  return renderSvgToPng(result.svg);
+}
+
 function roundRect(
   context: CanvasRenderingContext2D,
   x: number,
