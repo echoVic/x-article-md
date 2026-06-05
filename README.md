@@ -1,91 +1,81 @@
-# x-article-md
+# MD2X — Markdown to X Articles
 
-A lightweight Markdown editor for drafting content that can be previewed and copied into X Articles.
+A Markdown editor and converter for drafting content that can be previewed and pasted into X Articles with full formatting preserved.
 
-The first version focuses on one useful workflow: write Markdown on the left, preview an X Articles-like article on the right, then copy the title, rich body, and required image assets.
+Write Markdown, preview as X Articles, copy rich text + image assets, publish.
 
 ## Features
 
-- Split-pane Markdown editor and X Articles-style live preview.
-- Rich text copy for headings, paragraphs, lists, bold text, links, and inline code.
-- Code block handling:
-  - Quote mode for paste-friendly rich text.
-  - Image mode for X-style code card PNG assets.
-- Mermaid diagram preview and PNG asset copy/download.
-- Markdown table parsing with PNG asset copy/download.
-- X/Twitter status URL detection with embed hints.
-- Editor toolbar for common Markdown actions.
-- Keyboard helpers for bold, links, inline code, lists, Tab indentation, and list continuation.
-- Local draft autosave.
-
-## Why
-
-X Articles supports rich long-form writing, but pasting Markdown directly does not preserve every structure cleanly. This app keeps the authoring experience in Markdown while preparing a practical copy flow for X Articles.
+- **Rich Text Clipboard** — Copy preserves headings, bold, links, lists, inline code. Paste directly into X Articles.
+- **Code Blocks → PNG Images** — 9 syntax-highlighting themes (GitHub, Dracula, Nord, Night Owl, Tokyo Night, etc.)
+- **Mermaid Diagrams** — Flowcharts, sequence diagrams render as PNG with theme-synced colors.
+- **Tables → PNG** — Markdown tables render as styled image assets.
+- **AI Cover Images** — Generate cover images from article content via OpenAI-compatible API.
+- **AI Text Polish & Translate** — Polish selected text or translate between EN/ZH with one click.
+- **Thread Splitter** — AI-powered tweet thread generator with automatic numbering.
+- **PWA Offline Support** — Install as desktop app, works offline (AI features require network).
+- **Dark Mode** — Light, dark, and system theme with toggle.
+- **Multi-language UI** — English and Chinese interface.
+- **Import/Export** — Import existing .md files, export your draft.
+- **Local Autosave** — Drafts persist in localStorage, never leave your device.
+- **Rate Limiting** — Built-in abuse protection for public deployment.
+- **Analytics** — Vercel Analytics + Speed Insights integration.
 
 ## Getting Started
 
-Install dependencies:
-
 ```bash
 pnpm install
-```
-
-Start the development server:
-
-```bash
 pnpm dev
 ```
 
-Open:
-
-```text
-http://localhost:3000
-```
-
-## Scripts
-
-```bash
-pnpm dev
-pnpm test
-pnpm lint
-pnpm build
-```
+Open http://localhost:3000
 
 ## Copy Workflow
 
 1. Write or paste Markdown in the editor.
-2. Review the live preview.
-3. Choose how code blocks should be handled:
-   - `Code as quote`: code blocks are included in the rich body as blockquote-style content.
-   - `Code as image`: code blocks become PNG assets.
-4. Copy the title.
-5. Copy the body into X Articles.
-6. Insert any generated assets from the `X assets` panel.
+2. Review the live preview (right panel).
+3. Choose code block mode: **Code Quote** (rich text) or **Code Image** (PNG assets).
+4. Select a code image theme from the toolbar dropdown.
+5. Click **Copy Title** → paste into X Articles title field.
+6. Click **Copy Body** → paste into X Articles editor.
+7. Copy image assets from the **X Assets** panel → paste at placeholder positions.
+8. Optionally generate and attach an AI cover image.
 
 ## Supported Markdown
 
-- Headings
+- Headings (h1–h6)
 - Paragraphs
 - Ordered and unordered lists
 - Bold text
 - Links
 - Inline code
-- Fenced code blocks
-- Mermaid blocks
+- Fenced code blocks (with language detection)
+- Mermaid diagram blocks
 - Markdown tables
-- Standalone X/Twitter status URLs
-
-## Notes
-
-This is not a Chrome extension and does not directly inject Draft.js atomic entities into X Articles. Native X Article code/table/embed blocks may require a browser extension or page-context automation. This app currently focuses on a reliable local preview and copy/assets workflow.
+- X/Twitter status URL embeds
 
 ## Tech Stack
 
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- pnpm
-- Vitest
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **AI**: Vercel AI SDK + DeepSeek
+- **Image Gen**: OpenAI-compatible API (GPT Image)
+- **PWA**: @serwist/next + Serwist
+- **Theme**: next-themes
+- **Icons**: lucide-react
+- **Rate Limit**: @upstash/ratelimit + @upstash/redis
+- **Analytics**: @vercel/analytics + @vercel/speed-insights
+- **Package Manager**: pnpm
+
+## Scripts
+
+```bash
+pnpm dev          # Start dev server
+pnpm build        # Production build (with --webpack for Serwist)
+pnpm lint         # Lint
+pnpm test         # Run tests
+```
 
 ## License
 

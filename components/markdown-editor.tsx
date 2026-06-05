@@ -126,6 +126,7 @@ export function MarkdownEditor({
 
       if (!response.ok) {
         const error = await response.json();
+        if (response.status === 429) throw new Error(t.rateLimitError);
         throw new Error(error.error || "Translation failed");
       }
 
@@ -133,7 +134,7 @@ export function MarkdownEditor({
       onChange(data.translatedText);
     } catch (error) {
       console.error("Translation error:", error);
-      alert(t.translateError + ": " + (error instanceof Error ? error.message : "Unknown error"));
+      alert(error instanceof Error ? error.message : t.translateError);
     } finally {
       setIsTranslating(false);
     }
@@ -167,6 +168,7 @@ export function MarkdownEditor({
 
       if (!response.ok) {
         const error = await response.json();
+        if (response.status === 429) throw new Error(t.rateLimitError);
         throw new Error(error.error || "Polish failed");
       }
 
@@ -181,7 +183,7 @@ export function MarkdownEditor({
       });
     } catch (error) {
       console.error("Polish error:", error);
-      alert(t.polishError + ": " + (error instanceof Error ? error.message : "Unknown error"));
+      alert(error instanceof Error ? error.message : t.polishError);
     } finally {
       setIsPolishing(false);
     }

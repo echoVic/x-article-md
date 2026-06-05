@@ -2,7 +2,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
 import { buildFaqJsonLd, buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
-import { AlignLeft, Clock, Globe, LayoutGrid } from "lucide-react";
+import { AlignLeft, Clock, Globe, LayoutGrid, MessageSquare, WifiOff, Workflow } from "lucide-react";
 import Link from "next/link";
 
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
@@ -162,6 +162,27 @@ type Op = {
                 </div>
                 <h3>{t.feature3Title}</h3>
                 <p>{t.feature3Desc}</p>
+              </div>
+              <div className="feature">
+                <div className="feature-mark">
+                  <MessageSquare size={24} strokeWidth={1.6} />
+                </div>
+                <h3>{t.feature4Title}</h3>
+                <p>{t.feature4Desc}</p>
+              </div>
+              <div className="feature">
+                <div className="feature-mark">
+                  <Workflow size={24} strokeWidth={1.6} />
+                </div>
+                <h3>{t.feature5Title}</h3>
+                <p>{t.feature5Desc}</p>
+              </div>
+              <div className="feature">
+                <div className="feature-mark">
+                  <WifiOff size={24} strokeWidth={1.6} />
+                </div>
+                <h3>{t.feature6Title}</h3>
+                <p>{t.feature6Desc}</p>
               </div>
             </div>
           </div>

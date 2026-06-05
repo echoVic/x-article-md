@@ -60,6 +60,7 @@ export default function ThreadPage() {
         body: JSON.stringify({ markdown }),
       });
       if (!res.ok) {
+        if (res.status === 429) throw new Error(t.rateLimitError);
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `HTTP ${res.status}`);
       }
@@ -74,7 +75,7 @@ export default function ThreadPage() {
     } finally {
       setAiLoading(false);
     }
-  }, [markdown]);
+  }, [markdown, t.rateLimitError]);
 
   const handleReset = useCallback(() => {
     setAiThreads(null);
