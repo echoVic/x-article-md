@@ -87,7 +87,7 @@ function AssetRow({ asset, codeTheme }: { asset: XArticleAsset; codeTheme?: Code
         const ok = copyText(asset.url);
         if (!ok) throw new Error("Copy blocked.");
       } else {
-        downloadBlob(await renderMermaidToPng(asset.code), filename);
+        downloadBlob(await renderMermaidToPng(asset.code, codeTheme), filename);
       }
       setDownloadState("done");
     } catch {
@@ -135,7 +135,7 @@ async function copyImageAsset(asset: XArticleAsset, codeTheme?: CodeImageTheme):
   }
 
   if (asset.type === "mermaid") {
-    return copyMermaidImage(asset.code);
+    return copyMermaidImage(asset.code, codeTheme);
   }
 
   return false;
@@ -196,9 +196,9 @@ function copyText(text: string): boolean {
   }
 }
 
-async function copyMermaidImage(code: string): Promise<boolean> {
+async function copyMermaidImage(code: string, theme?: CodeImageTheme): Promise<boolean> {
   try {
-    return await copyPngBlob(await renderMermaidToPng(code));
+    return await copyPngBlob(await renderMermaidToPng(code, theme));
   } catch {
     return false;
   }

@@ -290,25 +290,44 @@ export function downloadBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export async function renderMermaidToPng(code: string): Promise<Blob> {
+export async function renderMermaidToPng(code: string, theme?: CodeImageTheme): Promise<Blob> {
   const mermaid = (await import("mermaid")).default;
+  const t = theme ?? THEME_GITHUB_LIGHT;
+  const isDark = isThemeDark(t);
   mermaid.initialize({
     startOnLoad: false,
     securityLevel: "strict",
     theme: "base",
     themeVariables: {
-      primaryColor: "#d9f3ea",
-      primaryTextColor: "#0f1419",
-      primaryBorderColor: "#4aa384",
-      lineColor: "#536471",
-      secondaryColor: "#eef2f5",
-      tertiaryColor: "#ffffff",
+      primaryColor: isDark ? lighten(t.cardBg, 0.12) : "#d9f3ea",
+      primaryTextColor: t.textColor,
+      primaryBorderColor: isDark ? t.borderColor : "#4aa384",
+      lineColor: t.labelColor,
+      secondaryColor: isDark ? t.headerBg : "#eef2f5",
+      tertiaryColor: t.cardBg,
       fontFamily: "Arial, sans-serif",
+      background: t.panelBg,
     },
   });
 
   const result = await mermaid.render(`ximg-${Date.now()}`, code);
   return renderSvgToPng(result.svg);
+}
+
+function isThemeDark(theme: CodeImageTheme): boolean {
+  const hex = theme.cardBg.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+}
+
+function lighten(hex: string, amount: number): string {
+  const c = hex.replace("#", "");
+  const r = Math.min(255, parseInt(c.slice(0, 2), 16) + Math.round(255 * amount));
+  const g = Math.min(255, parseInt(c.slice(2, 4), 16) + Math.round(255 * amount));
+  const b = Math.min(255, parseInt(c.slice(4, 6), 16) + Math.round(255 * amount));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
 function roundRect(

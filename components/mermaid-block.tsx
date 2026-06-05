@@ -1,19 +1,25 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import type { CodeImageTheme } from "@/lib/code-themes";
+import { THEME_GITHUB_LIGHT } from "@/lib/code-themes";
 import { copySvgImage } from "@/lib/image-copy";
 
 type MermaidBlockProps = {
   code: string;
+  codeTheme?: CodeImageTheme;
 };
 
-export function MermaidBlock({ code }: MermaidBlockProps) {
+export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
   const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const [svg, setSvg] = useState("");
   const [error, setError] = useState("");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
+
+  const theme = codeTheme ?? THEME_GITHUB_LIGHT;
+  const isDark = isDarkTheme(theme);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,12 +39,12 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
           securityLevel: "strict",
           theme: "base",
           themeVariables: {
-            primaryColor: "#d9f3ea",
-            primaryTextColor: "#0f1419",
-            primaryBorderColor: "#4aa384",
-            lineColor: "#536471",
-            secondaryColor: "#eef2f5",
-            tertiaryColor: "#ffffff",
+            primaryColor: isDark ? lightenHex(theme.cardBg, 0.12) : "#d9f3ea",
+            primaryTextColor: theme.textColor,
+            primaryBorderColor: isDark ? theme.borderColor : "#4aa384",
+            lineColor: theme.labelColor,
+            secondaryColor: isDark ? theme.headerBg : "#eef2f5",
+            tertiaryColor: theme.cardBg,
             fontFamily: "Arial, sans-serif",
           },
         });
@@ -63,7 +69,7 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
     return () => {
       cancelled = true;
     };
-  }, [code, reactId]);
+  }, [code, reactId, theme, isDark]);
 
   if (error) {
     return (
@@ -114,4 +120,20 @@ export function MermaidBlock({ code }: MermaidBlockProps) {
       />
     </figure>
   );
+}
+
+function isDarkTheme(t: CodeImageTheme): boolean {
+  const hex = t.cardBg.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+}
+
+function lightenHex(hex: string, amount: number): string {
+  const c = hex.replace("#", "");
+  const r = Math.min(255, parseInt(c.slice(0, 2), 16) + Math.round(255 * amount));
+  const g = Math.min(255, parseInt(c.slice(2, 4), 16) + Math.round(255 * amount));
+  const b = Math.min(255, parseInt(c.slice(4, 6), 16) + Math.round(255 * amount));
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }

@@ -91,7 +91,7 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
               />
             );
           case "mermaid":
-            return <MermaidBlock key={index} code={block.code} />;
+            return <MermaidBlock key={index} code={block.code} codeTheme={codeTheme} />;
           case "table":
             return (
               <div key={index} className="overflow-auto rounded-[var(--radius)] border border-[var(--border)]">
