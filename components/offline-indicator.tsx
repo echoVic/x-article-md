@@ -21,7 +21,7 @@ export function OfflineIndicator() {
 
   if (!isOffline) return null;
 
-  const isZh = document.documentElement.lang === "zh";
+  const isZh = typeof document !== "undefined" && document.documentElement.lang === "zh";
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-[var(--radius)] bg-[var(--warning)] text-white text-xs font-medium shadow-md">
