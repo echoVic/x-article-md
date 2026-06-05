@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { splitThread } from "@/lib/thread";
 import { useI18n } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 import { AppHeader } from "@/components/app-header";
 
 const defaultMarkdown = `# Why Every Developer Should Write
@@ -34,6 +35,7 @@ export default function ThreadPage() {
 
   const copyTweet = useCallback(async (text: string, index: number) => {
     await navigator.clipboard.writeText(text);
+    trackEvent("copy_tweet");
     setCopied(index);
     setTimeout(() => setCopied(null), 1500);
   }, []);
@@ -41,6 +43,7 @@ export default function ThreadPage() {
   const copyAll = useCallback(async () => {
     const full = threads.join("\n\n---\n\n");
     await navigator.clipboard.writeText(full);
+    trackEvent("copy_all_tweets");
     setCopied(-1);
     setTimeout(() => setCopied(null), 1500);
   }, [threads]);
@@ -49,6 +52,7 @@ export default function ThreadPage() {
     if (!markdown.trim()) return;
     setAiLoading(true);
     setAiError(null);
+    trackEvent("thread_split");
     try {
       const res = await fetch("/api/thread-split", {
         method: "POST",

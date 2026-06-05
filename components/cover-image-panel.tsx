@@ -8,6 +8,7 @@ import {
 } from "@/lib/cover-image";
 import { copyPngBlob, downloadBlob } from "@/lib/image-copy";
 import { useI18n } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 import { ChevronDown } from "lucide-react";
 
 type CoverImagePanelProps = {
@@ -67,6 +68,7 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
   async function generate() {
     setError("");
     setGenerateState("loading");
+    trackEvent("cover_generate");
 
     try {
       const result = await generateCoverImage(markdown, config);
@@ -84,6 +86,7 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
     }
 
     setCopyState("loading");
+    trackEvent("cover_copy");
     try {
       const ok = await copyPngBlob(await imageSrcToBlob(cover.src));
       setCopyState(ok ? "done" : "failed");
@@ -99,6 +102,7 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
     }
 
     setDownloadState("loading");
+    trackEvent("cover_download");
     try {
       downloadBlob(await imageSrcToBlob(cover.src), "x-article-cover.png");
       setDownloadState("done");

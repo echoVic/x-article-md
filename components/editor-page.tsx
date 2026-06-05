@@ -6,6 +6,7 @@ import { ArticlePreview } from "@/components/article-preview";
 import { CoverImagePanel } from "@/components/cover-image-panel";
 import { EditorToolbar } from "@/components/editor-toolbar";
 import { MarkdownEditor } from "@/components/markdown-editor";
+import { trackEvent } from "@/lib/analytics";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
@@ -120,6 +121,7 @@ export default function EditorPage() {
 
   async function copyTitle() {
     const title = clipboard.title || clipboard.fullText.split("\n")[0] || "";
+    trackEvent("copy_title");
 
     if (copyPlainText(title)) {
       markCopied("title");
@@ -131,6 +133,7 @@ export default function EditorPage() {
   }
 
   async function copyBody() {
+    trackEvent("copy_body");
     if (await copyRichText(clipboard.bodyHtml, clipboard.bodyText)) {
       markCopied("body");
       return;
@@ -177,6 +180,7 @@ export default function EditorPage() {
       const content = event.target?.result;
       if (typeof content === "string") {
         setMarkdown(content);
+        trackEvent("import_markdown");
       }
       e.target.value = ""; // Reset input for next import
     };
@@ -188,6 +192,7 @@ export default function EditorPage() {
   }
 
   function handleExport() {
+    trackEvent("export_markdown");
     // Extract filename from first line (title) or use default
     const firstLine = markdown.split("\n")[0].trim();
     const filename = firstLine

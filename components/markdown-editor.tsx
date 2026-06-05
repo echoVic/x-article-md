@@ -1,6 +1,7 @@
 "use client";
 
 import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
+import { trackEvent } from "@/lib/analytics";
 import {
   applyMarkdownAction,
   type EditorUpdate,
@@ -111,6 +112,7 @@ export function MarkdownEditor({
   async function handleTranslate(targetLang: "en" | "zh") {
     setShowTranslateMenu(false);
     setIsTranslating(true);
+    trackEvent("translate", { targetLang });
 
     try {
       const response = await fetch("/api/translate", {
@@ -151,6 +153,7 @@ export function MarkdownEditor({
 
     setShowPolishMenu(false);
     setIsPolishing(true);
+    trackEvent("polish", { style: style || "default" });
 
     try {
       const response = await fetch("/api/polish", {

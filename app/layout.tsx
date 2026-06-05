@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { OfflineIndicator } from "@/components/offline-indicator";
@@ -47,6 +48,7 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <OfflineIndicator />
         <Analytics />
+        <SpeedInsights />
         <GoogleAnalytics />
       </body>
     </html>
