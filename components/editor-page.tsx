@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { AppHeader } from "@/components/app-header";
 import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
 import { CoverImagePanel } from "@/components/cover-image-panel";
+import { EditorToolbar } from "@/components/editor-toolbar";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { LanguageToggle } from "@/components/language-toggle";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
+import { FileText, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const draftStorageKey = "x-article-md:draft";
 
 export default function EditorPage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [markdown, setMarkdown] = useState(sampleMarkdown);
   const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
@@ -206,124 +206,24 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="grid h-full grid-rows-[auto_1fr]" style={{ userSelect: isResizing ? 'none' : 'auto' }}>
-      {/* ═══ Header ═══ */}
-      <header className="flex h-12 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-4 relative z-10">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href={locale === "zh" ? "/zh" : "/"} className="flex items-center gap-1.5 no-underline hover:opacity-70 transition-opacity" title="MD2X - Markdown to X Articles">
-            <span className="font-mono font-extrabold text-sm tracking-tight text-[var(--fg)]">MD</span>
-            <span className="text-[var(--accent)] text-xs">→</span>
-            <span className="font-mono font-extrabold text-sm tracking-tight text-[var(--fg)]">X</span>
-          </Link>
-          <div className="w-px h-[18px] bg-[var(--border)]" />
-          <nav className="flex items-center gap-1">
-            <span className="px-2 py-1 rounded-[var(--radius-sm)] text-xs font-medium text-[var(--fg)] bg-[var(--fg-soft)]">Editor</span>
-            <Link href={locale === "zh" ? "/zh/thread" : "/thread"} title="Markdown to X Thread Splitter" className="px-2 py-1 rounded-[var(--radius-sm)] text-xs font-medium no-underline text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors">Thread</Link>
-          </nav>
-          <div className="w-px h-[18px] bg-[var(--border)]" />
-          <span className="flex items-center gap-[5px] font-mono text-[11px] text-[var(--muted)]">
-            <span className="w-[5px] h-[5px] rounded-full bg-[var(--success)]" />
-            {draftReady ? t.saved : t.loading}
-          </span>
-        </div>
+    <div className="grid h-full grid-rows-[auto_auto_1fr]" style={{ userSelect: isResizing ? 'none' : 'auto' }}>
+      {/* ═══ Global Header ═══ */}
+      <AppHeader activePage="editor" />
 
-        {/* Center: mode switch */}
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <div className="flex items-center bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius)] p-[3px] gap-[2px]">
-            <button
-              type="button"
-              onClick={() => setCodeMode("quote")}
-              className={`flex items-center gap-[5px] px-3 py-[5px] rounded-[var(--radius-sm)] text-xs font-medium transition-all ${
-                codeMode === "quote"
-                  ? "bg-[var(--surface)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
-                  : "text-[var(--muted)] hover:text-[var(--fg)]"
-              }`}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><path d="M3 4h8M3 7h5M3 10h6"/></svg>
-              {t.codeQuote}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCodeMode("image")}
-              className={`flex items-center gap-[5px] px-3 py-[5px] rounded-[var(--radius-sm)] text-xs font-medium transition-all ${
-                codeMode === "image"
-                  ? "bg-[var(--surface)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
-                  : "text-[var(--muted)] hover:text-[var(--fg)]"
-              }`}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><rect x="2" y="2" width="10" height="10" rx="1.5"/><circle cx="5" cy="5.5" r="1.2"/><path d="M2.5 10l2.5-3 2 2 3-4 1.5 2"/></svg>
-              {t.codeImage}
-            </button>
-          </div>
-        </div>
-
-        {/* Right: actions */}
-        <div className="flex items-center gap-[6px] flex-shrink-0">
-          <button
-            type="button"
-            onClick={handleImportClick}
-            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 11V3M5 6l3-3 3 3M3 13h10"/></svg>
-            {t.importFile}
-          </button>
-          <button
-            type="button"
-            onClick={handleExport}
-            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 3v8M5 8l3 3 3-3M3 13h10"/></svg>
-            {t.exportFile}
-          </button>
-          <div className="w-px h-[18px] bg-[var(--border)]" />
-          <button
-            type="button"
-            onClick={() => setAssetsOpen(true)}
-            className={`inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium transition-all active:scale-[0.97] ${
-              clipboard.assets.length > 0
-                ? "text-[var(--fg)] hover:bg-[var(--fg-soft)]"
-                : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)]"
-            }`}
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 3h10v10H3z" strokeLinejoin="round"/><path d="M6 6h4M6 8.5h4M6 11h2.5"/></svg>
-            {t.assetsTitle}
-            {clipboard.assets.length > 0 && (
-              <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-[var(--accent)] text-[10px] font-semibold text-white tabular-nums">{clipboard.assets.length}</span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setCoverOpen(true)}
-            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="5.5" cy="7" r="1.5"/><path d="M4 13l3.5-4 2.5 2.5 3-4 1.5 2"/></svg>
-            {t.coverTitle}
-          </button>
-          <div className="w-px h-[18px] bg-[var(--border)]" />
-          <ThemeToggle />
-          <LanguageToggle href={locale === "zh" ? "/editor" : "/zh/editor"} />
-          <button
-            type="button"
-            onClick={copyTitle}
-            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] border border-transparent text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="5" y="2" width="8" height="10" rx="1.5"/><path d="M3 5v8a1.5 1.5 0 001.5 1.5H11"/></svg>
-            {copyState === "title" ? t.copied : t.copyTitle}
-          </button>
-          <button
-            type="button"
-            onClick={copyBody}
-            className="inline-flex items-center gap-[5px] px-3 py-[6px] rounded-[var(--radius-sm)] bg-[var(--accent)] text-white text-xs font-medium hover:bg-[var(--accent-hover)] transition-all active:scale-[0.97]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="5" y="2" width="8" height="10" rx="1.5"/><path d="M3 5v8a1.5 1.5 0 001.5 1.5H11"/></svg>
-            {copyState === "body"
-              ? t.copied
-              : copyState === "manual"
-                ? t.selectText
-                : t.copyBody}
-          </button>
-        </div>
-      </header>
+      {/* ═══ Editor Toolbar ═══ */}
+      <EditorToolbar
+        codeMode={codeMode}
+        onCodeModeChange={setCodeMode}
+        onImport={handleImportClick}
+        onExport={handleExport}
+        onToggleAssets={() => setAssetsOpen(true)}
+        onToggleCover={() => setCoverOpen(true)}
+        onCopyTitle={copyTitle}
+        onCopyBody={copyBody}
+        draftReady={draftReady}
+        assetsCount={clipboard.assets.length}
+        copyState={copyState}
+      />
 
       {/* ═══ Hidden file input for import ═══ */}
       <input
@@ -394,7 +294,7 @@ export default function EditorPage() {
                 onClick={() => setCoverOpen(false)}
                 className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-sm)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+                <X size={14} strokeWidth={1.5} aria-hidden="true" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-5">
@@ -424,13 +324,13 @@ export default function EditorPage() {
                 onClick={() => setAssetsOpen(false)}
                 className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-sm)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+                <X size={14} strokeWidth={1.5} aria-hidden="true" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-5">
               {clipboard.assets.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                  <svg width="40" height="40" viewBox="0 0 16 16" fill="none" stroke="var(--border)" strokeWidth="1" aria-hidden="true"><path d="M3 3h10v10H3z" strokeLinejoin="round"/><path d="M6 6h4M6 8.5h4M6 11h2.5"/></svg>
+                  <FileText size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
                   <p className="mt-3 text-sm text-[var(--muted)]">{t.assetsEmpty}</p>
                 </div>
               ) : (

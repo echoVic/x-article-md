@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useI18n, type Locale } from "@/lib/i18n";
+import { Globe } from "lucide-react";
 
 export function LanguageToggle({
   className,
@@ -21,10 +22,7 @@ export function LanguageToggle({
 
   const content = (
     <>
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
-        <circle cx="8" cy="8" r="6.5" />
-        <path d="M1.5 8h13M8 1.5c-2 2-2.5 4-2.5 6.5s.5 4.5 2.5 6.5M8 1.5c2 2 2.5 4 2.5 6.5s-.5 4.5-2.5 6.5" />
-      </svg>
+      <Globe size={14} strokeWidth={1.5} aria-hidden="true" />
       {label}
     </>
   );

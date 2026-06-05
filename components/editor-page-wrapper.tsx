@@ -2,6 +2,7 @@ import EditorPage from "@/components/editor-page";
 import { EditorFaq } from "@/components/editor-faq";
 import { editorCopy, type EditorLocale } from "@/lib/editor-copy";
 import { buildFaqJsonLd } from "@/lib/seo";
+import { Check } from "lucide-react";
 
 export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
   const copy = editorCopy[locale];
@@ -17,18 +18,18 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
         }}
       />
 
-      {/* SEO Header */}
-      <section className="border-b border-[var(--border)] bg-[var(--surface)] px-6 py-4">
+      {/* Editor */}
+      <div className="h-[calc(100dvh-5rem)]">
+        <EditorPage />
+      </div>
+
+      {/* SEO Header — below the fold for search engines */}
+      <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-10">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-xl font-bold text-[var(--fg)]">{copy.h1}</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">{copy.subtitle}</p>
         </div>
       </section>
-
-      {/* Editor */}
-      <div className="h-[calc(100dvh-8rem)]">
-        <EditorPage />
-      </div>
 
       {/* How to Use */}
       <section className="border-t border-[var(--border)] bg-[var(--bg)] px-6 py-12">
@@ -113,9 +114,7 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
             {copy.whoItems.map((item, i) => (
               <div key={i} className="flex items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] p-4">
                 <span className="mt-0.5 text-[var(--accent)]">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="M2 8.5l4 4 8-9" />
-                  </svg>
+                  <Check size={16} strokeWidth={1.6} />
                 </span>
                 <p className="text-sm text-[var(--muted)]">{item}</p>
               </div>

@@ -17,16 +17,16 @@ export function ThreadPageWrapper({ locale }: { locale: ThreadLocale }) {
         }}
       />
 
-      {/* SEO Header */}
-      <section className="border-b border-[var(--border)] bg-[var(--surface)] px-6 py-4">
+      {/* Thread Generator */}
+      <ThreadPage />
+
+      {/* SEO Header — below the fold */}
+      <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-10">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-xl font-bold text-[var(--fg)]">{copy.h1}</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">{copy.subtitle}</p>
         </div>
       </section>
-
-      {/* Thread Generator */}
-      <ThreadPage />
 
       {/* How to Use */}
       <section className="border-t border-[var(--border)] bg-[var(--bg)] px-6 py-12">

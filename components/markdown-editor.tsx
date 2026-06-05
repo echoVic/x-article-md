@@ -1,15 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
 import {
   applyMarkdownAction,
-  handleMarkdownEnter,
-  insertTab,
   type EditorUpdate,
-  type MarkdownAction,
+  type MarkdownAction
 } from "@/lib/editor-actions";
 import { useI18n } from "@/lib/i18n";
-import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
+import {
+  Bold,
+  Code,
+  FileCode2,
+  Heading2,
+  Languages,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  Loader2,
+  RotateCcw,
+  Sparkles,
+  Table,
+  Workflow,
+  X,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type MarkdownEditorProps = {
   value: string;
@@ -44,7 +58,7 @@ export function MarkdownEditor({
   onReset,
   draftReady,
 }: MarkdownEditorProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const editorRef = useRef<CodeMirrorEditorHandle>(null);
   const stats = useMemo(() => getStats(value), [value]);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -305,15 +319,9 @@ export function MarkdownEditor({
             className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPolishing ? (
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <circle cx="8" cy="8" r="6" opacity="0.25" />
-                <path d="M8 2a6 6 0 016 6" strokeLinecap="round" />
-              </svg>
+              <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             ) : (
-              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-                <path d="M3 8l3 3 7-7" />
-                <path d="M13 3L7.5 8.5" opacity="0.5" />
-              </svg>
+              <Sparkles size={16} strokeWidth={1.8} aria-hidden="true" />
             )}
           </button>
 
@@ -375,17 +383,9 @@ export function MarkdownEditor({
             className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isTranslating ? (
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <circle cx="8" cy="8" r="6" opacity="0.25" />
-                <path d="M8 2a6 6 0 016 6" strokeLinecap="round" />
-              </svg>
+              <Loader2 size={16} className="animate-spin" aria-hidden="true" />
             ) : (
-              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-                <path d="M2 5h6M5 2v3" />
-                <path d="M4 9l2-2 2 2" />
-                <path d="M14 11H8M11 14v-3" />
-                <path d="M12 7l-2 2-2-2" />
-              </svg>
+              <Languages size={16} strokeWidth={1.8} aria-hidden="true" />
             )}
           </button>
 
@@ -418,7 +418,7 @@ export function MarkdownEditor({
           aria-label={t.toolReset}
           className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
         >
-          <ResetIcon />
+          <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
         </button>
       </div>
 
@@ -445,9 +445,7 @@ export function MarkdownEditor({
                 className="text-[var(--muted)] hover:text-[var(--fg)] transition-colors"
                 aria-label="Close"
               >
-                <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M12 4L4 12M4 4l8 8" />
-                </svg>
+                <X size={16} strokeWidth={1.8} aria-hidden="true" />
               </button>
             </div>
             <div className="flex-1 overflow-auto p-4">
@@ -512,76 +510,27 @@ function getStats(value: string) {
 }
 
 function ToolbarIcon({ icon }: { icon: string }) {
+  const props = { size: 16, strokeWidth: 1.8, "aria-hidden": true as const };
   switch (icon) {
-    case "code":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <path d="M5.5 4.5L2.5 8l3 3.5" />
-          <path d="M10.5 4.5l3 3.5-3 3.5" />
-        </svg>
-      );
-    case "link":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <path d="M7 5.5L8.5 4a2.5 2.5 0 013.5 3.5L10.5 9" />
-          <path d="M9 10.5L7.5 12A2.5 2.5 0 014 8.5L5.5 7" />
-          <path d="M6.5 9.5l3-3" />
-        </svg>
-      );
-    case "ul":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <path d="M6 4h7M6 8h7M6 12h7" />
-          <circle cx="3.5" cy="4" r="0.8" fill="currentColor" stroke="none" />
-          <circle cx="3.5" cy="8" r="0.8" fill="currentColor" stroke="none" />
-          <circle cx="3.5" cy="12" r="0.8" fill="currentColor" stroke="none" />
-        </svg>
-      );
-    case "ol":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <path d="M6 4h7M6 8h7M6 12h7" />
-          <text x="2.5" y="5.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">1</text>
-          <text x="2.5" y="9.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">2</text>
-          <text x="2.5" y="13.5" fontSize="5" fill="currentColor" stroke="none" fontFamily="monospace">3</text>
-        </svg>
-      );
-    case "fence":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-          <rect x="2" y="2" width="12" height="12" rx="2" />
-          <path d="M5 6h6M5 8.5h4M5 11h5" />
-        </svg>
-      );
-    case "flow":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
-          <rect x="2" y="2" width="5" height="4" rx="1" />
-          <rect x="9" y="10" width="5" height="4" rx="1" />
-          <path d="M7 4h2v8H9" />
-        </svg>
-      );
-    case "grid":
-      return (
-        <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
-          <rect x="2" y="2" width="12" height="12" rx="1.5" />
-          <path d="M2 6h12M2 10h12M6 2v12M10 2v12" />
-        </svg>
-      );
     case "H2":
-      return <span className="text-[11px] font-bold font-mono" aria-hidden="true">H2</span>;
+      return <Heading2 {...props} />;
     case "B":
-      return <span className="text-[12px] font-bold" aria-hidden="true">B</span>;
+      return <Bold {...props} />;
+    case "code":
+      return <Code {...props} />;
+    case "link":
+      return <LinkIcon {...props} />;
+    case "ul":
+      return <List {...props} />;
+    case "ol":
+      return <ListOrdered {...props} />;
+    case "fence":
+      return <FileCode2 {...props} />;
+    case "flow":
+      return <Workflow {...props} />;
+    case "grid":
+      return <Table {...props} />;
     default:
       return <span className="text-[11px] font-mono" aria-hidden="true">{icon}</span>;
   }
-}
-
-function ResetIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-      <path d="M3.5 5.5a5 5 0 11.5 5.3" />
-      <path d="M3.5 2v3.5H7" strokeLinejoin="round" />
-    </svg>
-  );
 }

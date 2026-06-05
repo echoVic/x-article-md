@@ -8,6 +8,7 @@ import {
 } from "@/lib/cover-image";
 import { copyPngBlob, downloadBlob } from "@/lib/image-copy";
 import { useI18n } from "@/lib/i18n";
+import { ChevronDown } from "lucide-react";
 
 type CoverImagePanelProps = {
   markdown: string;
@@ -214,14 +215,12 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
           <span className="font-mono text-[10px] text-[var(--muted)] opacity-60">
             {cover ? t.coverReady : t.coverOptional}
           </span>
-          <svg
-            width="12" height="12" viewBox="0 0 12 12" fill="none"
-            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+          <ChevronDown
+            size={12}
+            strokeWidth={1.5}
             className={`transition-transform ${expanded ? "rotate-180" : ""}`}
             aria-hidden="true"
-          >
-            <path d="M3 4.5l3 3 3-3" />
-          </svg>
+          />
         </span>
       </button>
 

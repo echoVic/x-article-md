@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Globe } from "lucide-react";
 
 type Page = "editor" | "thread";
 
@@ -71,10 +72,7 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
           aria-label={isZh ? "Switch to English" : "切换到中文"}
           title={isZh ? "Switch to English" : "切换到中文"}
         >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
-            <circle cx="8" cy="8" r="6.5" />
-            <path d="M1.5 8h13M8 1.5c-2 2-2.5 4-2.5 6.5s.5 4.5 2.5 6.5M8 1.5c2 2 2.5 4 2.5 6.5s-.5 4.5-2.5 6.5" />
-          </svg>
+          <Globe size={14} strokeWidth={1.5} aria-hidden="true" />
           {isZh ? "EN" : "中文"}
         </Link>
       </div>

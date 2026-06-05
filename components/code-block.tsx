@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Copy } from "lucide-react";
 import { copyCodeImage } from "@/lib/image-copy";
 
 type CodeBlockProps = {
@@ -37,7 +38,7 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
           }
           className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.95]"
         >
-          <CopyGlyph />
+          <Copy size={14} strokeWidth={1.4} aria-hidden="true" />
           {state === "copied" ? "已复制" : state === "failed" ? "失败" : "复制图片"}
         </button>
       </div>
@@ -58,19 +59,4 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
   );
 }
 
-function CopyGlyph() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 16 16"
-      className="w-3.5 h-3.5"
-      fill="none"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.4"
-    >
-      <rect x="5.5" y="2.5" width="7" height="9" rx="1.5" />
-      <path d="M3.5 5v7a1.5 1.5 0 001.5 1.5H10" />
-    </svg>
-  );
-}
+

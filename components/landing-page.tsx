@@ -2,6 +2,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
 import { buildFaqJsonLd, buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
+import { AlignLeft, Clock, Globe, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 
 export default function LandingPage({ locale = "en" }: { locale?: LandingLocale }) {
@@ -49,10 +50,7 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
               aria-label={locale === "en" ? "切换到中文" : "Switch to English"}
               title={locale === "en" ? "切换到中文" : "Switch to English"}
             >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.5" />
-                <path d="M1.5 8h13M8 1.5c-2 2-2.5 4-2.5 6.5s.5 4.5 2.5 6.5M8 1.5c2 2 2.5 4 2.5 6.5s-.5 4.5-2.5 6.5" />
-              </svg>
+              <Globe size={14} strokeWidth={1.3} aria-hidden="true" />
               {locale === "en" ? "中文" : "EN"}
             </Link>
             <Link href={editorHref} className="btn btn-primary">
@@ -146,44 +144,21 @@ type Op = {
             <div className="grid-3">
               <div className="feature">
                 <div className="feature-mark">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  >
-                    <path d="M4 7h16M4 12h10M4 17h16" />
-                  </svg>
+                  <AlignLeft size={24} strokeWidth={1.6} />
                 </div>
                 <h3>{t.feature1Title}</h3>
                 <p>{t.feature1Desc}</p>
               </div>
               <div className="feature">
                 <div className="feature-mark">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="3" />
-                    <path d="M8 8h3v3H8zM13 8h3v3h-3zM8 13h3v3H8z" />
-                  </svg>
+                  <LayoutGrid size={24} strokeWidth={1.6} />
                 </div>
                 <h3>{t.feature2Title}</h3>
                 <p>{t.feature2Desc}</p>
               </div>
               <div className="feature">
                 <div className="feature-mark">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  >
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 6v6l4 2" />
-                  </svg>
+                  <Clock size={24} strokeWidth={1.6} />
                 </div>
                 <h3>{t.feature3Title}</h3>
                 <p>{t.feature3Desc}</p>

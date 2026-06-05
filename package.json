@@ -21,6 +21,7 @@
     "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.195",
+    "lucide-react": "^1.17.0",
     "mermaid": "^11.12.0",
     "next": "^16.0.5",
     "next-themes": "^0.4.6",
