@@ -4,3 +4,8 @@ out
 coverage
 .env*.local
 pnpm-debug.log*
+
+# Serwist generated service worker
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
