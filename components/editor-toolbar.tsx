@@ -1,5 +1,6 @@
 "use client";
 
+import { CODE_THEMES } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import {
   AlignLeft,
@@ -13,6 +14,8 @@ import {
 export type EditorToolbarProps = {
   codeMode: "quote" | "image";
   onCodeModeChange: (mode: "quote" | "image") => void;
+  codeThemeId: string;
+  onCodeThemeChange: (id: string) => void;
   onImport: () => void;
   onExport: () => void;
   onToggleAssets: () => void;
@@ -27,6 +30,8 @@ export type EditorToolbarProps = {
 export function EditorToolbar({
   codeMode,
   onCodeModeChange,
+  codeThemeId,
+  onCodeThemeChange,
   onImport,
   onExport,
   onToggleAssets,
@@ -70,6 +75,21 @@ export function EditorToolbar({
             {t.codeImage}
           </button>
         </div>
+
+        {codeMode === "image" && (
+          <select
+            value={codeThemeId}
+            onChange={(e) => onCodeThemeChange(e.target.value)}
+            className="h-[26px] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-medium text-[var(--fg)] outline-none focus:border-[var(--accent)]"
+          >
+            <option value="auto">{t.codeThemeAuto}</option>
+            {CODE_THEMES.map((theme) => (
+              <option key={theme.id} value={theme.id}>
+                {theme.name}
+              </option>
+            ))}
+          </select>
+        )}
 
         <div className="w-px h-[14px] bg-[var(--border)]" />
 

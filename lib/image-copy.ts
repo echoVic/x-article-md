@@ -1,5 +1,7 @@
-export async function copyCodeImage(code: string, language: string): Promise<boolean> {
-  const blob = await renderCodeToPng(code, language);
+import { type CodeImageTheme, THEME_GITHUB_LIGHT } from "./code-themes";
+
+export async function copyCodeImage(code: string, language: string, theme?: CodeImageTheme): Promise<boolean> {
+  const blob = await renderCodeToPng(code, language, theme);
   return copyPngBlob(blob);
 }
 
@@ -12,8 +14,9 @@ export async function downloadCodeImage(
   code: string,
   language: string,
   filename: string,
+  theme?: CodeImageTheme,
 ): Promise<void> {
-  downloadBlob(await renderCodeToPng(code, language), filename);
+  downloadBlob(await renderCodeToPng(code, language, theme), filename);
 }
 
 export async function downloadSvgImage(svg: string, filename: string): Promise<void> {
@@ -56,6 +59,7 @@ export async function copyPngBlob(blob: Blob): Promise<boolean> {
 export async function renderCodeToPng(
   code: string,
   language: string,
+  theme: CodeImageTheme = THEME_GITHUB_LIGHT,
 ): Promise<Blob> {
   const lines = code.split("\n");
   const scale = window.devicePixelRatio || 2;
@@ -98,47 +102,47 @@ export async function renderCodeToPng(
   canvas.style.height = `${height}px`;
   context.scale(scale, scale);
 
-  context.fillStyle = "#ffffff";
+  context.fillStyle = theme.cardBg;
   context.fillRect(0, 0, width, height);
 
-  context.shadowColor = "rgba(15, 20, 25, 0.10)";
+  context.shadowColor = theme.shadowColor;
   context.shadowBlur = 18;
   context.shadowOffsetY = 6;
   roundRect(context, 0, 0, width, height, 14);
-  context.fillStyle = "#ffffff";
+  context.fillStyle = theme.cardBg;
   context.fill();
   context.shadowColor = "transparent";
   context.shadowBlur = 0;
   context.shadowOffsetY = 0;
 
-  context.strokeStyle = "#d8e0e5";
+  context.strokeStyle = theme.borderColor;
   context.lineWidth = 1;
   roundRect(context, 0.5, 0.5, width - 1, height - 1, 14);
   context.stroke();
 
-  drawCodeCardControls(context, width - cardPadding - 44, cardPadding + 1);
+  drawCodeCardControls(context, width - cardPadding - 44, cardPadding + 1, theme.controlColor);
 
   roundRect(context, panelX, panelY, width - cardPadding * 2, panelHeight, 12);
-  context.fillStyle = "#f7f9fa";
+  context.fillStyle = theme.panelBg;
   context.fill();
-  context.strokeStyle = "#d8e0e5";
+  context.strokeStyle = theme.borderColor;
   context.lineWidth = 1;
   context.stroke();
 
   context.save();
   roundRect(context, panelX, panelY, width - cardPadding * 2, headerHeight, 12);
   context.clip();
-  context.fillStyle = "#eff3f4";
+  context.fillStyle = theme.headerBg;
   context.fillRect(panelX, panelY, width - cardPadding * 2, headerHeight);
   context.restore();
 
-  context.strokeStyle = "#d8e0e5";
+  context.strokeStyle = theme.borderColor;
   context.beginPath();
   context.moveTo(panelX, panelY + headerHeight + 0.5);
   context.lineTo(width - cardPadding, panelY + headerHeight + 0.5);
   context.stroke();
 
-  context.fillStyle = "#536471";
+  context.fillStyle = theme.labelColor;
   context.font = `600 14px Arial, sans-serif`;
   context.textBaseline = "middle";
   context.fillText(
@@ -146,14 +150,14 @@ export async function renderCodeToPng(
     panelX + panelPaddingX,
     panelY + headerHeight / 2,
   );
-  drawCopyGlyph(context, width - cardPadding - panelPaddingX - 22, panelY + 11);
+  drawCopyGlyph(context, width - cardPadding - panelPaddingX - 22, panelY + 11, theme.labelColor);
 
   context.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
   context.textBaseline = "alphabetic";
   lines.forEach((line, index) => {
     const baseline =
       panelY + headerHeight + bodyPaddingY + fontSize + index * lineHeight;
-    context.fillStyle = "#f58b23";
+    context.fillStyle = theme.lineNumberColor;
     context.textAlign = "right";
     context.fillText(
       String(index + 1),
@@ -161,7 +165,7 @@ export async function renderCodeToPng(
       baseline,
     );
     context.textAlign = "left";
-    context.fillStyle = "#0f1419";
+    context.fillStyle = theme.textColor;
     context.fillText(
       line || " ",
       panelX + panelPaddingX + lineNumberWidth,
@@ -328,8 +332,9 @@ function drawCodeCardControls(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
+  color: string,
 ) {
-  context.strokeStyle = "#8a99a3";
+  context.strokeStyle = color;
   context.lineWidth = 1.8;
   context.lineCap = "round";
   context.lineJoin = "round";
@@ -356,8 +361,9 @@ function drawCopyGlyph(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
+  color: string,
 ) {
-  context.strokeStyle = "#536471";
+  context.strokeStyle = color;
   context.lineWidth = 1.7;
   context.lineJoin = "round";
   context.strokeRect(x + 5, y + 3, 12, 14);

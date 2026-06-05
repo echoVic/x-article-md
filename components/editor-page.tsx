@@ -7,6 +7,7 @@ import { CoverImagePanel } from "@/components/cover-image-panel";
 import { EditorToolbar } from "@/components/editor-toolbar";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { trackEvent } from "@/lib/analytics";
+import { resolveTheme } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
@@ -20,6 +21,7 @@ export default function EditorPage() {
   const [markdown, setMarkdown] = useState(sampleMarkdown);
   const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
+  const [codeThemeId, setCodeThemeId] = useState("auto");
   const [coverOpen, setCoverOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [copyState, setCopyState] = useState<
@@ -40,6 +42,23 @@ export default function EditorPage() {
   const clipboard = useMemo(
     () => toXArticleClipboard(markdown, { codeMode }),
     [codeMode, markdown],
+  );
+
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const resolvedCodeTheme = useMemo(
+    () => resolveTheme(codeThemeId, isDark),
+    [codeThemeId, isDark],
   );
 
   useEffect(() => {
@@ -222,6 +241,8 @@ export default function EditorPage() {
       <EditorToolbar
         codeMode={codeMode}
         onCodeModeChange={setCodeMode}
+        codeThemeId={codeThemeId}
+        onCodeThemeChange={setCodeThemeId}
         onImport={handleImportClick}
         onExport={handleExport}
         onToggleAssets={() => setAssetsOpen(true)}
@@ -282,7 +303,7 @@ export default function EditorPage() {
             <span className="font-mono text-[10px] text-[var(--muted)] opacity-60">{t.xArticles}</span>
           </div>
           <div className="flex-1 overflow-y-auto px-8 py-8 sm:px-10">
-            <ArticlePreview blocks={blocks} />
+            <ArticlePreview blocks={blocks} codeTheme={resolvedCodeTheme} />
           </div>
         </div>
       </main>
@@ -342,7 +363,7 @@ export default function EditorPage() {
                   <p className="mt-3 text-sm text-[var(--muted)]">{t.assetsEmpty}</p>
                 </div>
               ) : (
-                <ArticleAssets assets={clipboard.assets} inline />
+                <ArticleAssets assets={clipboard.assets} codeTheme={resolvedCodeTheme} inline />
               )}
             </div>
           </aside>

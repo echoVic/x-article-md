@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { CodeImageTheme } from "@/lib/code-themes";
 import {
   copyCodeImage,
   copyPngBlob,
@@ -9,19 +10,19 @@ import {
   downloadCodeImage,
   downloadTableImage,
   renderMermaidToPng,
-  renderSvgToPng,
 } from "@/lib/image-copy";
 import type { XArticleAsset } from "@/lib/markdown";
 import { useI18n } from "@/lib/i18n";
 
 type ArticleAssetsProps = {
   assets: XArticleAsset[];
+  codeTheme?: CodeImageTheme;
   inline?: boolean;
 };
 
 type ActionState = "idle" | "done" | "failed";
 
-export function ArticleAssets({ assets, inline }: ArticleAssetsProps) {
+export function ArticleAssets({ assets, codeTheme, inline }: ArticleAssetsProps) {
   const { t } = useI18n();
 
   if (assets.length === 0) {
@@ -32,7 +33,7 @@ export function ArticleAssets({ assets, inline }: ArticleAssetsProps) {
     return (
       <div className="divide-y divide-[var(--border)]">
         {assets.map((asset) => (
-          <AssetRow key={asset.placeholder} asset={asset} />
+          <AssetRow key={asset.placeholder} asset={asset} codeTheme={codeTheme} />
         ))}
       </div>
     );
@@ -46,14 +47,14 @@ export function ArticleAssets({ assets, inline }: ArticleAssetsProps) {
       </div>
       <div className="divide-y divide-[var(--border)]">
         {assets.map((asset) => (
-          <AssetRow key={asset.placeholder} asset={asset} />
+          <AssetRow key={asset.placeholder} asset={asset} codeTheme={codeTheme} />
         ))}
       </div>
     </aside>
   );
 }
 
-function AssetRow({ asset }: { asset: XArticleAsset }) {
+function AssetRow({ asset, codeTheme }: { asset: XArticleAsset; codeTheme?: CodeImageTheme }) {
   const { t } = useI18n();
   const [imageState, setImageState] = useState<ActionState>("idle");
   const [downloadState, setDownloadState] = useState<ActionState>("idle");
@@ -70,7 +71,7 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
       return;
     }
 
-    const ok = await copyImageAsset(asset);
+    const ok = await copyImageAsset(asset, codeTheme);
     setImageState(ok ? "done" : "failed");
     reset(setImageState);
   }
@@ -79,7 +80,7 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
     try {
       const filename = `${asset.placeholder.toLowerCase()}-${asset.type}.png`;
       if (asset.type === "code") {
-        await downloadCodeImage(asset.code, asset.language ?? "", filename);
+        await downloadCodeImage(asset.code, asset.language ?? "", filename, codeTheme);
       } else if (asset.type === "table") {
         await downloadTableImage(asset.headers, asset.rows, filename);
       } else if (asset.type === "tweet") {
@@ -124,9 +125,9 @@ function AssetRow({ asset }: { asset: XArticleAsset }) {
   );
 }
 
-async function copyImageAsset(asset: XArticleAsset): Promise<boolean> {
+async function copyImageAsset(asset: XArticleAsset, codeTheme?: CodeImageTheme): Promise<boolean> {
   if (asset.type === "code") {
-    return copyCodeImage(asset.code, asset.language ?? "");
+    return copyCodeImage(asset.code, asset.language ?? "", codeTheme);
   }
 
   if (asset.type === "table") {

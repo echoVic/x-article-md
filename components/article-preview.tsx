@@ -1,12 +1,14 @@
 import type { ArticleBlock, InlineToken } from "@/lib/markdown";
+import type { CodeImageTheme } from "@/lib/code-themes";
 import { CodeBlock } from "./code-block";
 import { MermaidBlock } from "./mermaid-block";
 
 type ArticlePreviewProps = {
   blocks: ArticleBlock[];
+  codeTheme?: CodeImageTheme;
 };
 
-export function ArticlePreview({ blocks }: ArticlePreviewProps) {
+export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
   if (blocks.length === 0) {
     return (
       <div className="flex h-full min-h-64 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-sm text-[var(--muted)]">
@@ -85,6 +87,7 @@ export function ArticlePreview({ blocks }: ArticlePreviewProps) {
                 key={index}
                 code={block.code}
                 language={block.language}
+                codeTheme={codeTheme}
               />
             );
           case "mermaid":
