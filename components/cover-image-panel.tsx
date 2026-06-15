@@ -9,7 +9,7 @@ import {
 import { copyPngBlob, downloadBlob } from "@/lib/image-copy";
 import { useI18n } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
-import { ChevronDown } from "lucide-react";
+import { Collapsible } from "./ui/collapsible";
 
 type CoverImagePanelProps = {
   markdown: string;
@@ -34,7 +34,6 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
   const [copyState, setCopyState] = useState<ActionState>("idle");
   const [downloadState, setDownloadState] = useState<ActionState>("idle");
   const [error, setError] = useState("");
-  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -206,33 +205,21 @@ export function CoverImagePanel({ markdown, inline }: CoverImagePanelProps) {
     return formContent;
   }
 
-  // Standalone mode: collapsible panel (legacy, kept for flexibility)
+  // Standalone mode: collapsible panel
   return (
     <aside className="mt-8 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]">
-      <button
-        type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-4 h-10 text-left transition-colors hover:bg-[var(--fg-soft)] rounded-t-[var(--radius-lg)]"
-      >
-        <span className="text-xs font-medium text-[var(--muted)]">{t.coverTitle}</span>
-        <span className="flex items-center gap-2">
+      <Collapsible
+        title={<span className="text-xs font-medium text-[var(--muted)]">{t.coverTitle}</span>}
+        titleRight={
           <span className="font-mono text-[10px] text-[var(--muted)] opacity-60">
             {cover ? t.coverReady : t.coverOptional}
           </span>
-          <ChevronDown
-            size={12}
-            strokeWidth={1.5}
-            className={`transition-transform ${expanded ? "rotate-180" : ""}`}
-            aria-hidden="true"
-          />
-        </span>
-      </button>
-
-      {expanded && (
+        }
+      >
         <div className="border-t border-[var(--border)] p-4">
           {formContent}
         </div>
-      )}
+      </Collapsible>
     </aside>
   );
 }

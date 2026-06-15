@@ -21,11 +21,12 @@ import {
   RotateCcw,
   Sparkles,
   Table,
-  Workflow,
-  X,
+  Workflow
 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { DropdownMenu } from "./dropdown-menu";
+import { Dialog } from "./ui/dialog";
+import { DropdownMenu } from "./ui/dropdown-menu";
+import { Tooltip } from "./ui/tooltip";
 
 type MarkdownEditorProps = {
   value: string;
@@ -262,16 +263,16 @@ export function MarkdownEditor({
               {group.map((item) => {
                 const label = t[item.labelKey as keyof typeof t] || item.labelKey;
                 return (
-                <button
-                  key={item.action}
-                  type="button"
-                  onClick={() => applyAction(item.action)}
-                  title={item.shortcut ? `${label} (${item.shortcut})` : label}
-                  aria-label={label}
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
-                >
-                  <ToolbarIcon icon={item.icon} />
-                </button>
+                <Tooltip key={item.action} content={item.shortcut ? `${label} (${item.shortcut})` : String(label)}>
+                  <button
+                    type="button"
+                    onClick={() => applyAction(item.action)}
+                    aria-label={String(label)}
+                    className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
+                  >
+                    <ToolbarIcon icon={item.icon} />
+                  </button>
+                </Tooltip>
                 );
               })}
             </div>
@@ -286,7 +287,6 @@ export function MarkdownEditor({
             <button
               type="button"
               disabled={isPolishing}
-              title={t.toolPolish}
               aria-label={t.toolPolish}
               className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -313,7 +313,6 @@ export function MarkdownEditor({
             <button
               type="button"
               disabled={isTranslating}
-              title={t.toolTranslate}
               aria-label={t.toolTranslate}
               className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -330,15 +329,16 @@ export function MarkdownEditor({
           ]}
         />
 
-        <button
-          type="button"
-          onClick={onReset}
-          title={t.toolReset}
-          aria-label={t.toolReset}
-          className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
-        >
-          <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
-        </button>
+        <Tooltip content={t.toolReset}>
+          <button
+            type="button"
+            onClick={onReset}
+            aria-label={t.toolReset}
+            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
+          >
+            <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
+          </button>
+        </Tooltip>
       </div>
 
       {/* Editor area */}
@@ -352,56 +352,47 @@ export function MarkdownEditor({
         />
       </div>
 
-      {/* Polish comparison overlay */}
-      {polishComparison && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 p-4">
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-lg)] max-w-4xl w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
-              <h3 className="text-sm font-medium text-[var(--fg)]">{t.polishComparing}</h3>
-              <button
-                type="button"
-                onClick={rejectPolish}
-                className="text-[var(--muted)] hover:text-[var(--fg)] transition-colors"
-                aria-label="Close"
-              >
-                <X size={16} strokeWidth={1.8} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto p-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Original</div>
-                  <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
-                    {polishComparison.original}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Polished</div>
-                  <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
-                    {polishComparison.polished}
-                  </div>
-                </div>
+      {/* Polish comparison dialog */}
+      <Dialog
+        open={polishComparison !== null}
+        onOpenChange={(open) => { if (!open) rejectPolish(); }}
+        title={t.polishComparing}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={rejectPolish}
+              className="px-4 py-2 text-sm text-[var(--fg)] hover:bg-[var(--fg-soft)] rounded-[var(--radius-sm)] transition-colors"
+            >
+              {t.polishReject}
+            </button>
+            <button
+              type="button"
+              onClick={acceptPolish}
+              className="px-4 py-2 text-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-[var(--radius-sm)] transition-colors"
+            >
+              {t.polishAccept}
+            </button>
+          </>
+        }
+      >
+        {polishComparison && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Original</div>
+              <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
+                {polishComparison.original}
               </div>
             </div>
-            <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-[var(--border)]">
-              <button
-                type="button"
-                onClick={rejectPolish}
-                className="px-4 py-2 text-sm text-[var(--fg)] hover:bg-[var(--fg-soft)] rounded-[var(--radius-sm)] transition-colors"
-              >
-                {t.polishReject}
-              </button>
-              <button
-                type="button"
-                onClick={acceptPolish}
-                className="px-4 py-2 text-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] rounded-[var(--radius-sm)] transition-colors"
-              >
-                {t.polishAccept}
-              </button>
+            <div>
+              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Polished</div>
+              <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
+                {polishComparison.polished}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Dialog>
 
       {/* Footer */}
       <div className="flex items-center justify-between px-[14px] h-[30px] border-t border-[var(--border)] font-mono text-[11px] text-[var(--muted)]">

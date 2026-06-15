@@ -10,6 +10,8 @@ import {
   Image,
   Upload,
 } from "lucide-react";
+import { Select } from "./ui/select";
+import { ToggleGroup } from "./ui/toggle-group";
 
 export type EditorToolbarProps = {
   codeMode: "quote" | "image";
@@ -49,46 +51,24 @@ export function EditorToolbar({
       {/* Left: mode switch + file actions */}
       <div className="flex items-center gap-[6px]">
         {/* Code mode switch */}
-        <div className="flex items-center bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] p-[2px] gap-[2px]">
-          <button
-            type="button"
-            onClick={() => onCodeModeChange("quote")}
-            className={`flex items-center gap-[4px] px-2.5 py-[3px] rounded-[var(--radius-sm)] text-[11px] font-medium transition-all ${
-              codeMode === "quote"
-                ? "bg-[var(--bg)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
-                : "text-[var(--muted)] hover:text-[var(--fg)]"
-            }`}
-          >
-            <AlignLeft size={12} strokeWidth={1.8} aria-hidden="true" />
-            {t.codeQuote}
-          </button>
-          <button
-            type="button"
-            onClick={() => onCodeModeChange("image")}
-            className={`flex items-center gap-[4px] px-2.5 py-[3px] rounded-[var(--radius-sm)] text-[11px] font-medium transition-all ${
-              codeMode === "image"
-                ? "bg-[var(--bg)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
-                : "text-[var(--muted)] hover:text-[var(--fg)]"
-            }`}
-          >
-            <Image size={12} strokeWidth={1.8} aria-hidden="true" />
-            {t.codeImage}
-          </button>
-        </div>
+        <ToggleGroup
+          value={codeMode}
+          onValueChange={(v) => onCodeModeChange(v as "quote" | "image")}
+          items={[
+            { value: "quote", label: <><AlignLeft size={12} strokeWidth={1.8} aria-hidden="true" /> {t.codeQuote}</> },
+            { value: "image", label: <><Image size={12} strokeWidth={1.8} aria-hidden="true" /> {t.codeImage}</> },
+          ]}
+        />
 
         {codeMode === "image" && (
-          <select
+          <Select
             value={codeThemeId}
-            onChange={(e) => onCodeThemeChange(e.target.value)}
-            className="h-[26px] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-medium text-[var(--fg)] outline-none focus:border-[var(--accent)]"
-          >
-            <option value="auto">{t.codeThemeAuto}</option>
-            {CODE_THEMES.map((theme) => (
-              <option key={theme.id} value={theme.id}>
-                {theme.name}
-              </option>
-            ))}
-          </select>
+            onValueChange={onCodeThemeChange}
+            options={[
+              { value: "auto", label: t.codeThemeAuto },
+              ...CODE_THEMES.map((theme) => ({ value: theme.id, label: theme.name })),
+            ]}
+          />
         )}
 
         <div className="w-px h-[14px] bg-[var(--border)]" />

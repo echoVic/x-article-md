@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Accordion } from "./ui/accordion";
 
 type FaqItem = { question: string; answer: string };
 
@@ -15,22 +15,7 @@ export function EditorFaq({
         <h2 className="text-lg font-semibold text-[var(--fg)] mb-6">
           {title}
         </h2>
-        <div className="space-y-3">
-          {faqs.map((faq, i) => (
-            <details
-              key={i}
-              className="group border border-[var(--border)] rounded-[var(--radius)] overflow-hidden"
-            >
-              <summary className="flex items-center justify-between px-5 py-4 cursor-pointer text-sm font-medium text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors">
-                {faq.question}
-                <ChevronDown className="w-4 h-4 shrink-0 text-[var(--muted)] group-open:rotate-180 transition-transform" />
-              </summary>
-              <div className="px-5 pb-4 text-sm text-[var(--muted)] leading-relaxed">
-                {faq.answer}
-              </div>
-            </details>
-          ))}
-        </div>
+        <Accordion items={faqs} />
       </div>
     </section>
   );

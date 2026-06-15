@@ -34,7 +34,6 @@ export function LanguageToggle({
         onClick={toggle}
         className={`inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] no-underline ${className ?? ""}`}
         aria-label={accessibleLabel}
-        title={accessibleLabel}
       >
         {content}
       </Link>
@@ -47,7 +46,6 @@ export function LanguageToggle({
       onClick={toggle}
       className={`inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] ${className ?? ""}`}
       aria-label={accessibleLabel}
-      title={accessibleLabel}
     >
       {content}
     </button>

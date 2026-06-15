@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
 import type { ReactNode } from "react";
@@ -22,7 +23,9 @@ export function Providers({
       disableTransitionOnChange
     >
       <I18nProvider initialLocale={initialLocale} persistLocale={persistLocale}>
-        {children}
+        <TooltipPrimitive.Provider delayDuration={400} skipDelayDuration={200}>
+          {children}
+        </TooltipPrimitive.Provider>
       </I18nProvider>
     </ThemeProvider>
   );

@@ -29,7 +29,6 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
         <Link
           href={isZh ? "/zh" : "/"}
           className="flex items-center gap-1.5 no-underline hover:opacity-70 transition-opacity"
-          title="MD2X - Markdown to X Articles"
         >
           <span className="font-mono font-extrabold text-sm tracking-tight text-[var(--fg)]">MD</span>
           <span className="text-[var(--accent)] text-xs">→</span>
@@ -50,7 +49,6 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
           </Link>
           <Link
             href={threadHref}
-            title="Markdown to X Thread Splitter"
             className={`px-2 py-1 rounded-[var(--radius-sm)] text-xs font-medium no-underline transition-colors ${
               activePage === "thread"
                 ? "text-[var(--fg)] bg-[var(--fg-soft)]"
@@ -70,7 +68,6 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
           onClick={() => setLocale(nextLocale)}
           className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] no-underline"
           aria-label={isZh ? "Switch to English" : "切换到中文"}
-          title={isZh ? "Switch to English" : "切换到中文"}
         >
           <Globe size={14} strokeWidth={1.5} aria-hidden="true" />
           {isZh ? "EN" : "中文"}

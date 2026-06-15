@@ -42,13 +42,6 @@ export function CodeBlock({ code, language, codeTheme }: CodeBlockProps) {
           type="button"
           onClick={copyImage}
           aria-label="复制代码图片"
-          title={
-            state === "copied"
-              ? "已复制"
-              : state === "failed"
-                ? "复制失败"
-                : "复制为图片"
-          }
           className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium transition-all hover:opacity-80 active:scale-[0.95]"
           style={{ color: theme.labelColor }}
         >

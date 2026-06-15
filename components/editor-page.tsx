@@ -11,8 +11,9 @@ import { resolveTheme } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { sampleMarkdown } from "@/lib/sample";
-import { FileText, X } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Sheet } from "./ui/sheet";
 
 const draftStorageKey = "x-article-md:draft";
 
@@ -309,66 +310,28 @@ export default function EditorPage() {
       </main>
 
       {/* ═══ Cover Image Drawer ═══ */}
-      {coverOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[2px] transition-opacity"
-            onClick={() => setCoverOpen(false)}
-          />
-          <aside className="fixed top-0 right-0 z-40 h-full w-full max-w-md border-l border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-lg)] flex flex-col animate-slide-in">
-            <div className="flex items-center justify-between px-5 h-12 border-b border-[var(--border)] flex-shrink-0">
-              <span className="text-sm font-medium text-[var(--fg)]">{t.coverTitle}</span>
-              <button
-                type="button"
-                onClick={() => setCoverOpen(false)}
-                className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-sm)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all"
-              >
-                <X size={14} strokeWidth={1.5} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-5">
-              <CoverImagePanel markdown={markdown} inline />
-            </div>
-          </aside>
-        </>
-      )}
+      <Sheet open={coverOpen} onOpenChange={setCoverOpen} title={t.coverTitle}>
+        <CoverImagePanel markdown={markdown} inline />
+      </Sheet>
 
       {/* ═══ Assets Drawer ═══ */}
-      {assetsOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[2px] transition-opacity"
-            onClick={() => setAssetsOpen(false)}
-          />
-          <aside className="fixed top-0 right-0 z-40 h-full w-full max-w-md border-l border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-lg)] flex flex-col animate-slide-in">
-            <div className="flex items-center justify-between px-5 h-12 border-b border-[var(--border)] flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-[var(--fg)]">{t.assetsTitle}</span>
-                {clipboard.assets.length > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[var(--accent-soft)] text-[11px] font-semibold text-[var(--accent)] tabular-nums">{clipboard.assets.length}</span>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => setAssetsOpen(false)}
-                className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-sm)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all"
-              >
-                <X size={14} strokeWidth={1.5} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-5">
-              {clipboard.assets.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                  <FileText size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
-                  <p className="mt-3 text-sm text-[var(--muted)]">{t.assetsEmpty}</p>
-                </div>
-              ) : (
-                <ArticleAssets assets={clipboard.assets} codeTheme={resolvedCodeTheme} inline />
-              )}
-            </div>
-          </aside>
-        </>
-      )}
+      <Sheet
+        open={assetsOpen}
+        onOpenChange={setAssetsOpen}
+        title={t.assetsTitle}
+        titleRight={clipboard.assets.length > 0 ? (
+          <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[var(--accent-soft)] text-[11px] font-semibold text-[var(--accent)] tabular-nums">{clipboard.assets.length}</span>
+        ) : undefined}
+      >
+        {clipboard.assets.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center py-12">
+            <FileText size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
+            <p className="mt-3 text-sm text-[var(--muted)]">{t.assetsEmpty}</p>
+          </div>
+        ) : (
+          <ArticleAssets assets={clipboard.assets} codeTheme={resolvedCodeTheme} inline />
+        )}
+      </Sheet>
 
       {/* ═══ Manual copy fallback ═══ */}
       {manualCopy ? (
