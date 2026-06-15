@@ -24,7 +24,8 @@ import {
   Workflow,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { DropdownMenu } from "./dropdown-menu";
 
 type MarkdownEditorProps = {
   value: string;
@@ -63,17 +64,13 @@ export function MarkdownEditor({
   const editorRef = useRef<CodeMirrorEditorHandle>(null);
   const stats = useMemo(() => getStats(value), [value]);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [showTranslateMenu, setShowTranslateMenu] = useState(false);
-  const translateButtonRef = useRef<HTMLButtonElement>(null);
   const [isPolishing, setIsPolishing] = useState(false);
-  const [showPolishMenu, setShowPolishMenu] = useState(false);
   const [polishComparison, setPolishComparison] = useState<{
     original: string;
     polished: string;
     start: number;
     end: number;
   } | null>(null);
-  const polishButtonRef = useRef<HTMLButtonElement>(null);
 
   function applyAction(action: MarkdownAction) {
     const editor = editorRef.current;
@@ -110,7 +107,6 @@ export function MarkdownEditor({
   }
 
   async function handleTranslate(targetLang: "en" | "zh") {
-    setShowTranslateMenu(false);
     setIsTranslating(true);
     trackEvent("translate", { targetLang });
 
@@ -152,7 +148,6 @@ export function MarkdownEditor({
       return;
     }
 
-    setShowPolishMenu(false);
     setIsPolishing(true);
     trackEvent("polish", { style: style || "default" });
 
@@ -204,34 +199,6 @@ export function MarkdownEditor({
   function rejectPolish() {
     setPolishComparison(null);
   }
-
-  // Close translate menu when clicking outside
-  useEffect(() => {
-    if (!showTranslateMenu) return;
-
-    function handleClickOutside(event: MouseEvent) {
-      if (translateButtonRef.current && !translateButtonRef.current.contains(event.target as Node)) {
-        setShowTranslateMenu(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showTranslateMenu]);
-
-  // Close polish menu when clicking outside
-  useEffect(() => {
-    if (!showPolishMenu) return;
-
-    function handleClickOutside(event: MouseEvent) {
-      if (polishButtonRef.current && !polishButtonRef.current.contains(event.target as Node)) {
-        setShowPolishMenu(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showPolishMenu]);
 
   function handleKeyDown(event: KeyboardEvent): boolean {
     // Handle custom shortcuts for markdown actions
@@ -313,108 +280,55 @@ export function MarkdownEditor({
         <div className="flex-1" />
 
         {/* Polish button with dropdown */}
-        <div className="relative">
-          <button
-            ref={polishButtonRef}
-            type="button"
-            onClick={() => setShowPolishMenu(!showPolishMenu)}
-            disabled={isPolishing}
-            title={t.toolPolish}
-            aria-label={t.toolPolish}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPolishing ? (
-              <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <Sparkles size={16} strokeWidth={1.8} aria-hidden="true" />
-            )}
-          </button>
-
-          {showPolishMenu && (
-            <div className="absolute top-full right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-md)] py-1 z-10 min-w-[180px]">
-              <button
-                type="button"
-                onClick={() => handlePolish()}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>✨</span>
-                <span>{t.polishDefault}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePolish("concise")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>📝</span>
-                <span>{t.polishConcise}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePolish("professional")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>💼</span>
-                <span>{t.polishProfessional}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePolish("casual")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>💬</span>
-                <span>{t.polishCasual}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePolish("engaging")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>🎯</span>
-                <span>{t.polishEngaging}</span>
-              </button>
-            </div>
-          )}
-        </div>
+        <DropdownMenu
+          disabled={isPolishing}
+          trigger={
+            <button
+              type="button"
+              disabled={isPolishing}
+              title={t.toolPolish}
+              aria-label={t.toolPolish}
+              className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPolishing ? (
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+              ) : (
+                <Sparkles size={16} strokeWidth={1.8} aria-hidden="true" />
+              )}
+            </button>
+          }
+          items={[
+            { icon: "✨", label: t.polishDefault, onClick: () => handlePolish() },
+            { icon: "📝", label: t.polishConcise, onClick: () => handlePolish("concise") },
+            { icon: "💼", label: t.polishProfessional, onClick: () => handlePolish("professional") },
+            { icon: "💬", label: t.polishCasual, onClick: () => handlePolish("casual") },
+            { icon: "🎯", label: t.polishEngaging, onClick: () => handlePolish("engaging") },
+          ]}
+        />
 
         {/* Translate button with dropdown */}
-        <div className="relative">
-          <button
-            ref={translateButtonRef}
-            type="button"
-            onClick={() => setShowTranslateMenu(!showTranslateMenu)}
-            disabled={isTranslating}
-            title={t.toolTranslate}
-            aria-label={t.toolTranslate}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isTranslating ? (
-              <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <Languages size={16} strokeWidth={1.8} aria-hidden="true" />
-            )}
-          </button>
-
-          {showTranslateMenu && (
-            <div className="absolute top-full right-0 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] shadow-[var(--shadow-md)] py-1 z-10 min-w-[160px]">
-              <button
-                type="button"
-                onClick={() => handleTranslate("en")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>🇬🇧</span>
-                <span>{t.translateToEnglish}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTranslate("zh")}
-                className="w-full px-3 py-1.5 text-left text-xs text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors flex items-center gap-2"
-              >
-                <span>🇨🇳</span>
-                <span>{t.translateToChinese}</span>
-              </button>
-            </div>
-          )}
-        </div>
+        <DropdownMenu
+          disabled={isTranslating}
+          trigger={
+            <button
+              type="button"
+              disabled={isTranslating}
+              title={t.toolTranslate}
+              aria-label={t.toolTranslate}
+              className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTranslating ? (
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+              ) : (
+                <Languages size={16} strokeWidth={1.8} aria-hidden="true" />
+              )}
+            </button>
+          }
+          items={[
+            { icon: "🇬🇧", label: t.translateToEnglish, onClick: () => handleTranslate("en") },
+            { icon: "🇨🇳", label: t.translateToChinese, onClick: () => handleTranslate("zh") },
+          ]}
+        />
 
         <button
           type="button"
