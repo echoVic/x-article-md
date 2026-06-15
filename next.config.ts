@@ -18,10 +18,10 @@ const nextConfig: NextConfig = {
         has: [
           {
             type: "host",
-            value: "markdown2x.com",
+            value: "www.markdown2x.com",
           },
         ],
-        destination: "https://www.markdown2x.com/:path*",
+        destination: "https://markdown2x.com/:path*",
         permanent: true,
       },
     ];

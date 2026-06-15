@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const siteUrl = "https://www.markdown2x.com";
+export const siteUrl = "https://markdown2x.com";
 export const githubRepoUrl = "https://github.com/echoVic/x-article-md";
 
 export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread";
