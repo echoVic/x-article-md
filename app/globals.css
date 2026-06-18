@@ -465,6 +465,38 @@ input {
   border-top: 1px solid var(--border);
 }
 
+/* SEO landing page lists */
+.seo-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 680px;
+}
+
+.seo-points li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.seo-points li::before {
+  content: "×";
+  position: absolute;
+  left: 0;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.seo-points--check li::before {
+  content: "✓";
+  color: var(--success);
+}
+
 /* FAQ */
 .faq-list {
   display: flex;

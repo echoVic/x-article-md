@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+    type ReactNode,
 } from "react";
 
 export type Locale = "en" | "zh";
@@ -20,7 +20,7 @@ const en = {
   // Landing — nav
   navFeatures: "Features",
   navWorkflow: "Workflow",
-  navOpenEditor: "Open Editor",
+  navEditor: "Editor",
   navGetStarted: "Get Started",
 
   // Landing — hero
@@ -242,7 +242,7 @@ const zh: Translations = {
   // Landing — nav
   navFeatures: "功能",
   navWorkflow: "工作流",
-  navOpenEditor: "打开编辑器",
+  navEditor: "编辑器",
   navGetStarted: "开始使用",
 
   // Landing — hero

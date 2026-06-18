@@ -4,7 +4,7 @@ export const landingCopy = {
   en: {
     navFeatures: "Features",
     navWorkflow: "Workflow",
-    navOpenEditor: "Open Editor",
+    navEditor: "Editor",
     navThread: "Thread",
     navGetStarted: "Get Started",
     heroEyebrow: "MARKDOWN → X ARTICLES",
@@ -95,7 +95,7 @@ export const landingCopy = {
   zh: {
     navFeatures: "功能",
     navWorkflow: "工作流",
-    navOpenEditor: "打开编辑器",
+    navEditor: "编辑器",
     navThread: "推文流",
     navGetStarted: "开始使用",
     heroEyebrow: "MARKDOWN → X ARTICLES",

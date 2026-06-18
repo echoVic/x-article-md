@@ -68,5 +68,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       alternates: threadAlternates,
     },
+    {
+      url: absoluteUrl("/markdown-to-x-articles"),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: absoluteUrl("/paste-code-into-x-articles"),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: absoluteUrl("/mermaid-in-x-articles"),
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
 }
