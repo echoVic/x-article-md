@@ -27,6 +27,9 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
   function CodeMirrorEditor({ value, onChange, onKeyDown, placeholder }, ref) {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
+    const isSyncingRef = useRef(false);
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
 
     useImperativeHandle(ref, () => ({
       getSelection: () => {
@@ -94,9 +97,9 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
         syntaxHighlighting(defaultHighlightStyle),
         keymap.of([...defaultKeymap, indentWithTab]),
         EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
+          if (update.docChanged && !isSyncingRef.current) {
             const newValue = update.state.doc.toString();
-            onChange(newValue);
+            onChangeRef.current(newValue);
           }
         }),
         EditorView.theme({
@@ -246,6 +249,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
 
       const currentValue = view.state.doc.toString();
       if (currentValue !== value) {
+        isSyncingRef.current = true;
         view.dispatch({
           changes: {
             from: 0,
@@ -253,6 +257,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
             insert: value,
           },
         });
+        isSyncingRef.current = false;
       }
     }, [value]);
 

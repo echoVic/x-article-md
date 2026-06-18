@@ -8,10 +8,12 @@ import {
   Download,
   FileText,
   Image,
+  LayoutTemplate,
   ListChecks,
   ShieldCheck,
   Upload,
 } from "lucide-react";
+import { DropdownMenu } from "./ui/dropdown-menu";
 import { Select } from "./ui/select";
 import { ToggleGroup } from "./ui/toggle-group";
 
@@ -22,8 +24,8 @@ export type EditorToolbarProps = {
   onCodeThemeChange: (id: string) => void;
   onImport: () => void;
   onExport: () => void;
+  onTemplates: () => void;
   onToggleAssets: () => void;
-  onToggleCover: () => void;
   onCopyTitle: () => void;
   onCopyBody: () => void;
   onPreflight: () => void;
@@ -41,8 +43,8 @@ export function EditorToolbar({
   onCodeThemeChange,
   onImport,
   onExport,
+  onTemplates,
   onToggleAssets,
-  onToggleCover,
   onCopyTitle,
   onCopyBody,
   onPreflight,
@@ -81,14 +83,22 @@ export function EditorToolbar({
 
         <div className="w-px h-[14px] bg-[var(--border)]" />
 
-        <button
-          type="button"
-          onClick={onImport}
-          className="inline-flex items-center gap-[4px] px-2.5 py-[4px] rounded-[var(--radius-sm)] text-[11px] font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-        >
-          <Upload size={12} strokeWidth={1.8} aria-hidden="true" />
-          {t.importFile}
-        </button>
+        <DropdownMenu
+          trigger={
+            <button
+              type="button"
+              className="inline-flex items-center gap-[4px] px-2.5 py-[4px] rounded-[var(--radius-sm)] text-[11px] font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
+            >
+              <Upload size={12} strokeWidth={1.8} aria-hidden="true" />
+              {t.importFile}
+            </button>
+          }
+          items={[
+            { icon: <Upload size={14} strokeWidth={1.5} />, label: t.importFile, onClick: onImport },
+            { icon: <LayoutTemplate size={14} strokeWidth={1.5} />, label: t.templatePickerTitle, onClick: onTemplates },
+          ]}
+          align="start"
+        />
         <button
           type="button"
           onClick={onExport}
@@ -110,18 +120,10 @@ export function EditorToolbar({
           }`}
         >
           <FileText size={12} strokeWidth={1.8} aria-hidden="true" />
-          {t.assetsTitle}
+          {t.orchestratorTitle}
           {assetsCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[14px] h-[14px] px-1 rounded-full bg-[var(--accent)] text-[9px] font-semibold text-white tabular-nums">{assetsCount}</span>
           )}
-        </button>
-        <button
-          type="button"
-          onClick={onToggleCover}
-          className="inline-flex items-center gap-[4px] px-2.5 py-[4px] rounded-[var(--radius-sm)] text-[11px] font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-        >
-          <Image size={12} strokeWidth={1.8} aria-hidden="true" />
-          {t.coverTitle}
         </button>
 
         <div className="w-px h-[14px] bg-[var(--border)]" />

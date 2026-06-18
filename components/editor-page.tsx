@@ -1,33 +1,34 @@
 "use client";
 
 import { AppHeader } from "@/components/app-header";
-import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
+import { AssetOrchestrator } from "@/components/asset-orchestrator";
 import { CoverImagePanel } from "@/components/cover-image-panel";
 import { EditorToolbar } from "@/components/editor-toolbar";
 import { MarkdownEditor, type MarkdownEditorHandle } from "@/components/markdown-editor";
 import { PreflightPanel } from "@/components/preflight-panel";
 import { initialPublishState, PublishPanel, publishReducer } from "@/components/publish-panel";
+import { TemplatePicker } from "@/components/template-picker";
 import { trackEvent } from "@/lib/analytics";
 import { resolveTheme } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { runPreflight, type PreflightReport } from "@/lib/preflight";
 import { sampleMarkdown } from "@/lib/sample";
-import { FileText } from "lucide-react";
+import type { ArticleTemplate } from "@/lib/templates";
 import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { Sheet } from "./ui/sheet";
 
 const draftStorageKey = "x-article-md:draft";
 
 export default function EditorPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [markdown, setMarkdown] = useState(sampleMarkdown);
   const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
   const [codeThemeId, setCodeThemeId] = useState("auto");
-  const [coverOpen, setCoverOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [preflightOpen, setPreflightOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [preflightReport, setPreflightReport] = useState<PreflightReport | null>(null);
@@ -202,6 +203,16 @@ export default function EditorPage() {
     setPublishOpen(true);
   }
 
+  function handleTemplateSelect(template: ArticleTemplate) {
+    const isDirty = markdown !== sampleMarkdown && markdown.trim() !== "";
+    if (isDirty && !window.confirm(t.templateConfirmReplace)) {
+      return;
+    }
+    setMarkdown(template.content[locale]);
+    setTemplatePickerOpen(false);
+    trackEvent("template_select", { templateId: template.id });
+  }
+
   function markCopied(target: "title" | "body") {
     setCopyState(target);
     window.setTimeout(() => setCopyState("idle"), 1800);
@@ -278,8 +289,8 @@ export default function EditorPage() {
         onCodeThemeChange={setCodeThemeId}
         onImport={handleImportClick}
         onExport={handleExport}
+        onTemplates={() => setTemplatePickerOpen(true)}
         onToggleAssets={() => setAssetsOpen(true)}
-        onToggleCover={() => setCoverOpen(true)}
         onCopyTitle={copyTitle}
         onCopyBody={copyBody}
         onPreflight={handlePreflight}
@@ -345,28 +356,25 @@ export default function EditorPage() {
         </div>
       </main>
 
-      {/* ═══ Cover Image Drawer ═══ */}
-      <Sheet open={coverOpen} onOpenChange={setCoverOpen} title={t.coverTitle}>
-        <CoverImagePanel markdown={markdown} inline />
-      </Sheet>
-
-      {/* ═══ Assets Drawer ═══ */}
+      {/* ═══ Assets & Media Drawer ═══ */}
       <Sheet
         open={assetsOpen}
         onOpenChange={setAssetsOpen}
-        title={t.assetsTitle}
+        title={t.orchestratorTitle}
         titleRight={clipboard.assets.length > 0 ? (
           <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[var(--accent-soft)] text-[11px] font-semibold text-[var(--accent)] tabular-nums">{clipboard.assets.length}</span>
         ) : undefined}
       >
-        {clipboard.assets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center py-12">
-            <FileText size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
-            <p className="mt-3 text-sm text-[var(--muted)]">{t.assetsEmpty}</p>
-          </div>
-        ) : (
-          <ArticleAssets assets={clipboard.assets} codeTheme={resolvedCodeTheme} inline />
-        )}
+        <div className="flex flex-col h-full divide-y divide-[var(--border)]">
+          <CoverImagePanel markdown={markdown} inline />
+          <AssetOrchestrator
+            assets={clipboard.assets}
+            assetOffsets={clipboard.assetOffsets}
+            codeTheme={resolvedCodeTheme}
+            coverBlob={null}
+            onJumpToSource={handleJumpToSource}
+          />
+        </div>
       </Sheet>
 
       {/* ═══ Preflight Drawer ═══ */}
@@ -387,6 +395,13 @@ export default function EditorPage() {
           onReset={() => dispatchPublish({ type: "RESET", assetCount: clipboard.assets.length })}
         />
       </Sheet>
+
+      {/* ═══ Template Picker ═══ */}
+      <TemplatePicker
+        open={templatePickerOpen}
+        onOpenChange={setTemplatePickerOpen}
+        onSelect={handleTemplateSelect}
+      />
 
       {/* ═══ Preflight hint toast ═══ */}
       {showPreflightHint && (

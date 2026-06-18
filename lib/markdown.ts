@@ -58,6 +58,7 @@ export type XArticleClipboard = {
   fullText: string;
   fullHtml: string;
   assets: XArticleAsset[];
+  assetOffsets: number[];
 };
 
 export type XArticleClipboardOptions = {
@@ -202,6 +203,7 @@ export function toXArticleClipboard(
   options: XArticleClipboardOptions = {},
 ): XArticleClipboard {
   const blocks = parseMarkdown(source);
+  const blockOffsets = computeBlockOffsets(source);
   const firstBlock = blocks[0];
   const titleBlock =
     firstBlock?.type === "heading" && firstBlock.level === 1
@@ -212,9 +214,10 @@ export function toXArticleClipboard(
     ? `<h1>${inlineToHtml(titleBlock.content)}</h1>`
     : "";
   const bodyBlocks = titleBlock ? blocks.slice(1) : blocks;
+  const bodyStartIndex = titleBlock ? 1 : 0;
   const body = blocksToXArticleBody(bodyBlocks, {
     codeMode: options.codeMode ?? "quote",
-  });
+  }, blockOffsets, bodyStartIndex);
   const bodyText = body.text;
   const bodyHtml = body.html;
   const fullText = [title, bodyText].filter(Boolean).join("\n\n");
@@ -228,6 +231,7 @@ export function toXArticleClipboard(
     fullText,
     fullHtml,
     assets: body.assets,
+    assetOffsets: body.assetOffsets,
   };
 }
 
@@ -280,16 +284,21 @@ function blocksToText(
 function blocksToXArticleBody(
   blocks: ArticleBlock[],
   options: Required<XArticleClipboardOptions>,
+  blockOffsets: number[],
+  bodyStartIndex: number,
 ): {
   text: string;
   html: string;
   assets: XArticleAsset[];
+  assetOffsets: number[];
 } {
   const textParts: string[] = [];
   const htmlParts: string[] = [];
   const assets: XArticleAsset[] = [];
+  const assetOffsets: number[] = [];
 
-  for (const block of blocks) {
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
     switch (block.type) {
       case "heading":
         textParts.push(inlineToText(block.content));
@@ -338,6 +347,7 @@ function blocksToXArticleBody(
         const id = assets.length + 1;
         const placeholder = `XIMGPH_${id}`;
         const label = imageAssetLabel(block.type, id);
+        assetOffsets.push(blockOffsets[bodyStartIndex + i] ?? 0);
         if (block.type === "table") {
           assets.push({
             id,
@@ -367,6 +377,7 @@ function blocksToXArticleBody(
       case "tweet": {
         const id = assets.length + 1;
         const placeholder = `XTWEET_${id}`;
+        assetOffsets.push(blockOffsets[bodyStartIndex + i] ?? 0);
         assets.push({
           id,
           placeholder,
@@ -390,6 +401,7 @@ function blocksToXArticleBody(
     text: textParts.filter(Boolean).join("\n\n"),
     html: htmlParts.join(""),
     assets,
+    assetOffsets,
   };
 }
 
@@ -499,6 +511,91 @@ function isParagraphLine(line: string): boolean {
     !blockquotePattern.test(line) &&
     !tweetUrlPattern.test(line.trim())
   );
+}
+
+export function computeBlockOffsets(rawMarkdown: string): number[] {
+  const lines = rawMarkdown.replace(/\r\n/g, "\n").split("\n");
+  const offsets: number[] = [];
+  let index = 0;
+
+  const lineOffsets: number[] = [];
+  let cumulative = 0;
+  for (const line of lines) {
+    lineOffsets.push(cumulative);
+    cumulative += line.length + 1;
+  }
+
+  while (index < lines.length) {
+    const line = lines[index];
+
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    const blockStart = lineOffsets[index];
+
+    const fence = line.match(fencePattern);
+    if (fence) {
+      offsets.push(blockStart);
+      index += 1;
+      while (index < lines.length && !lines[index].startsWith("```")) {
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      continue;
+    }
+
+    if (headingPattern.test(line)) {
+      offsets.push(blockStart);
+      index += 1;
+      continue;
+    }
+
+    if (blockquotePattern.test(line)) {
+      offsets.push(blockStart);
+      while (index < lines.length && blockquotePattern.test(lines[index])) {
+        index += 1;
+      }
+      continue;
+    }
+
+    if (unorderedListPattern.test(line) || orderedListPattern.test(line)) {
+      offsets.push(blockStart);
+      const ordered = orderedListPattern.test(line);
+      while (index < lines.length) {
+        const current = lines[index];
+        const match = ordered
+          ? current.match(orderedListPattern)
+          : current.match(unorderedListPattern);
+        if (!match) break;
+        index += 1;
+      }
+      continue;
+    }
+
+    if (isTableSeparator(lines[index + 1]?.trim() ?? "") && isTableRow(line.trim())) {
+      offsets.push(blockStart);
+      index += 2;
+      while (index < lines.length && isTableRow(lines[index].trim()) && lines[index].trim()) {
+        index += 1;
+      }
+      continue;
+    }
+
+    if (tweetUrlPattern.test(line.trim())) {
+      offsets.push(blockStart);
+      index += 1;
+      continue;
+    }
+
+    offsets.push(blockStart);
+    while (index < lines.length && isParagraphLine(lines[index])) {
+      index += 1;
+    }
+  }
+
+  return offsets;
 }
 
 function parseTableAt(

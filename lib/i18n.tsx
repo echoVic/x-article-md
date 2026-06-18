@@ -200,6 +200,37 @@ const en = {
   publishDone: "Ready to publish!",
   publishReset: "Reset",
   publishNoAssets: "No assets needed",
+
+  // Template picker
+  templatePickerTitle: "Templates",
+  templatePickerDesc: "Start with a structure",
+  templateConfirmReplace: "Replace current content with this template?",
+  templateUse: "Use Template",
+  templateTechTutorial: "Technical Tutorial",
+  templateTechTutorialDesc: "Step-by-step guide with code examples",
+  templateBuildInPublic: "Build in Public",
+  templateBuildInPublicDesc: "Share what you're building and why",
+  templateArchitecture: "Architecture Analysis",
+  templateArchitectureDesc: "Deep-dive into system design",
+  templateChangelog: "Changelog",
+  templateChangelogDesc: "Release notes with migration guide",
+  templateThreadExpand: "Thread → Article",
+  templateThreadExpandDesc: "Expand a thread into long-form",
+  templateToolIntro: "Tool Introduction",
+  templateToolIntroDesc: "Present a tool with quick start",
+
+  // Asset orchestrator
+  orchestratorTitle: "Assets & Media",
+  orchestratorDownloadZip: "Download All (ZIP)",
+  orchestratorReRenderAll: "Re-render All",
+  orchestratorReRender: "Re-render",
+  orchestratorJump: "Jump",
+  orchestratorCover: "Cover Image",
+  orchestratorContentAssets: "Content Assets",
+  orchestratorEmpty: "No assets in this document.",
+  orchestratorRendering: "Rendering…",
+  orchestratorReady: "Ready",
+  orchestratorError: "Error",
 } as const;
 
 // ─── Chinese ───────────────────────────────────────────────────────────────────
@@ -387,6 +418,37 @@ const zh: Translations = {
   publishDone: "准备发布！",
   publishReset: "重置",
   publishNoAssets: "无需资源",
+
+  // Template picker
+  templatePickerTitle: "模板",
+  templatePickerDesc: "从模板开始写作",
+  templateConfirmReplace: "用此模板替换当前内容？",
+  templateUse: "使用模板",
+  templateTechTutorial: "技术教程",
+  templateTechTutorialDesc: "带代码示例的分步指南",
+  templateBuildInPublic: "产品构建记录",
+  templateBuildInPublicDesc: "分享你在构建什么以及为什么",
+  templateArchitecture: "架构分析",
+  templateArchitectureDesc: "深入系统设计",
+  templateChangelog: "发布说明",
+  templateChangelogDesc: "带迁移指南的版本说明",
+  templateThreadExpand: "Thread 扩写",
+  templateThreadExpandDesc: "将推文流扩写为长文",
+  templateToolIntro: "工具介绍",
+  templateToolIntroDesc: "介绍工具及快速上手",
+
+  // Asset orchestrator
+  orchestratorTitle: "资源与媒体",
+  orchestratorDownloadZip: "全部下载 (ZIP)",
+  orchestratorReRenderAll: "全部重新渲染",
+  orchestratorReRender: "重新渲染",
+  orchestratorJump: "跳转",
+  orchestratorCover: "封面图片",
+  orchestratorContentAssets: "内容资源",
+  orchestratorEmpty: "当前文档没有资源。",
+  orchestratorRendering: "渲染中…",
+  orchestratorReady: "就绪",
+  orchestratorError: "错误",
 };
 
 // ─── Context ───────────────────────────────────────────────────────────────────
