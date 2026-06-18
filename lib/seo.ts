@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://markdown2x.com";
 export const githubRepoUrl = "https://github.com/echoVic/x-article-md";
 
-export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread" | "markdownToXArticles" | "pasteCodeIntoXArticles" | "mermaidInXArticles";
+export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread" | "blog";
 
 type PageSeo = {
   title: string;
@@ -98,34 +98,14 @@ const pageSeo: Record<SeoPage, PageSeo> = {
       canonical: "/zh/thread",
     },
   },
-  markdownToXArticles: {
-    title: "How to Convert Markdown to X Articles — Step-by-Step Guide | MD2X",
+  blog: {
+    title: "Blog — Articles & Updates | MD2X",
     description:
-      "Learn how to convert Markdown to X Articles rich text. Step-by-step guide: write Markdown, copy formatted text, paste into X Articles with all formatting preserved. Free online tool.",
-    path: "/markdown-to-x-articles",
+      "Tutorials, tips, and changelog for MD2X. Learn how to convert Markdown to X Articles, add code blocks, diagrams, and more.",
+    path: "/blog",
     locale: "en",
     alternates: {
-      canonical: "/markdown-to-x-articles",
-    },
-  },
-  pasteCodeIntoXArticles: {
-    title: "Paste Code Blocks into X Articles with Syntax Highlighting | MD2X",
-    description:
-      "X Articles doesn't support code blocks. MD2X renders your code as syntax-highlighted PNG images with 9 themes. Copy and paste beautiful code snippets into X Articles.",
-    path: "/paste-code-into-x-articles",
-    locale: "en",
-    alternates: {
-      canonical: "/paste-code-into-x-articles",
-    },
-  },
-  mermaidInXArticles: {
-    title: "Add Mermaid Diagrams to X Articles — Flowcharts & Sequence Diagrams | MD2X",
-    description:
-      "Create flowcharts, sequence diagrams, and more with Mermaid syntax, then paste them as PNG images into X Articles. Free online tool, no sign-up required.",
-    path: "/mermaid-in-x-articles",
-    locale: "en",
-    alternates: {
-      canonical: "/mermaid-in-x-articles",
+      canonical: "/blog",
     },
   },
 };
@@ -224,5 +204,23 @@ export function buildHowToJsonLd(data: {
       text: s.text,
     })),
     tool: { "@type": "HowToTool", name: "MD2X" },
+  };
+}
+
+export function buildArticleJsonLd(post: {
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    url: `${siteUrl}/blog/${post.slug}`,
+    author: { "@type": "Organization", name: "MD2X" },
+    publisher: { "@type": "Organization", name: "MD2X", url: siteUrl },
   };
 }

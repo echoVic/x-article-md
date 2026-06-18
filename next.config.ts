@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
   },
+  turbopack: {},
   async redirects() {
     return [
       {
@@ -22,6 +23,21 @@ const nextConfig: NextConfig = {
           },
         ],
         destination: "https://markdown2x.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/markdown-to-x-articles",
+        destination: "/blog/markdown-to-x-articles",
+        permanent: true,
+      },
+      {
+        source: "/paste-code-into-x-articles",
+        destination: "/blog/paste-code-into-x-articles",
+        permanent: true,
+      },
+      {
+        source: "/mermaid-in-x-articles",
+        destination: "/blog/mermaid-in-x-articles",
         permanent: true,
       },
     ];

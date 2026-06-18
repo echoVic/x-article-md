@@ -1,0 +1,63 @@
+---
+title: "Paste Code Blocks into X Articles with Syntax Highlighting"
+description: "X Articles doesn't support code blocks. MD2X renders your code as syntax-highlighted PNG images with 9 themes. Copy and paste beautiful code snippets into X Articles."
+date: "2026-06-02"
+tags: ["code", "syntax-highlighting", "x-articles"]
+---
+
+X Articles can't display formatted code. MD2X renders your code blocks as beautiful, syntax-highlighted images you can paste directly into your article.
+
+## The problem: X Articles strips code formatting
+
+If you're a developer sharing technical content on X Articles, you've hit this wall:
+
+- X Articles has no code block support — pasted code loses all indentation and highlighting
+- Monospace font is not available in the X Articles editor
+- Screenshot workarounds produce inconsistent sizes and low-quality images
+- Carbon.sh and similar tools require switching between apps and manual resizing
+- No way to keep code images in sync with your article when you edit
+
+## The solution: code blocks as themed PNG images
+
+MD2X automatically detects code blocks in your Markdown and renders them as high-quality PNG images with proper syntax highlighting:
+
+- **9 professional themes:** Dracula, Nord, GitHub Dark, GitHub Light, One Dark Pro, Tokyo Night, Night Owl, Solarized Dark, One Monokai
+- **Accurate syntax highlighting** for 30+ languages via Shiki
+- **Consistent sizing and padding** — no manual cropping needed
+- **Live updates** — images regenerate automatically when you edit the code
+- **One-click copy** from the Assets panel directly into X Articles
+- **Optimized font size** for readability at any screen size
+
+## How to add code to X Articles
+
+### 1. Write code in Markdown fences
+
+Use triple backticks with a language identifier (`` ```typescript ``, `` ```python ``, etc.). Write your code as you normally would in any Markdown editor.
+
+### 2. Select a code theme
+
+Switch to "Code Image" mode in the toolbar and choose from 9 syntax themes. The preview panel shows exactly how your code image will look.
+
+### 3. Copy and paste the code image
+
+Open the Assets panel to see all rendered code images. Click "Copy Image" on any code block, then paste it into X Articles as an inline image.
+
+## Before and after
+
+**Markdown code fence:**
+
+```typescript
+type SyncEngine = {
+  id: string;
+  merge: (op: Op) => void;
+  snapshot: () => State;
+}
+```
+
+**Result:** A beautifully styled PNG with syntax highlighting, proper indentation, and your chosen color theme — ready to paste into X Articles.
+
+## Share code on X Articles today
+
+Free, no sign-up. 9 themes, 30+ languages. Renders in your browser — your code never leaves your device.
+
+[Open Editor →](/editor)

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
+import { getBlogPosts } from "@/lib/blog";
 
 const lastModified = new Date("2026-06-01");
 const homeAlternates = {
@@ -25,6 +26,15 @@ const threadAlternates = {
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const posts = getBlogPosts();
+
+  const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: absoluteUrl(`/blog/${post.slug}`),
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
   return [
     {
       url: absoluteUrl("/"),
@@ -69,22 +79,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: threadAlternates,
     },
     {
-      url: absoluteUrl("/markdown-to-x-articles"),
-      lastModified,
-      changeFrequency: "monthly",
+      url: absoluteUrl("/blog"),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
       priority: 0.8,
     },
-    {
-      url: absoluteUrl("/paste-code-into-x-articles"),
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: absoluteUrl("/mermaid-in-x-articles"),
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
+    ...blogEntries,
   ];
 }
