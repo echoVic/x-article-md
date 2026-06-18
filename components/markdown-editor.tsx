@@ -3,27 +3,27 @@
 import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
 import { trackEvent } from "@/lib/analytics";
 import {
-  applyMarkdownAction,
-  type EditorUpdate,
-  type MarkdownAction
+    applyMarkdownAction,
+    type EditorUpdate,
+    type MarkdownAction
 } from "@/lib/editor-actions";
 import { useI18n } from "@/lib/i18n";
 import {
-  Bold,
-  Code,
-  FileCode2,
-  Heading2,
-  Languages,
-  Link as LinkIcon,
-  List,
-  ListOrdered,
-  Loader2,
-  RotateCcw,
-  Sparkles,
-  Table,
-  Workflow
+    Bold,
+    Code,
+    FileCode2,
+    Heading2,
+    Languages,
+    Link as LinkIcon,
+    List,
+    ListOrdered,
+    Loader2,
+    RotateCcw,
+    Sparkles,
+    Table,
+    Workflow
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { Dialog } from "./ui/dialog";
 import { DropdownMenu } from "./ui/dropdown-menu";
 import { Tooltip } from "./ui/tooltip";
@@ -33,6 +33,10 @@ type MarkdownEditorProps = {
   onChange: (value: string) => void;
   onReset: () => void;
   draftReady: boolean;
+};
+
+export type MarkdownEditorHandle = {
+  jumpToOffset: (offset: number) => void;
 };
 
 type ToolbarItem = {
@@ -55,12 +59,13 @@ const toolbarItems: ToolbarItem[] = [
   { action: "table", labelKey: "toolTable", icon: "grid", group: 3 },
 ];
 
-export function MarkdownEditor({
+export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
+  function MarkdownEditor({
   value,
   onChange,
   onReset,
   draftReady,
-}: MarkdownEditorProps) {
+}, ref) {
   const { t } = useI18n();
   const editorRef = useRef<CodeMirrorEditorHandle>(null);
   const stats = useMemo(() => getStats(value), [value]);
@@ -72,6 +77,12 @@ export function MarkdownEditor({
     start: number;
     end: number;
   } | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    jumpToOffset: (offset: number) => {
+      editorRef.current?.jumpToOffset(offset);
+    },
+  }));
 
   function applyAction(action: MarkdownAction) {
     const editor = editorRef.current;
@@ -407,7 +418,7 @@ export function MarkdownEditor({
       </div>
     </div>
   );
-}
+});
 
 function getStats(value: string) {
   const words = value.trim() ? value.trim().split(/\s+/).length : 0;

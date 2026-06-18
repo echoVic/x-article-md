@@ -5,14 +5,17 @@ import { ArticleAssets } from "@/components/article-assets";
 import { ArticlePreview } from "@/components/article-preview";
 import { CoverImagePanel } from "@/components/cover-image-panel";
 import { EditorToolbar } from "@/components/editor-toolbar";
-import { MarkdownEditor } from "@/components/markdown-editor";
+import { MarkdownEditor, type MarkdownEditorHandle } from "@/components/markdown-editor";
+import { PreflightPanel } from "@/components/preflight-panel";
+import { initialPublishState, PublishPanel, publishReducer } from "@/components/publish-panel";
 import { trackEvent } from "@/lib/analytics";
 import { resolveTheme } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
+import { runPreflight, type PreflightReport } from "@/lib/preflight";
 import { sampleMarkdown } from "@/lib/sample";
 import { FileText } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { Sheet } from "./ui/sheet";
 
 const draftStorageKey = "x-article-md:draft";
@@ -25,6 +28,11 @@ export default function EditorPage() {
   const [codeThemeId, setCodeThemeId] = useState("auto");
   const [coverOpen, setCoverOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
+  const [preflightOpen, setPreflightOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [preflightReport, setPreflightReport] = useState<PreflightReport | null>(null);
+  const [showPreflightHint, setShowPreflightHint] = useState(false);
+  const [publishState, dispatchPublish] = useReducer(publishReducer, initialPublishState);
   const [copyState, setCopyState] = useState<
     "idle" | "title" | "body" | "manual"
   >("idle");
@@ -39,23 +47,22 @@ export default function EditorPage() {
   const manualRichCopyRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const markdownEditorRef = useRef<MarkdownEditorHandle>(null);
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
   const clipboard = useMemo(
     () => toXArticleClipboard(markdown, { codeMode }),
     [codeMode, markdown],
   );
 
-  const [isDark, setIsDark] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-      : false,
+  const isDark = useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+    () => false,
   );
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
 
   const resolvedCodeTheme = useMemo(
     () => resolveTheme(codeThemeId, isDark),
@@ -145,6 +152,7 @@ export default function EditorPage() {
 
     if (copyPlainText(title)) {
       markCopied("title");
+      dispatchPublish({ type: "TITLE_COPIED" });
       return;
     }
 
@@ -155,10 +163,16 @@ export default function EditorPage() {
   async function copyBody() {
     trackEvent("copy_body");
 
+    if (!preflightReport) {
+      setShowPreflightHint(true);
+      window.setTimeout(() => setShowPreflightHint(false), 5000);
+    }
+
     const htmlToWrite = clipboard.bodyHtml;
 
     if (await copyRichText(htmlToWrite, clipboard.bodyText)) {
       markCopied("body");
+      dispatchPublish({ type: "BODY_COPIED" });
       return;
     }
 
@@ -168,6 +182,24 @@ export default function EditorPage() {
       html: htmlToWrite,
     });
     setCopyState("manual");
+  }
+
+  function handlePreflight() {
+    const report = runPreflight(blocks, markdown, codeMode);
+    setPreflightReport(report);
+    setPreflightOpen(true);
+    dispatchPublish({ type: "PREFLIGHT_DONE" });
+    trackEvent("preflight_run");
+  }
+
+  function handleJumpToSource(offset: number) {
+    markdownEditorRef.current?.jumpToOffset(offset);
+    setPreflightOpen(false);
+  }
+
+  function handlePublishOpen() {
+    dispatchPublish({ type: "RESET", assetCount: clipboard.assets.length });
+    setPublishOpen(true);
   }
 
   function markCopied(target: "title" | "body") {
@@ -250,9 +282,12 @@ export default function EditorPage() {
         onToggleCover={() => setCoverOpen(true)}
         onCopyTitle={copyTitle}
         onCopyBody={copyBody}
+        onPreflight={handlePreflight}
+        onPublish={handlePublishOpen}
         draftReady={draftReady}
         assetsCount={clipboard.assets.length}
         copyState={copyState}
+        preflightStatus={preflightReport?.status ?? null}
       />
 
       {/* ═══ Hidden file input for import ═══ */}
@@ -274,6 +309,7 @@ export default function EditorPage() {
         }}
       >
         <MarkdownEditor
+          ref={markdownEditorRef}
           value={markdown}
           onChange={setMarkdown}
           onReset={resetDraft}
@@ -332,6 +368,39 @@ export default function EditorPage() {
           <ArticleAssets assets={clipboard.assets} codeTheme={resolvedCodeTheme} inline />
         )}
       </Sheet>
+
+      {/* ═══ Preflight Drawer ═══ */}
+      <Sheet open={preflightOpen} onOpenChange={setPreflightOpen} title={t.preflightTitle}>
+        <PreflightPanel report={preflightReport} onJump={handleJumpToSource} />
+      </Sheet>
+
+      {/* ═══ Publish Drawer ═══ */}
+      <Sheet open={publishOpen} onOpenChange={setPublishOpen} title={t.publishTitle}>
+        <PublishPanel
+          state={publishState}
+          assets={clipboard.assets}
+          onPreflight={handlePreflight}
+          onCopyTitle={copyTitle}
+          onCopyBody={copyBody}
+          onAssetCopied={(index: number) => dispatchPublish({ type: "ASSET_COPIED", assetIndex: index })}
+          onVerifyDone={() => dispatchPublish({ type: "VERIFY_DONE" })}
+          onReset={() => dispatchPublish({ type: "RESET", assetCount: clipboard.assets.length })}
+        />
+      </Sheet>
+
+      {/* ═══ Preflight hint toast ═══ */}
+      {showPreflightHint && (
+        <div className="fixed top-14 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)] animate-in fade-in slide-in-from-top-2">
+          <span className="text-[12px] text-[var(--fg)]">{t.preflightHint}</span>
+          <button
+            type="button"
+            onClick={() => { setShowPreflightHint(false); handlePreflight(); }}
+            className="px-2 py-0.5 text-[11px] font-medium text-[var(--accent)] hover:bg-[var(--accent-soft)] rounded-[var(--radius-xs)] transition-colors"
+          >
+            {t.preflightHintAction}
+          </button>
+        </div>
+      )}
 
       {/* ═══ Manual copy fallback ═══ */}
       {manualCopy ? (

@@ -12,7 +12,8 @@ type EventName =
   | "cover_download"
   | "cover_copy"
   | "export_markdown"
-  | "import_markdown";
+  | "import_markdown"
+  | "preflight_run";
 
 export function trackEvent(name: EventName, props?: Record<string, string | number | boolean>) {
   track(name, props);

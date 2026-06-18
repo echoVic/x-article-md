@@ -20,6 +20,7 @@ export type CodeMirrorEditorHandle = {
   focus: () => void;
   getValue: () => string;
   setValue: (value: string) => void;
+  jumpToOffset: (offset: number) => void;
 };
 
 export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEditorProps>(
@@ -69,6 +70,16 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
             insert: newValue,
           },
         });
+      },
+      jumpToOffset: (offset: number) => {
+        const view = viewRef.current;
+        if (!view) return;
+        const pos = Math.min(offset, view.state.doc.length);
+        view.dispatch({
+          selection: { anchor: pos },
+          effects: EditorView.scrollIntoView(pos, { y: "center" }),
+        });
+        view.focus();
       },
     }));
 

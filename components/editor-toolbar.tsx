@@ -8,6 +8,8 @@ import {
   Download,
   FileText,
   Image,
+  ListChecks,
+  ShieldCheck,
   Upload,
 } from "lucide-react";
 import { Select } from "./ui/select";
@@ -24,9 +26,12 @@ export type EditorToolbarProps = {
   onToggleCover: () => void;
   onCopyTitle: () => void;
   onCopyBody: () => void;
+  onPreflight: () => void;
+  onPublish: () => void;
   draftReady: boolean;
   assetsCount: number;
   copyState: "idle" | "title" | "body" | "manual";
+  preflightStatus: "ok" | "warning" | "blocked" | null;
 };
 
 export function EditorToolbar({
@@ -40,9 +45,12 @@ export function EditorToolbar({
   onToggleCover,
   onCopyTitle,
   onCopyBody,
+  onPreflight,
+  onPublish,
   draftReady,
   assetsCount,
   copyState,
+  preflightStatus,
 }: EditorToolbarProps) {
   const { t } = useI18n();
 
@@ -124,8 +132,34 @@ export function EditorToolbar({
         </span>
       </div>
 
-      {/* Right: copy actions */}
+      {/* Right: preflight + publish + copy actions */}
       <div className="flex items-center gap-[6px] flex-shrink-0">
+        <button
+          type="button"
+          onClick={onPreflight}
+          className="inline-flex items-center gap-[4px] px-2.5 py-[4px] rounded-[var(--radius-sm)] text-[11px] font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
+        >
+          <ShieldCheck size={12} strokeWidth={1.8} aria-hidden="true" />
+          {t.preflightRun}
+          {preflightStatus && (
+            <span className={`w-[5px] h-[5px] rounded-full ${
+              preflightStatus === "ok" ? "bg-[var(--success)]" :
+              preflightStatus === "warning" ? "bg-[var(--warning)]" :
+              "bg-[var(--danger)]"
+            }`} />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={onPublish}
+          className="inline-flex items-center gap-[4px] px-2.5 py-[4px] rounded-[var(--radius-sm)] text-[11px] font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
+        >
+          <ListChecks size={12} strokeWidth={1.8} aria-hidden="true" />
+          {t.publishTitle}
+        </button>
+
+        <div className="w-px h-[14px] bg-[var(--border)]" />
+
         <button
           type="button"
           onClick={onCopyTitle}

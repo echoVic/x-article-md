@@ -173,6 +173,33 @@ const en = {
   threadEmpty: "Your thread will appear here...",
   threadTweet: "tweet",
   threadTweets: "tweets",
+
+  // Preflight panel
+  preflightTitle: "Preflight Check",
+  preflightRun: "Check",
+  preflightReady: "Ready to publish",
+  preflightAssets: "Will become assets",
+  preflightWarnings: "Needs attention",
+  preflightUnsupported: "Unsupported",
+  preflightOk: "All clear",
+  preflightHasWarnings: "Has warnings",
+  preflightHasErrors: "Has issues",
+  preflightJump: "Jump",
+  preflightHint: "Run preflight check before copying?",
+  preflightHintAction: "Check Now",
+  preflightEmpty: "Click Check to analyze your article before publishing.",
+
+  // Publish panel
+  publishTitle: "Publish",
+  publishStepPreflight: "Run preflight",
+  publishStepTitle: "Copy title",
+  publishStepBody: "Copy body",
+  publishStepAssets: "Insert assets",
+  publishStepVerify: "Final verification",
+  publishVerifyLabel: "Confirmed image count and order",
+  publishDone: "Ready to publish!",
+  publishReset: "Reset",
+  publishNoAssets: "No assets needed",
 } as const;
 
 // ─── Chinese ───────────────────────────────────────────────────────────────────
@@ -333,6 +360,33 @@ const zh: Translations = {
   threadEmpty: "推文流将在这里显示...",
   threadTweet: "条推文",
   threadTweets: "条推文",
+
+  // Preflight panel
+  preflightTitle: "发布预检",
+  preflightRun: "检查",
+  preflightReady: "可直接发布",
+  preflightAssets: "将转为资源",
+  preflightWarnings: "需要关注",
+  preflightUnsupported: "不支持",
+  preflightOk: "一切就绪",
+  preflightHasWarnings: "有警告",
+  preflightHasErrors: "存在问题",
+  preflightJump: "跳转",
+  preflightHint: "建议先运行发布预检",
+  preflightHintAction: "立即检查",
+  preflightEmpty: "点击「检查」分析文章发布兼容性。",
+
+  // Publish panel
+  publishTitle: "发布",
+  publishStepPreflight: "运行预检",
+  publishStepTitle: "复制标题",
+  publishStepBody: "复制正文",
+  publishStepAssets: "插入资源",
+  publishStepVerify: "最终验证",
+  publishVerifyLabel: "已确认图片数量和顺序",
+  publishDone: "准备发布！",
+  publishReset: "重置",
+  publishNoAssets: "无需资源",
 };
 
 // ─── Context ───────────────────────────────────────────────────────────────────
