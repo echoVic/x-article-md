@@ -81,6 +81,11 @@ input {
   background: var(--accent-soft);
 }
 
+@keyframes ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+  50% { box-shadow: 0 0 0 4px var(--accent-soft); }
+}
+
 /* ═══ Landing Page ═══ */
 .landing {
   overflow: auto;

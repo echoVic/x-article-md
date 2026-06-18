@@ -50,6 +50,7 @@ export default function EditorPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const markdownEditorRef = useRef<MarkdownEditorHandle>(null);
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
+  const hasCodeBlocks = useMemo(() => blocks.some(b => b.type === "code" || b.type === "mermaid"), [blocks]);
   const clipboard = useMemo(
     () => toXArticleClipboard(markdown, { codeMode }),
     [codeMode, markdown],
@@ -299,6 +300,8 @@ export default function EditorPage() {
         assetsCount={clipboard.assets.length}
         copyState={copyState}
         preflightStatus={preflightReport?.status ?? null}
+        hasCodeBlocks={hasCodeBlocks}
+        showPreflightHint={showPreflightHint}
       />
 
       {/* ═══ Hidden file input for import ═══ */}

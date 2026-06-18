@@ -201,6 +201,10 @@ const en = {
   publishReset: "Reset",
   publishNoAssets: "No assets needed",
 
+  // Toolbar UX
+  nudgePublish: "Paste into X →",
+  noCodeBlocks: "No code blocks",
+
   // Template picker
   templatePickerTitle: "Templates",
   templatePickerDesc: "Start with a structure",
@@ -418,6 +422,10 @@ const zh: Translations = {
   publishDone: "准备发布！",
   publishReset: "重置",
   publishNoAssets: "无需资源",
+
+  // Toolbar UX
+  nudgePublish: "粘贴到 X →",
+  noCodeBlocks: "无代码块",
 
   // Template picker
   templatePickerTitle: "模板",

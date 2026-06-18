@@ -10,12 +10,13 @@ type SelectProps = {
   onValueChange: (value: string) => void;
   options: SelectOption[];
   placeholder?: string;
+  disabled?: boolean;
 };
 
-export function Select({ value, onValueChange, options, placeholder }: SelectProps) {
+export function Select({ value, onValueChange, options, placeholder, disabled }: SelectProps) {
   return (
-    <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
-      <SelectPrimitive.Trigger className="inline-flex items-center gap-1 h-[26px] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-medium text-[var(--fg)] outline-none focus:border-[var(--accent)] data-[placeholder]:text-[var(--muted)]">
+    <SelectPrimitive.Root value={value} onValueChange={onValueChange} disabled={disabled}>
+      <SelectPrimitive.Trigger className={`inline-flex items-center gap-1 h-[26px] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2 text-[11px] font-medium outline-none focus:border-[var(--accent)] data-[placeholder]:text-[var(--muted)] ${disabled ? "opacity-40 cursor-not-allowed text-[var(--muted)]" : "text-[var(--fg)]"}`}>
         <SelectPrimitive.Value placeholder={placeholder} />
         <SelectPrimitive.Icon>
           <ChevronDown size={10} strokeWidth={2} aria-hidden="true" />
