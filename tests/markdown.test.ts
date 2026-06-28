@@ -360,9 +360,11 @@ const ship = true;
       },
     );
 
-    expect(clipboard.bodyText).toBe("XIMGPH_1");
+    expect(clipboard.bodyText).toBe(
+      "\n📷 [Code image 1 — paste from Assets panel]\n",
+    );
     expect(clipboard.bodyHtml).toContain(
-      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
+      "<p>📷 <em>[Code image 1 — paste from Assets panel]</em></p>",
     );
     expect(clipboard.assets).toEqual([
       {
@@ -386,10 +388,10 @@ graph TD
 `);
 
     expect(clipboard.bodyText).toBe(
-      ["Intro paragraph.", "", "XIMGPH_1"].join("\n"),
+      "Intro paragraph.\n\n\n📷 [Mermaid image 1 — paste from Assets panel]\n",
     );
     expect(clipboard.bodyHtml).toContain(
-      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
+      "<p>📷 <em>[Mermaid image 1 — paste from Assets panel]</em></p>",
     );
     expect(clipboard.bodyHtml).not.toContain("graph TD");
     expect(clipboard.assets).toEqual([
@@ -414,10 +416,10 @@ https://twitter.com/jack/status/20
 `);
 
     expect(clipboard.bodyText).toBe(
-      ["XIMGPH_1", "", "https://twitter.com/jack/status/20"].join("\n"),
+      "\n📷 [Table image 1 — paste from Assets panel]\n\n\nhttps://twitter.com/jack/status/20",
     );
     expect(clipboard.bodyHtml).toContain(
-      '<p><span data-x-asset-placeholder="XIMGPH_1">XIMGPH_1</span></p>',
+      "<p>📷 <em>[Table image 1 — paste from Assets panel]</em></p>",
     );
     expect(clipboard.bodyHtml).toContain(
       '<p><a href="https://twitter.com/jack/status/20">https://twitter.com/jack/status/20</a></p>',
