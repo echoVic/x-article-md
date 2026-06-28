@@ -60,42 +60,34 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
               </div>
               <div className="product-frame-content">
                 <div className="product-frame-editor">
-                  {`# Building a sync engine
+                  {`# Writing on X Articles
 
-Writing a sync engine from scratch
-sounds hard — and it is. But the
-core algorithm is surprisingly
-elegant.
+Long-form posts deserve real
+formatting. Draft in Markdown,
+publish without the busywork.
 
-## The CRDT approach
+## Paste with one click
 
 \`\`\`typescript
-type Op = {
-  id: string;
-  parent: string;
-  content: string;
-}
+const article = toXArticles(
+  markdown,
+);
 \`\`\``}
                 </div>
                 <div className="product-frame-preview">
-                  <h3>Building a sync engine</h3>
+                  <h3>Writing on X Articles</h3>
                   <p>
-                    Writing a sync engine from scratch sounds hard — and it is.
-                    But the core algorithm is surprisingly elegant.
+                    Long-form posts deserve real formatting. Draft in Markdown,
+                    publish without the busywork.
                   </p>
-                  <p className="preview-subtitle">The CRDT approach</p>
+                  <p className="preview-subtitle">Paste with one click</p>
                   <div className="preview-code">
-                    <span className="code-keyword">type</span> Op = &#123;
+                    <span className="code-keyword">const</span> article ={" "}
+                    <span className="code-type">toXArticles</span>(
                     <br />
-                    &nbsp;&nbsp;id: <span className="code-type">string</span>;
+                    &nbsp;&nbsp;markdown,
                     <br />
-                    &nbsp;&nbsp;parent:{" "}
-                    <span className="code-type">string</span>;
-                    <br />
-                    &nbsp;&nbsp;content:{" "}
-                    <span className="code-type">string</span>;
-                    <br />
-                    &#125;
+                    );
                   </div>
                 </div>
               </div>
