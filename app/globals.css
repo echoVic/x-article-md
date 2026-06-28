@@ -440,6 +440,31 @@ input {
   font-size: 14px;
 }
 
+/* Feature checklist */
+.feature-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.feature-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fg);
+}
+
+.feature-checklist li svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--accent);
+}
+
 /* CTA */
 .cta-section {
   text-align: center;
@@ -542,6 +567,22 @@ input {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 20px;
+}
+
+.pagefoot-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+
+.pagefoot-tools a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.pagefoot-tools a:hover {
+  color: var(--fg);
 }
 
 /* Responsive */

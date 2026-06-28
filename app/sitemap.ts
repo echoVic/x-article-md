@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
 import { getBlogPosts } from "@/lib/blog";
+import { getAllFeatureLandings } from "@/lib/feature-landing-copy";
 
 const lastModified = new Date("2026-06-01");
 const homeAlternates = {
@@ -34,6 +35,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.7,
   }));
+
+  const featureEntries: MetadataRoute.Sitemap = getAllFeatureLandings().flatMap(
+    (def) => {
+      const alternates = {
+        languages: {
+          en: absoluteUrl(`/${def.slug}`),
+          "zh-CN": absoluteUrl(`/zh/${def.slug}`),
+          "x-default": absoluteUrl(`/${def.slug}`),
+        },
+      };
+      return [
+        {
+          url: absoluteUrl(`/${def.slug}`),
+          lastModified,
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+          alternates,
+        },
+        {
+          url: absoluteUrl(`/zh/${def.slug}`),
+          lastModified,
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+          alternates,
+        },
+      ];
+    },
+  );
 
   return [
     {
@@ -84,6 +113,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    ...featureEntries,
     ...blogEntries,
   ];
 }

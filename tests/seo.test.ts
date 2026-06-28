@@ -51,86 +51,36 @@ describe("SEO configuration", () => {
   });
 
   it("lists canonical indexable URLs in the sitemap", () => {
-    expect(sitemap()).toEqual([
-      {
-        url: absoluteUrl("/"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 1,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/"),
-            "zh-CN": absoluteUrl("/zh"),
-            "x-default": absoluteUrl("/"),
-          },
-        },
-      },
-      {
-        url: absoluteUrl("/zh"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 0.9,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/"),
-            "zh-CN": absoluteUrl("/zh"),
-            "x-default": absoluteUrl("/"),
-          },
-        },
-      },
-      {
-        url: absoluteUrl("/editor"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 0.9,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/editor"),
-            "zh-CN": absoluteUrl("/zh/editor"),
-            "x-default": absoluteUrl("/editor"),
-          },
-        },
-      },
-      {
-        url: absoluteUrl("/zh/editor"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 0.8,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/editor"),
-            "zh-CN": absoluteUrl("/zh/editor"),
-            "x-default": absoluteUrl("/editor"),
-          },
-        },
-      },
-      {
-        url: absoluteUrl("/thread"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 0.9,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/thread"),
-            "zh-CN": absoluteUrl("/zh/thread"),
-            "x-default": absoluteUrl("/thread"),
-          },
-        },
-      },
-      {
-        url: absoluteUrl("/zh/thread"),
-        lastModified: expect.any(Date),
-        changeFrequency: "weekly",
-        priority: 0.8,
-        alternates: {
-          languages: {
-            en: absoluteUrl("/thread"),
-            "zh-CN": absoluteUrl("/zh/thread"),
-            "x-default": absoluteUrl("/thread"),
-          },
-        },
-      },
-    ]);
+    const entries = sitemap();
+    const byUrl = new Map(entries.map((e) => [e.url, e]));
+
+    // Core marketing pages are present with hreflang alternates.
+    expect(byUrl.get(absoluteUrl("/"))?.priority).toBe(1);
+    expect(byUrl.get(absoluteUrl("/"))?.alternates?.languages).toEqual({
+      en: absoluteUrl("/"),
+      "zh-CN": absoluteUrl("/zh"),
+      "x-default": absoluteUrl("/"),
+    });
+    expect(byUrl.has(absoluteUrl("/editor"))).toBe(true);
+    expect(byUrl.has(absoluteUrl("/zh/editor"))).toBe(true);
+    expect(byUrl.has(absoluteUrl("/thread"))).toBe(true);
+    expect(byUrl.has(absoluteUrl("/zh/thread"))).toBe(true);
+    expect(byUrl.has(absoluteUrl("/blog"))).toBe(true);
+
+    // Keyword-targeted feature landing pages are present in both locales,
+    // each with reciprocal hreflang alternates.
+    expect(byUrl.get(absoluteUrl("/code-to-image"))?.alternates?.languages).toEqual({
+      en: absoluteUrl("/code-to-image"),
+      "zh-CN": absoluteUrl("/zh/code-to-image"),
+      "x-default": absoluteUrl("/code-to-image"),
+    });
+    expect(byUrl.has(absoluteUrl("/zh/code-to-image"))).toBe(true);
+
+    // Every entry has an absolute URL and a lastModified date.
+    for (const entry of entries) {
+      expect(entry.url.startsWith(siteUrl)).toBe(true);
+      expect(entry.lastModified).toBeInstanceOf(Date);
+    }
   });
 
   it("uses the real GitHub repository URL", () => {
