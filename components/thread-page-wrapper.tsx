@@ -1,7 +1,7 @@
 import ThreadPage from "@/components/thread-page";
 import { EditorFaq } from "@/components/editor-faq";
 import { threadCopy, type ThreadLocale } from "@/lib/thread-copy";
-import { buildFaqJsonLd } from "@/lib/seo";
+import { buildFaqJsonLd, buildHowToJsonLd } from "@/lib/seo";
 
 export function ThreadPageWrapper({ locale }: { locale: ThreadLocale }) {
   const copy = threadCopy[locale];
@@ -14,6 +14,24 @@ export function ThreadPageWrapper({ locale }: { locale: ThreadLocale }) {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildFaqJsonLd(copy.faqs)),
+        }}
+      />
+
+      {/* HowTo JSON-LD */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildHowToJsonLd({
+              name: copy.h1,
+              description: copy.subtitle,
+              steps: copy.steps.map((step) => ({
+                name: step.title,
+                text: step.desc,
+              })),
+            }),
+          ),
         }}
       />
 

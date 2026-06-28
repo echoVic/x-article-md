@@ -13,7 +13,7 @@ export const threadCopy: Record<ThreadLocale, ThreadCopy> = {
   en: {
     h1: "Free Twitter Thread Generator from Markdown",
     subtitle:
-      "Write in Markdown, auto-split into tweet-sized chunks with numbering. Copy each tweet individually or the entire thread.",
+      "The free tweet thread maker for writers: write in Markdown, auto-split into tweet-sized chunks with numbering. Copy each tweet individually or the entire thread.",
     howToTitle: "How to Use",
     steps: [
       {
@@ -66,7 +66,7 @@ export const threadCopy: Record<ThreadLocale, ThreadCopy> = {
   zh: {
     h1: "免费 Markdown 转 Twitter Thread 生成器",
     subtitle:
-      "用 Markdown 编写，自动拆分为推文大小的段落并添加编号。支持逐条复制或一键复制整个 Thread。",
+      "面向写作者的免费推文流生成器：用 Markdown 编写，自动拆分为推文大小的段落并添加编号。支持逐条复制或一键复制整个 Thread。",
     howToTitle: "使用方法",
     steps: [
       {
