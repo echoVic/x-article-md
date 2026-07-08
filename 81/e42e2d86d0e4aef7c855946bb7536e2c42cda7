@@ -1,0 +1,27 @@
+.gitignore
+  s_75176a2f9583ca::t_d434001d47165e 6-7
+scripts/gsc-utils.mjs
+  s_75176a2f9583ca::t_1c8c79004bd36d 1-84
+scripts/gsc.mjs
+  s_75176a2f9583ca::t_100f5b2f608154 1-218
+tests/gsc-utils.test.mjs
+  s_75176a2f9583ca::t_f1a74dbfb5a921 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "81e42e2d86d0e4aef7c855946bb7536e2c42cda7",
+  "prompts": {},
+  "sessions": {
+    "s_75176a2f9583ca": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f4002-86ef-7ab0-9620-4d9340d1f729",
+        "model": "unknown"
+      },
+      "human_author": "echoVic <137844255@qq.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
