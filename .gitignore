@@ -3,6 +3,8 @@ node_modules
 out
 coverage
 .env*.local
+credentials.json
+.gsc-token.json
 pnpm-debug.log*
 
 # Serwist generated service worker

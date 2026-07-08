@@ -20,9 +20,9 @@ export type EditorCopy = {
 
 export const editorCopy: Record<EditorLocale, EditorCopy> = {
   en: {
-    h1: "Free Markdown to X Articles Converter",
+    h1: "Markdown to X Articles Converter",
     subtitle:
-      "Write Markdown, convert to beautifully formatted X Articles rich text — code blocks, tables, and Mermaid diagrams included.",
+      "Write Markdown, convert it to clipboard-ready rich text for X Articles, and keep code blocks, tables, and Mermaid diagrams readable.",
     howToTitle: "How to Use",
     steps: [
       {
@@ -57,7 +57,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
     ],
     ioTitle: "Input → Output",
     ioInput: "Standard Markdown (.md) — paste or type directly in the editor",
-    ioOutput: "Clipboard-ready rich text for X Articles editor, with code blocks and Mermaid diagrams as inline PNG images",
+    ioOutput: "Clipboard-ready rich text for the X Articles editor, with code blocks and Mermaid diagrams as inline PNG images",
     whoTitle: "Who Is This For",
     whoItems: [
       "Developers sharing technical articles on X",

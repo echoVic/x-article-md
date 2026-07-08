@@ -61,9 +61,9 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     },
   },
   editor: {
-    title: "Free Markdown to X Articles Converter - Online Editor | MD2X",
+    title: "Markdown to X Articles Converter - Free Online Editor | MD2X",
     description:
-      "Convert Markdown to X Articles rich text online. Code blocks render as images, tables and Mermaid diagrams copy in one click. Free, no sign-up, runs in browser.",
+      "Convert Markdown to clipboard-ready rich text for X Articles. Code blocks render as images, tables and Mermaid diagrams copy in one click. Free, no sign-up.",
     path: "/editor",
     locale: "en",
     alternates: editorAlternates,
@@ -80,9 +80,9 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     },
   },
   thread: {
-    title: "Free Twitter Thread Generator from Markdown | MD2X",
+    title: "Free X/Twitter Thread Generator from Markdown | MD2X",
     description:
-      "Turn Markdown into Twitter/X threads. Rule-based and AI-powered splitting into 280-character tweets with auto-numbering. Free, no sign-up, runs in your browser.",
+      "Use Markdown to split long posts into numbered X/Twitter threads. Create 280-character tweets, copy each tweet or copy the entire thread. Free, no sign-up.",
     path: "/thread",
     locale: "en",
     alternates: threadAlternates,
@@ -99,9 +99,9 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     },
   },
   blog: {
-    title: "Blog — Articles & Updates | MD2X",
+    title: "Markdown to X Articles Tutorials | MD2X Blog",
     description:
-      "Tutorials, tips, and changelog for MD2X. Learn how to convert Markdown to X Articles, add code blocks, diagrams, and more.",
+      "Tutorials for converting Markdown to X Articles, code screenshots, Mermaid diagrams, tables, and Twitter/X threads with MD2X.",
     path: "/blog",
     locale: "en",
     alternates: {

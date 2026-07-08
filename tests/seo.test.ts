@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   absoluteUrl,
   buildPageMetadata,
@@ -8,6 +9,9 @@ import {
 } from "@/lib/seo";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
+import { buildFeatureMetadata, getFeatureLanding } from "@/lib/feature-landing-copy";
+import { editorCopy } from "@/lib/editor-copy";
+import { threadCopy } from "@/lib/thread-copy";
 
 describe("SEO configuration", () => {
   it("builds canonical metadata with social previews for the landing page", () => {
@@ -35,9 +39,28 @@ describe("SEO configuration", () => {
   it("uses focused metadata for the editor page", () => {
     const metadata = buildPageMetadata("editor");
 
-    expect(metadata.title).toBe("Free Markdown to X Articles Converter - Online Editor | MD2X");
+    expect(metadata.title).toBe("Markdown to X Articles Converter - Free Online Editor | MD2X");
+    expect(metadata.description).toContain("clipboard-ready rich text");
     expect(metadata.alternates?.canonical).toBe("/editor");
     expect(metadata.openGraph?.url).toBe("/editor");
+  });
+
+  it("uses GSC-informed metadata for thread and blog pages", () => {
+    const thread = buildPageMetadata("thread");
+    const blog = buildPageMetadata("blog");
+
+    expect(thread.title).toBe("Free X/Twitter Thread Generator from Markdown | MD2X");
+    expect(thread.description).toContain("split long posts");
+    expect(thread.description).toContain("280-character tweets");
+    expect(blog.title).toBe("Markdown to X Articles Tutorials | MD2X Blog");
+  });
+
+  it("keeps indexable SEO copy aligned with target queries", () => {
+    expect(editorCopy.en.h1).toBe("Markdown to X Articles Converter");
+    expect(editorCopy.en.subtitle).toContain("clipboard-ready rich text");
+    expect(threadCopy.en.h1).toBe("Free X/Twitter Thread Generator from Markdown");
+    expect(threadCopy.en.subtitle).toContain("split long posts");
+    expect(threadCopy.en.faqs.some((faq) => faq.answer.includes("copy the entire thread"))).toBe(true);
   });
 
   it("exposes crawl directives and a sitemap URL", () => {
@@ -69,6 +92,12 @@ describe("SEO configuration", () => {
 
     // Keyword-targeted feature landing pages are present in both locales,
     // each with reciprocal hreflang alternates.
+    expect(byUrl.get(absoluteUrl("/markdown-to-x-articles"))?.alternates?.languages).toEqual({
+      en: absoluteUrl("/markdown-to-x-articles"),
+      "zh-CN": absoluteUrl("/zh/markdown-to-x-articles"),
+      "x-default": absoluteUrl("/markdown-to-x-articles"),
+    });
+    expect(byUrl.has(absoluteUrl("/zh/markdown-to-x-articles"))).toBe(true);
     expect(byUrl.get(absoluteUrl("/code-to-image"))?.alternates?.languages).toEqual({
       en: absoluteUrl("/code-to-image"),
       "zh-CN": absoluteUrl("/zh/code-to-image"),
@@ -81,6 +110,27 @@ describe("SEO configuration", () => {
       expect(entry.url.startsWith(siteUrl)).toBe(true);
       expect(entry.lastModified).toBeInstanceOf(Date);
     }
+  });
+
+  it("serves markdown-to-x-articles as a tool landing page instead of a redirect", () => {
+    const def = getFeatureLanding("markdown-to-x-articles");
+    const metadata = buildFeatureMetadata("markdown-to-x-articles", "en");
+    const nextConfig = readFileSync("next.config.ts", "utf8");
+
+    expect(def?.editorPath).toBe("/editor");
+    expect(def?.en.metaTitle).toContain("Markdown to X Articles Converter");
+    expect(metadata.alternates?.canonical).toBe("/markdown-to-x-articles");
+    expect(nextConfig).not.toContain('source: "/markdown-to-x-articles"');
+  });
+
+  it("keeps tutorial posts linked to the matching tool landing pages", () => {
+    const markdownTutorial = readFileSync("content/blog/markdown-to-x-articles.mdx", "utf8");
+    const codeTutorial = readFileSync("content/blog/code-to-image-converter.mdx", "utf8");
+    const mermaidTutorial = readFileSync("content/blog/mermaid-to-png.mdx", "utf8");
+
+    expect(markdownTutorial).toContain("](/markdown-to-x-articles)");
+    expect(codeTutorial).toContain("](/code-to-image)");
+    expect(mermaidTutorial).toContain("](/mermaid-to-png)");
   });
 
   it("uses the real GitHub repository URL", () => {

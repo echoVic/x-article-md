@@ -26,11 +26,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/markdown-to-x-articles",
-        destination: "/blog/markdown-to-x-articles",
-        permanent: true,
-      },
-      {
         source: "/paste-code-into-x-articles",
         destination: "/blog/paste-code-into-x-articles",
         permanent: true,

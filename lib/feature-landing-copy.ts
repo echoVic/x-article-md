@@ -42,6 +42,139 @@ export type FeatureLandingDef = {
   zh: FeatureLandingContent;
 };
 
+const markdownToXArticles: FeatureLandingDef = {
+  slug: "markdown-to-x-articles",
+  editorPath: "/editor",
+  zhEditorPath: "/zh/editor",
+  en: {
+    metaTitle: "Markdown to X Articles Converter — Free Online Tool | MD2X",
+    metaDescription:
+      "Convert Markdown to clipboard-ready rich text for X Articles. Preserve headings, links, lists, code images, tables, and Mermaid diagrams. Free, no sign-up.",
+    heroEyebrow: "MARKDOWN → X ARTICLES",
+    heroTitle: "Convert Markdown to X Articles",
+    heroLead:
+      "Write in Markdown, copy rich text, and paste cleanly into X Articles. MD2X preserves headings, links, lists, code images, tables, and Mermaid diagrams without requiring an account.",
+    ctaOpenEditor: "Open Converter",
+    introTitle: "Why convert Markdown before publishing on X?",
+    introBody:
+      "X Articles does not understand raw Markdown. If you paste a Markdown draft directly, headings, links, lists, and code fences turn into plain text. MD2X converts your source into clipboard-ready rich text so your long-form post keeps its structure when pasted into the X Articles editor.",
+    benefitsTitle: "What you get",
+    benefits: [
+      "Clipboard-ready rich text for X Articles headings, links, lists, bold, and italic text",
+      "Code blocks rendered as syntax-highlighted PNG images with 9 themes",
+      "Markdown tables and Mermaid diagrams converted into pasteable assets",
+      "Live preview of the article before you copy it to X",
+      "Runs fully in-browser — drafts stay on your device",
+    ],
+    howToEyebrow: "HOW IT WORKS",
+    howToTitle: "Convert Markdown to X Articles in three steps",
+    howToDescription:
+      "Turn a Markdown draft into formatted X Articles content without manual reformatting.",
+    steps: [
+      {
+        name: "Write or import Markdown",
+        text: "Open the MD2X editor, paste your Markdown draft, or import a .md file. The preview shows how your article will read.",
+      },
+      {
+        name: "Copy title and body",
+        text: "Use Copy Title and Copy Body to place formatted rich text on your clipboard. Code, tables, and diagrams appear in the Assets panel.",
+      },
+      {
+        name: "Paste into X Articles",
+        text: "Open the X Articles editor, paste the rich text, then add any generated images from the Assets panel before publishing.",
+      },
+    ],
+    ctaTitle: "Convert your next X Article",
+    ctaDesc: "Free, no sign-up, and built for Markdown-first writers.",
+    faqTitle: "Frequently Asked Questions",
+    faqs: [
+      {
+        question: "Does X Articles support Markdown?",
+        answer:
+          "No. X Articles uses its own rich-text editor. MD2X converts Markdown into formatted rich text that can be pasted into that editor.",
+      },
+      {
+        question: "What Markdown formatting is preserved?",
+        answer:
+          "Headings, bold, italic, strikethrough, links, ordered lists, unordered lists, and inline code are converted to rich text. Code blocks, Mermaid diagrams, and tables become pasteable visual assets.",
+      },
+      {
+        question: "Can I use this for technical posts?",
+        answer:
+          "Yes. MD2X is designed for technical writers who need code snippets, diagrams, tables, links, and long-form structure inside X Articles.",
+      },
+      {
+        question: "Is my article uploaded to a server?",
+        answer:
+          "No. Editing, previewing, and copying run in your browser. Your Markdown draft stays local unless you choose an optional AI feature.",
+      },
+    ],
+  },
+  zh: {
+    metaTitle: "Markdown 转 X Articles — 免费在线转换器 | MD2X",
+    metaDescription:
+      "将 Markdown 转换为可直接粘贴到 X Articles 的富文本。保留标题、链接、列表、代码图片、表格和 Mermaid 图表。免费，无需注册。",
+    heroEyebrow: "MARKDOWN → X ARTICLES",
+    heroTitle: "将 Markdown 转换为 X Articles",
+    heroLead:
+      "用 Markdown 写作，一键复制富文本，再干净地粘贴到 X Articles。MD2X 会保留标题、链接、列表、代码图片、表格和 Mermaid 图表，无需账号。",
+    ctaOpenEditor: "打开转换器",
+    introTitle: "为什么发布到 X 前要先转换 Markdown？",
+    introBody:
+      "X Articles 不理解原始 Markdown。如果直接粘贴，标题、链接、列表和代码块都会变成普通文本。MD2X 会把 Markdown 转为可直接粘贴的富文本，让长文在 X Articles 编辑器里保留结构。",
+    benefitsTitle: "你能得到什么",
+    benefits: [
+      "适配 X Articles 的富文本剪贴板，支持标题、链接、列表、粗体和斜体",
+      "代码块渲染为带语法高亮的 PNG 图片，支持 9 种主题",
+      "Markdown 表格和 Mermaid 图表转换为可粘贴的图片资产",
+      "复制到 X 前可实时预览文章效果",
+      "纯浏览器端运行，草稿保存在你的设备上",
+    ],
+    howToEyebrow: "使用方法",
+    howToTitle: "三步将 Markdown 转为 X Articles",
+    howToDescription: "无需手动排版，即可将 Markdown 草稿转为适合 X Articles 的格式。",
+    steps: [
+      {
+        name: "编写或导入 Markdown",
+        text: "打开 MD2X 编辑器，粘贴 Markdown 草稿，或导入 .md 文件。右侧预览会显示文章效果。",
+      },
+      {
+        name: "复制标题和正文",
+        text: "使用复制标题和复制正文，将格式化富文本放入剪贴板。代码、表格和图表会出现在 Assets 面板。",
+      },
+      {
+        name: "粘贴到 X Articles",
+        text: "打开 X Articles 编辑器，粘贴富文本，再从 Assets 面板补充生成的图片即可发布。",
+      },
+    ],
+    ctaTitle: "转换你的下一篇 X Article",
+    ctaDesc: "免费、无需注册，为 Markdown 写作者打造。",
+    faqTitle: "常见问题",
+    faqs: [
+      {
+        question: "X Articles 支持 Markdown 吗？",
+        answer:
+          "不支持。X Articles 使用自己的富文本编辑器。MD2X 会把 Markdown 转为可粘贴到该编辑器的格式化富文本。",
+      },
+      {
+        question: "哪些 Markdown 格式会保留？",
+        answer:
+          "标题、粗体、斜体、删除线、链接、有序列表、无序列表和行内代码会转为富文本。代码块、Mermaid 图表和表格会变成可粘贴的图片资产。",
+      },
+      {
+        question: "适合技术文章吗？",
+        answer:
+          "适合。MD2X 专为需要在 X Articles 中使用代码片段、图表、表格、链接和长文结构的技术写作者设计。",
+      },
+      {
+        question: "文章会上传到服务器吗？",
+        answer:
+          "不会。编辑、预览和复制都在浏览器中完成。除非你主动使用可选 AI 功能，否则 Markdown 草稿不会离开本地设备。",
+      },
+    ],
+  },
+};
+
 const codeToImage: FeatureLandingDef = {
   slug: "code-to-image",
   editorPath: "/editor",
@@ -442,6 +575,7 @@ const markdownTableToImage: FeatureLandingDef = {
 };
 
 const definitions: Record<string, FeatureLandingDef> = {
+  [markdownToXArticles.slug]: markdownToXArticles,
   [codeToImage.slug]: codeToImage,
   [mermaidToPng.slug]: mermaidToPng,
   [markdownTableToImage.slug]: markdownTableToImage,

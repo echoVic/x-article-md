@@ -11,9 +11,9 @@ export type ThreadCopy = {
 
 export const threadCopy: Record<ThreadLocale, ThreadCopy> = {
   en: {
-    h1: "Free Twitter Thread Generator from Markdown",
+    h1: "Free X/Twitter Thread Generator from Markdown",
     subtitle:
-      "The free tweet thread maker for writers: write in Markdown, auto-split into tweet-sized chunks with numbering. Copy each tweet individually or the entire thread.",
+      "Use Markdown to split long posts into 280-character tweets with numbering. Copy each tweet individually or copy the entire thread for X/Twitter.",
     howToTitle: "How to Use",
     steps: [
       {
@@ -49,7 +49,7 @@ export const threadCopy: Record<ThreadLocale, ThreadCopy> = {
       {
         question: "Is this Twitter thread generator free?",
         answer:
-          "Yes, completely free and open source. It runs in your browser with no sign-up, no account required, and your content stays local.",
+          "Yes, completely free and open source. It runs in your browser with no sign-up, no account required, and your content stays local. You can copy individual tweets or copy the entire thread at once.",
       },
       {
         question: "Can I use this for X (formerly Twitter)?",
