@@ -48,6 +48,7 @@ export default function ThreadPage() {
       return () => mq.removeEventListener("change", cb);
     },
     () => window.matchMedia("(min-width: 768px)").matches,
+    () => true,
   );
 
   const ruleThreads = splitThread(markdown);
