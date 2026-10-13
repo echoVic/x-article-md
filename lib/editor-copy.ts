@@ -75,7 +75,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
       {
         question: "Does MD2X support code blocks and syntax highlighting?",
         answer:
-          "Yes. Code blocks are automatically rendered as syntax-highlighted PNG images that can be pasted directly into X Articles, which doesn't natively support code formatting.",
+          "Yes. Code blocks are automatically rendered as syntax-highlighted PNG images that can be pasted directly into X Articles, keeping the highlighting and theme that plain pasted code loses.",
       },
       {
         question: "Can I use Mermaid diagrams?",
@@ -95,7 +95,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
       {
         question: "How do I add code snippets to X Articles?",
         answer:
-          "X Articles does not natively support code formatting. MD2X solves this by converting your Markdown code blocks into syntax-highlighted PNG images that you can paste directly into X Articles while preserving readability.",
+          "Code pasted into X Articles as text loses its syntax highlighting. MD2X solves this by converting your Markdown code blocks into syntax-highlighted PNG images that you can paste directly into X Articles while preserving readability.",
       },
       {
         question: "Does X Articles support Markdown formatting?",
@@ -175,7 +175,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
       {
         question: "MD2X 支持代码块和语法高亮吗？",
         answer:
-          "支持。代码块会自动渲染为带语法高亮的 PNG 图片，可以直接粘贴到不支持代码格式的 X Articles 中。",
+          "支持。代码块会自动渲染为带语法高亮的 PNG 图片，可以直接粘贴到 X Articles 中，保留纯文本粘贴会丢失的高亮和主题。",
       },
       {
         question: "可以使用 Mermaid 图表吗？",
@@ -195,7 +195,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
       {
         question: "如何在 X Articles 中插入代码片段？",
         answer:
-          "X Articles 原生不支持代码格式。MD2X 将 Markdown 代码块自动转换为带语法高亮的 PNG 图片，可直接粘贴到 X Articles 中，保持代码可读性。",
+          "以纯文本粘贴到 X Articles 的代码会丢失语法高亮。MD2X 将 Markdown 代码块自动转换为带语法高亮的 PNG 图片，可直接粘贴到 X Articles 中，保持代码可读性。",
       },
       {
         question: "X Articles 支持 Markdown 格式吗？",
@@ -210,7 +210,7 @@ export const editorCopy: Record<EditorLocale, EditorCopy> = {
       {
         question: "X Articles 能插入表格和图表吗？",
         answer:
-          "X Articles 对表格支持有限，不支持图表。MD2X 将 Markdown 表格渲染为格式化富文本，Mermaid 图表渲染为图片，两者都可粘贴到 X Articles 中。",
+          "X Articles 无法渲染 Mermaid 源码，表格的样式也难以保持一致。MD2X 将 Markdown 表格渲染为格式化富文本，Mermaid 图表渲染为图片，两者都可粘贴到 X Articles 中。",
       },
       {
         question: "MD2X 和从 Notion 或 Google Docs 复制相比有什么优势？",

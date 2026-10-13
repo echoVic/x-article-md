@@ -63,7 +63,7 @@ export const landingCopy = {
       {
         question: "How are code blocks handled?",
         answer:
-          "X Articles cannot display formatted code. MD2X renders code blocks as syntax-highlighted PNG images with your chosen theme (9 options including Dracula, Nord, GitHub Dark, etc.). Copy them from the Assets panel and paste into X Articles.",
+          "Code pasted into X Articles loses its syntax highlighting and theme. MD2X renders code blocks as syntax-highlighted PNG images with your chosen theme (9 options including Dracula, Nord, GitHub Dark, etc.). Copy them from the Assets panel and paste into X Articles.",
       },
       {
         question: "What is the Thread mode?",
@@ -154,7 +154,7 @@ export const landingCopy = {
       {
         question: "代码块是怎么处理的？",
         answer:
-          "X Articles 无法显示格式化代码。MD2X 将代码块渲染为带语法高亮的 PNG 图片，支持 9 种主题（Dracula、Nord、GitHub Dark 等）。从 Assets 面板复制后粘贴到 X Articles。",
+          "粘贴进 X Articles 的代码会丢失语法高亮和主题配色。MD2X 将代码块渲染为带语法高亮的 PNG 图片，支持 9 种主题（Dracula、Nord、GitHub Dark 等）。从 Assets 面板复制后粘贴到 X Articles。",
       },
       {
         question: "什么是推文流模式？",

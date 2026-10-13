@@ -500,7 +500,7 @@ const markdownTableToImage: FeatureLandingDef = {
       {
         question: "Can I use it for X Articles?",
         answer:
-          "Yes. X Articles can't render Markdown tables, so MD2X converts them to images you can paste directly from the Assets panel.",
+          "Yes. MD2X converts Markdown tables to styled images that look the same in X Articles as in your editor — paste them directly from the Assets panel.",
       },
       {
         question: "What image format do I get?",
@@ -516,7 +516,7 @@ const markdownTableToImage: FeatureLandingDef = {
     heroEyebrow: "MARKDOWN 表格 → 图片",
     heroTitle: "把 Markdown 表格变成图片",
     heroLead:
-      "粘贴 Markdown 表格，即可得到干净、带样式的 PNG，随处可用。非常适合无法渲染 Markdown 表格的 X Articles、幻灯片和文档。完全免费，无需注册，纯浏览器端运行。",
+      "粘贴 Markdown 表格，即可得到干净、带样式的 PNG，随处可用。非常适合 X Articles、幻灯片和文档，在哪里显示都一致。完全免费，无需注册，纯浏览器端运行。",
     ctaOpenEditor: "打开编辑器",
     introTitle: "为什么要把 Markdown 表格转成图片？",
     introBody:
@@ -563,7 +563,7 @@ const markdownTableToImage: FeatureLandingDef = {
       {
         question: "可以用于 X Articles 吗？",
         answer:
-          "可以。X Articles 无法渲染 Markdown 表格，MD2X 会把它们转成图片，你可以直接从 Assets 面板粘贴。",
+          "可以。MD2X 会把 Markdown 表格转成带样式的图片，在 X Articles 里和编辑器里看起来一致，可直接从 Assets 面板粘贴。",
       },
       {
         question: "导出的是什么图片格式？",
