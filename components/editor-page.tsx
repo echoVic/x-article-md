@@ -342,7 +342,7 @@ export default function EditorPage() {
               role="tab"
               aria-selected={mobileView === tab.id}
               onClick={() => setMobileView(tab.id)}
-              className="relative flex-1 text-[14px] font-medium transition-colors"
+              className="relative h-11 flex-1 text-[14px] font-medium transition-colors"
               style={{ color: mobileView === tab.id ? "var(--fg)" : "var(--muted)" }}
             >
               {tab.label}

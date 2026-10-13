@@ -42,7 +42,7 @@ export function CodeBlock({ code, language, codeTheme }: CodeBlockProps) {
           type="button"
           onClick={copyImage}
           aria-label="复制代码图片"
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium transition-all hover:opacity-80 active:scale-[0.95]"
+          className="code-block-copy inline-flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium transition-all hover:opacity-80 active:scale-[0.95]"
           style={{ color: theme.labelColor }}
         >
           <Copy size={14} strokeWidth={1.4} aria-hidden="true" />

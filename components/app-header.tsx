@@ -33,7 +33,7 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
       <div className="flex items-baseline gap-4 min-w-0">
         <Link
           href={isZh ? "/zh" : "/"}
-          className="flex items-baseline gap-[6px] no-underline transition-opacity hover:opacity-70"
+          className="flex h-11 items-center gap-[6px] no-underline transition-opacity hover:opacity-70 md:h-auto md:items-baseline"
           aria-label={t.homeAria}
         >
           <span
@@ -77,7 +77,7 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
         </Link>
 
         <nav
-          className="flex items-center gap-[18px] border-l border-[var(--border)] pl-[18px]"
+          className="hidden items-center gap-[18px] border-l border-[var(--border)] pl-[18px] md:flex"
           aria-label={t.sectionsNav}
         >
           <SectionLink href={editorHref} active={activePage === "editor"} label={t.navEditor} />
@@ -91,7 +91,7 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
         <Link
           href={langHref}
           onClick={() => setLocale(nextLocale)}
-          className="inline-flex items-baseline gap-[6px] no-underline text-[var(--muted)] transition-colors hover:text-[var(--fg)] h-11 items-center md:h-auto"
+          className="inline-flex items-baseline gap-[6px] no-underline text-[var(--muted)] transition-colors hover:text-[var(--fg)] h-11 min-w-[44px] items-center justify-center md:h-auto md:min-w-0"
           aria-label={isZh ? "Switch to English" : "切换到中文"}
           style={{
             fontFamily: "var(--font-geist-mono)",

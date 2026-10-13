@@ -124,6 +124,10 @@
   .workbench .cm-line {
     line-height: 20px !important;
   }
+  /* Asset-card copy button reaches the 44px touch floor */
+  .code-block-copy {
+    min-height: 44px;
+  }
 }
 
 /* ═══ X Articles preview — measured values, independent of brand tokens ═══ */
