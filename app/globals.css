@@ -37,8 +37,15 @@
   --shadow-md: 0 4px 12px rgba(30,20,10,0.06);
   --shadow-lg: 0 8px 32px rgba(30,20,10,0.10);
 
-  /* Editorial serif — landing display headlines & pull-quotes only */
-  --font-display: var(--font-serif), 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman', serif;
+  /* X Articles preview surface — independent of the brand magazine tokens.
+   * Measured values from the live X editor (2026-10-13), lights-out values
+   * from the public Lights-out dark design spec. The preview never paints
+   * brand warm tones. */
+  --x-bg: #ffffff;
+  --x-fg: rgb(15, 20, 26);
+  --x-title: #000000;
+  --x-muted: #536471;
+  --x-line: #e4eaec;
 }
 
 .dark {
@@ -62,6 +69,51 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.24);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.34);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.44);
+
+  --x-bg: #000000;
+  --x-fg: rgb(231, 233, 234);
+  --x-title: #e7e9ea;
+  --x-muted: #8b98a5;
+  --x-line: #2f3e4d;
+}
+
+/* ═══ Quiet workbench (editor) — neutral tokens ═══
+ * The magazine paper/ink tokens above are scoped to the landing. The editor
+ * re-declares the same token names on this wrapper so every descendant
+ * (header, toolbar, gutter) reads neutral greys; the only warm accent left is
+ * the logo "×", the focus ring, inline markdown links, nav/selected
+ * underlines and the primary-button hover. */
+.workbench {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #525252;
+  --border: #e5e5e5;
+  --border-struct: #8f8f8f;
+  --ln: #767676;
+  --accent: #b2392b;
+  --on-accent: #ffffff;
+  --fg-soft: color-mix(in srgb, var(--fg) 5%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --accent-hover: color-mix(in srgb, var(--accent) 88%, black);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+}
+
+.dark .workbench {
+  --bg: #171717;
+  --surface: #0f0f0f;
+  --fg: #ececec;
+  --muted: #a3a3a3;
+  --border: #262626;
+  --border-struct: #6a6a6a;
+  --ln: #808080;
+  --accent: #ef816b;
+  --on-accent: #1a1a1a;
+  --fg-soft: color-mix(in srgb, var(--fg) 8%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+  --accent-hover: color-mix(in srgb, var(--accent) 88%, white);
 }
 
 * {
@@ -82,6 +134,12 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Editorial serif — landing display headlines, pull-quotes, brand wordmark.
+   * Declared on <body> (not :root) on purpose: --font-serif is a next/font
+   * variable attached to <body>, so resolving the reference at :root level
+   * would leave it undefined. */
+  --font-display: var(--font-serif), 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman', serif;
 }
 
 button,
@@ -92,6 +150,12 @@ input {
 
 ::selection {
   background: var(--accent-soft);
+}
+
+/* Visible keyboard focus everywhere: 2px accent ring, 2px offset. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 @keyframes ring-pulse {
