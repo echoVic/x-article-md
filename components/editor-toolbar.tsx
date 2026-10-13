@@ -119,7 +119,7 @@ export function EditorToolbar({
   );
 
   return (
-    <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--surface)] pl-2 pr-2 md:pl-3">
+    <div className="wb-toolbar flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--surface)] pl-2 pr-2 md:pl-3">
       {/* Left: saved state */}
       <div className="flex items-center gap-1 flex-shrink-0">
         <Tooltip content={draftReady ? t.saved : t.loading}>

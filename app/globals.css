@@ -130,6 +130,16 @@
   }
 }
 
+/* ═══ Compact height (≤760px viewport height) — 40 + 40 + 28 + 32 = 140 ═══
+ * Writing surface ≈580px (≥80% of 720). Only row heights shrink;
+ * inner control sizes stay. */
+@media (max-height: 760px) {
+  .wb-header { height: 40px !important; }
+  .wb-toolbar { height: 40px !important; }
+  .wb-colhead { height: 28px !important; }
+  .wb-formatbar { height: 32px !important; }
+}
+
 /* ═══ X Articles preview — measured values, independent of brand tokens ═══ */
 .x-preview {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;

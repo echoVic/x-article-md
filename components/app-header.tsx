@@ -28,7 +28,7 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
   const nextLocale = isZh ? "en" : "zh";
 
   return (
-    <header className="flex h-12 md:h-11 shrink-0 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 md:px-5 relative z-10">
+    <header className="wb-header flex h-12 md:h-11 shrink-0 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 md:px-5 relative z-10">
       {/* Left: wordmark + section nav */}
       <div className="flex items-baseline gap-4 min-w-0">
         <Link

@@ -386,7 +386,7 @@ export default function EditorPage() {
           }`}
         >
           {/* Column head — 30px */}
-          <div className="hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex">
+          <div className="wb-colhead hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex">
             <span className="flex items-baseline gap-[6px]" style={{ ...monoLabel, color: "var(--fg)" }}>
               {t.manuscript}
               <span className="text-[var(--muted)]">· MARKDOWN</span>
@@ -442,7 +442,7 @@ export default function EditorPage() {
         >
           {/* Column head — 30px */}
           <div
-            className="hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex"
+            className="wb-colhead hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex"
             style={{ background: "var(--surface)" }}
           >
             <span className="flex items-center gap-[6px]" style={{ ...monoLabel, color: "var(--fg)" }}>

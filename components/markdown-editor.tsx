@@ -266,7 +266,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-[var(--surface)]">
       {/* Format bar — 36px desktop, 44px touch-friendly scroll on mobile */}
-      <div className="flex h-11 md:h-9 shrink-0 items-center gap-px overflow-x-auto border-b border-[var(--border)] px-2">
+      <div className="wb-formatbar flex h-11 md:h-9 shrink-0 items-center gap-px overflow-x-auto border-b border-[var(--border)] px-2">
         {toolbarGroups.map((group, groupIndex) => (
           <div key={groupIndex} className="flex items-center">
             {groupIndex > 0 && (
