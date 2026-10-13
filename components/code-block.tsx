@@ -5,6 +5,7 @@ import { Copy } from "lucide-react";
 import type { CodeImageTheme } from "@/lib/code-themes";
 import { THEME_GITHUB_LIGHT } from "@/lib/code-themes";
 import { copyCodeImage } from "@/lib/image-copy";
+import { trackEvent } from "@/lib/analytics";
 
 type CodeBlockProps = {
   code: string;
@@ -19,6 +20,7 @@ export function CodeBlock({ code, language, codeTheme }: CodeBlockProps) {
 
   async function copyImage() {
     const copied = await copyCodeImage(code, language, codeTheme);
+    trackEvent("asset_copy", { type: "code", theme: theme.id, surface: "preview", ok: copied });
     setState(copied ? "copied" : "failed");
     window.setTimeout(() => setState("idle"), 1800);
   }

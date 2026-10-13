@@ -9,13 +9,14 @@ import {
   type OrchestrationAsset,
 } from "@/lib/asset-orchestrator";
 import { copyPngBlob, downloadBlob } from "@/lib/image-copy";
+import { trackEvent } from "@/lib/analytics";
 import type { XArticleAsset } from "@/lib/markdown";
 import { useI18n } from "@/lib/i18n";
 import {
   Code,
   Copy,
   Download,
-  Image,
+  Image as ImageIcon,
   Link,
   Locate,
   Network,
@@ -48,7 +49,7 @@ export function AssetOrchestrator({
   if (orchestrated.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <Image size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
+        <ImageIcon size={40} strokeWidth={0.8} className="text-[var(--border)]" aria-hidden="true" />
         <p className="mt-3 text-sm text-[var(--muted)]">{t.orchestratorEmpty}</p>
       </div>
     );
@@ -78,10 +79,12 @@ export function AssetOrchestrator({
         setRenderStates((prev) => ({ ...prev, [asset.id]: "ready" }));
       } catch {
         setRenderStates((prev) => ({ ...prev, [asset.id]: "error" }));
+        trackEvent("asset_copy", { type: asset.type, theme: codeTheme.id, surface: "assets_panel", ok: false });
         return;
       }
     }
-    await copyPngBlob(blob);
+    const ok = await copyPngBlob(blob);
+    trackEvent("asset_copy", { type: asset.type, theme: codeTheme.id, surface: "assets_panel", ok });
   }
 
   async function handleDownload(asset: OrchestrationAsset) {
@@ -94,11 +97,13 @@ export function AssetOrchestrator({
         setRenderStates((prev) => ({ ...prev, [asset.id]: "ready" }));
       } catch {
         setRenderStates((prev) => ({ ...prev, [asset.id]: "error" }));
+        trackEvent("asset_download", { type: asset.type, theme: codeTheme.id, surface: "assets_panel", ok: false });
         return;
       }
     }
     const filename = asset.label.replace(/[^a-zA-Z0-9_-]/g, "-") + ".png";
     downloadBlob(blob, filename);
+    trackEvent("asset_download", { type: asset.type, theme: codeTheme.id, surface: "assets_panel", ok: true });
   }
 
   async function handleReRenderAll() {
@@ -113,7 +118,12 @@ export function AssetOrchestrator({
       ...a,
       renderedBlob: blobs[a.id] ?? a.renderedBlob,
     }));
-    await downloadAllAssetsAsZip(assetsWithBlobs, codeTheme);
+    try {
+      await downloadAllAssetsAsZip(assetsWithBlobs, codeTheme);
+      trackEvent("asset_zip_download", { count: assetsWithBlobs.length, theme: codeTheme.id, ok: true });
+    } catch {
+      trackEvent("asset_zip_download", { count: assetsWithBlobs.length, theme: codeTheme.id, ok: false });
+    }
   }
 
   return (
@@ -192,7 +202,7 @@ const TYPE_ICON: Record<OrchestrationAsset["type"], React.ComponentType<{ size: 
   mermaid: Network,
   table: Table2,
   tweet: Link,
-  cover: Image,
+  cover: ImageIcon,
 };
 
 function AssetCard({

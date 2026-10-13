@@ -183,8 +183,6 @@ export default function EditorPage() {
   }
 
   async function copyBody() {
-    trackEvent("copy_body");
-
     if (!preflightReport) {
       setShowPreflightHint(true);
       window.setTimeout(() => setShowPreflightHint(false), 5000);
@@ -192,7 +190,10 @@ export default function EditorPage() {
 
     const htmlToWrite = clipboard.bodyHtml;
 
-    if (await copyRichText(htmlToWrite, clipboard.bodyText)) {
+    const ok = await copyRichText(htmlToWrite, clipboard.bodyText);
+    trackEvent("copy_body", { codeMode, assets: clipboard.assets.length, ok });
+
+    if (ok) {
       markCopied("body");
       dispatchPublish({ type: "BODY_COPIED" });
       return;
