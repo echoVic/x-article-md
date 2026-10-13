@@ -190,6 +190,10 @@ const en = {
   threadEmpty: "Your thread will appear here...",
   threadTweet: "tweet",
   threadTweets: "tweets",
+  threadSourceRules: "Rule split",
+  threadSourceAi: "AI split",
+  threadTweetPreview: "Tweet preview",
+  threadOverLimit: "over 280",
 
   // Preflight panel
   preflightTitle: "Preflight Check",
@@ -429,6 +433,10 @@ const zh: Translations = {
   threadEmpty: "推文流将在这里显示...",
   threadTweet: "条推文",
   threadTweets: "条推文",
+  threadSourceRules: "规则拆分",
+  threadSourceAi: "AI 拆分",
+  threadTweetPreview: "推文预览",
+  threadOverLimit: "已超 280",
 
   // Preflight panel
   preflightTitle: "发布预检",

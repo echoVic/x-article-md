@@ -128,6 +128,11 @@
   .code-block-copy {
     min-height: 44px;
   }
+  /* Thread manuscript input matches the writing surface on mobile */
+  .workbench .thread-input {
+    font-size: 12.5px !important;
+    line-height: 20px !important;
+  }
 }
 
 /* ═══ Compact height (≤760px viewport height) — 40 + 40 + 28 + 32 = 140 ═══
