@@ -14,7 +14,7 @@ import {
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const DEFAULT_CREDENTIALS = "credentials.json";
 const DEFAULT_TOKEN = ".gsc-token.json";
-const DEFAULT_SITE = process.env.GSC_SITE_URL || "https://markdown2x.com/";
+const DEFAULT_SITE = process.env.GSC_SITE_URL || "sc-domain:markdown2x.com";
 
 const args = parseArgs(process.argv.slice(2));
 const command = args._[0] || "help";
@@ -233,7 +233,7 @@ function printSites(sites) {
 function printHelp() {
   console.log(`Usage:
   node scripts/gsc.mjs sites
-  node scripts/gsc.mjs query --site https://markdown2x.com/ --days 28 --dimensions page,query --limit 100
+  node scripts/gsc.mjs query --site sc-domain:markdown2x.com --days 28 --dimensions page,query --limit 100
 
 Options:
   --credentials <path>   OAuth client file, default credentials.json
