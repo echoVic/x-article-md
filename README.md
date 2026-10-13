@@ -1,18 +1,20 @@
 # MD2X — Markdown to X Articles
 
+**Try it online: [markdown2x.com](https://markdown2x.com)** · [中文](https://markdown2x.com/zh) — free, no sign-up, runs in your browser.
+
 A Markdown editor and converter for drafting content that can be previewed and pasted into X Articles with full formatting preserved.
 
 Write Markdown, preview as X Articles, copy rich text + image assets, publish.
 
 ## Features
 
-- **Rich Text Clipboard** — Copy preserves headings, bold, links, lists, inline code. Paste directly into X Articles.
-- **Code Blocks → PNG Images** — 9 syntax-highlighting themes (GitHub, Dracula, Nord, Night Owl, Tokyo Night, etc.)
-- **Mermaid Diagrams** — Flowcharts, sequence diagrams render as PNG with theme-synced colors.
-- **Tables → PNG** — Markdown tables render as styled image assets.
+- **[Rich Text Clipboard](https://markdown2x.com/markdown-to-x-articles)** — Copy preserves headings, bold, links, lists, inline code. Paste directly into X Articles.
+- **[Code Blocks → PNG Images](https://markdown2x.com/code-to-image)** — 9 syntax-highlighting themes (GitHub, Dracula, Nord, Night Owl, Tokyo Night, etc.)
+- **[Mermaid Diagrams → PNG](https://markdown2x.com/mermaid-to-png)** — Flowcharts, sequence diagrams render as PNG with theme-synced colors.
+- **[Tables → PNG](https://markdown2x.com/markdown-table-to-image)** — Markdown tables render as styled image assets.
 - **AI Cover Images** — Generate cover images from article content via OpenAI-compatible API.
 - **AI Text Polish & Translate** — Polish selected text or translate between EN/ZH with one click.
-- **Thread Splitter** — AI-powered tweet thread generator with automatic numbering.
+- **[Thread Splitter](https://markdown2x.com/thread)** — AI-powered tweet thread generator with automatic numbering.
 - **PWA Offline Support** — Install as desktop app, works offline (AI features require network).
 - **Dark Mode** — Light, dark, and system theme with toggle.
 - **Multi-language UI** — English and Chinese interface.
