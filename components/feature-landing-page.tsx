@@ -1,5 +1,6 @@
 import { LandingFooter } from "@/components/landing-footer";
 import { LandingHeader } from "@/components/landing-header";
+import { TableImageTool } from "@/components/table-image-tool";
 import { Accordion } from "@/components/ui/accordion";
 import type { FeatureLandingDef, LandingLocale } from "@/lib/feature-landing-copy";
 import { buildFaqJsonLd, buildHowToJsonLd, githubRepoUrl } from "@/lib/seo";
@@ -47,8 +48,14 @@ export function FeatureLandingPage({
             <p className="eyebrow">{t.heroEyebrow}</p>
             <h1>{t.heroTitle}</h1>
             <p className="lead">{t.heroLead}</p>
+            {def.tool === "table-image" ? (
+              <TableImageTool locale={locale} />
+            ) : null}
             <div className="hero-cta">
-              <Link href={editorHref} className="btn btn-primary">
+              <Link
+                href={editorHref}
+                className={def.tool ? "btn btn-secondary" : "btn btn-primary"}
+              >
                 {t.ctaOpenEditor}
               </Link>
               <a

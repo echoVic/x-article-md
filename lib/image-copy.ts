@@ -211,10 +211,43 @@ export async function renderSvgToPng(svg: string): Promise<Blob> {
   }
 }
 
+export type TableImageTheme = "light" | "dark";
+export type TableImageAlignment = "left" | "center" | "right";
+
+export type TableImageOptions = {
+  alignments?: TableImageAlignment[];
+  theme?: TableImageTheme;
+};
+
+const TABLE_PALETTES: Record<
+  TableImageTheme,
+  { card: string; cardBorder: string; header: string; cell: string; grid: string; text: string }
+> = {
+  light: {
+    card: "#ffffff",
+    cardBorder: "#cfd9de",
+    header: "#eef2f5",
+    cell: "#ffffff",
+    grid: "#d8e0e5",
+    text: "#0f1419",
+  },
+  dark: {
+    card: "#15202b",
+    cardBorder: "#38444d",
+    header: "#1e2732",
+    cell: "#15202b",
+    grid: "#38444d",
+    text: "#e7e9ea",
+  },
+};
+
 export async function renderTableToPng(
   headers: string[],
   rows: string[][],
+  options: TableImageOptions = {},
 ): Promise<Blob> {
+  const palette = TABLE_PALETTES[options.theme ?? "light"];
+  const alignments = options.alignments ?? [];
   const scale = window.devicePixelRatio || 2;
   const padding = 28;
   const cellX = 18;
@@ -249,18 +282,19 @@ export async function renderTableToPng(
   canvas.height = height * scale;
   context.scale(scale, scale);
 
-  context.fillStyle = "#ffffff";
+  context.fillStyle = palette.card;
   roundRect(context, 0, 0, width, height, 14);
   context.fill();
-  context.strokeStyle = "#cfd9de";
+  context.strokeStyle = palette.cardBorder;
   context.lineWidth = 1;
   context.stroke();
 
+  const style = { palette, alignments, cellX };
   let y = padding;
-  drawTableRow(context, headers, widths, padding, y, rowHeight, headerFont, true);
+  drawTableRow(context, headers, widths, padding, y, rowHeight, headerFont, true, style);
   y += rowHeight;
   for (const row of rows) {
-    drawTableRow(context, row, widths, padding, y, rowHeight, font, false);
+    drawTableRow(context, row, widths, padding, y, rowHeight, font, false, style);
     y += rowHeight;
   }
 
@@ -398,6 +432,11 @@ function drawTableRow(
   height: number,
   font: string,
   header: boolean,
+  style: {
+    palette: (typeof TABLE_PALETTES)[TableImageTheme];
+    alignments: TableImageAlignment[];
+    cellX: number;
+  },
 ) {
   let cursor = x;
   context.font = font;
@@ -405,12 +444,21 @@ function drawTableRow(
 
   for (let index = 0; index < widths.length; index += 1) {
     const width = widths[index];
-    context.fillStyle = header ? "#eef2f5" : "#ffffff";
+    const alignment = style.alignments[index] ?? "left";
+    context.fillStyle = header ? style.palette.header : style.palette.cell;
     context.fillRect(cursor, y, width, height);
-    context.strokeStyle = "#d8e0e5";
+    context.strokeStyle = style.palette.grid;
     context.strokeRect(cursor, y, width, height);
-    context.fillStyle = "#0f1419";
-    context.fillText(String(cells[index] ?? ""), cursor + 18, y + height / 2);
+    context.fillStyle = style.palette.text;
+    context.textAlign = alignment;
+    const textX =
+      alignment === "center"
+        ? cursor + width / 2
+        : alignment === "right"
+          ? cursor + width - style.cellX
+          : cursor + style.cellX;
+    context.fillText(String(cells[index] ?? ""), textX, y + height / 2);
     cursor += width;
   }
+  context.textAlign = "left";
 }

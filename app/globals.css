@@ -1315,3 +1315,143 @@ input {
   text-align: right;
   margin-left: auto;
 }
+
+/* ── Embedded tool: Markdown table → image ── */
+.table-tool {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.table-tool-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.table-tool-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+}
+
+.table-tool-label {
+  font-family: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.table-tool-link {
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.table-tool-input {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.table-tool-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.table-tool-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.table-tool-toggle {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.table-tool-toggle button {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.table-tool-toggle button.is-active {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.table-tool-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  overflow: auto;
+}
+
+.table-tool-preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.table-tool-status {
+  max-width: 40ch;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.table-tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.table-tool-actions .btn {
+  min-height: 44px;
+}
+
+.table-tool-actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 820px) {
+  .table-tool {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+}

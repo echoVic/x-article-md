@@ -38,6 +38,8 @@ export type FeatureLandingDef = {
   /** Where the primary CTA points (relative path) */
   editorPath: string;
   zhEditorPath: string;
+  /** Interactive tool rendered directly under the hero, if this page has one */
+  tool?: "table-image";
   en: FeatureLandingContent;
   zh: FeatureLandingContent;
 };
@@ -445,6 +447,7 @@ const markdownTableToImage: FeatureLandingDef = {
   slug: "markdown-table-to-image",
   editorPath: "/editor",
   zhEditorPath: "/zh/editor",
+  tool: "table-image",
   en: {
     metaTitle: "Markdown Table to Image — Free Table to PNG Converter | MD2X",
     metaDescription:
@@ -452,8 +455,8 @@ const markdownTableToImage: FeatureLandingDef = {
     heroEyebrow: "MARKDOWN TABLE → IMAGE",
     heroTitle: "Turn Markdown tables into images",
     heroLead:
-      "Paste a Markdown table and get a clean, styled PNG you can drop anywhere. Perfect for X Articles, slides, and docs that don't render Markdown tables. Free, no sign-up, runs entirely in your browser.",
-    ctaOpenEditor: "Open Editor",
+      "Paste a Markdown table below and get a clean, styled PNG you can drop anywhere — X Articles, slides, docs. Free, no sign-up, runs entirely in your browser.",
+    ctaOpenEditor: "Write a full article in the editor",
     introTitle: "Why turn a Markdown table into an image?",
     introBody:
       "Markdown tables are easy to write but fragile to share — paste one into X Articles or a slide and the pipes and dashes show up as raw text. Rendering the table as an image preserves the layout, borders, and alignment so it looks like a real table wherever you paste it.",
@@ -461,7 +464,7 @@ const markdownTableToImage: FeatureLandingDef = {
     benefits: [
       "Clean, styled table rendering with proper borders and alignment",
       "Handles multi-column tables and long cell content",
-      "Colors match your light or dark theme",
+      "Light and dark styles, and column alignment from your separator row",
       "High-resolution PNG, ready to copy or download",
       "Runs fully in-browser — your data never leaves your device",
     ],
@@ -471,16 +474,16 @@ const markdownTableToImage: FeatureLandingDef = {
       "Turn any Markdown table into a shareable PNG image without installing anything.",
     steps: [
       {
-        name: "Write or paste your table",
-        text: "Open the MD2X editor and add a standard Markdown table using pipes and dashes. The live preview renders it instantly.",
+        name: "Paste your table",
+        text: "Paste a standard Markdown table (header row, separator row, data rows) into the box at the top of this page. The preview updates as you type.",
       },
       {
-        name: "Let it render as an asset",
-        text: "MD2X turns the table into a styled image with proper borders and alignment, using colors that match your theme.",
+        name: "Pick a style",
+        text: "Choose light or dark. Column alignment set with :--- , :---: or ---: in the separator row is kept in the image.",
       },
       {
         name: "Copy or download the PNG",
-        text: "Grab the table image from the Assets panel — copy it to your clipboard or download the PNG to use anywhere.",
+        text: "Click Copy image to paste it straight into X Articles or a doc, or Download PNG to save the file.",
       },
     ],
     ctaTitle: "Convert your first Markdown table",
@@ -500,7 +503,7 @@ const markdownTableToImage: FeatureLandingDef = {
       {
         question: "Can I use it for X Articles?",
         answer:
-          "Yes. MD2X converts Markdown tables to styled images that look the same in X Articles as in your editor — paste them directly from the Assets panel.",
+          "Yes. Copy the image here and paste it into the X Articles editor. If your article has several tables, the MD2X editor renders all of them at once in its Assets panel.",
       },
       {
         question: "What image format do I get?",
@@ -516,8 +519,8 @@ const markdownTableToImage: FeatureLandingDef = {
     heroEyebrow: "MARKDOWN 表格 → 图片",
     heroTitle: "把 Markdown 表格变成图片",
     heroLead:
-      "粘贴 Markdown 表格，即可得到干净、带样式的 PNG，随处可用。非常适合 X Articles、幻灯片和文档，在哪里显示都一致。完全免费，无需注册，纯浏览器端运行。",
-    ctaOpenEditor: "打开编辑器",
+      "在下方粘贴 Markdown 表格，即可得到干净、带样式的 PNG，可用于 X Articles、幻灯片和文档。完全免费，无需注册，纯浏览器端运行。",
+    ctaOpenEditor: "在编辑器里写整篇文章",
     introTitle: "为什么要把 Markdown 表格转成图片？",
     introBody:
       "Markdown 表格写起来简单，但分享时很脆弱——粘贴到 X Articles 或幻灯片里，竖线和横线会变成原始文本。把表格渲染成图片可以保留布局、边框和对齐方式，让它在任何粘贴的地方都像一张真正的表格。",
@@ -525,7 +528,7 @@ const markdownTableToImage: FeatureLandingDef = {
     benefits: [
       "干净、带样式的表格渲染，边框和对齐都规整",
       "支持多列表格和较长的单元格内容",
-      "配色与亮色/暗色主题匹配",
+      "支持亮色/暗色样式，并保留分隔行设置的列对齐",
       "高分辨率 PNG，可直接复制或下载",
       "纯浏览器端运行，数据绝不离开你的设备",
     ],
@@ -534,16 +537,16 @@ const markdownTableToImage: FeatureLandingDef = {
     howToDescription: "无需安装任何软件，即可将任意 Markdown 表格转为可分享的 PNG 图片。",
     steps: [
       {
-        name: "编写或粘贴表格",
-        text: "打开 MD2X 编辑器，用竖线和横线写一个标准 Markdown 表格，实时预览会立即渲染。",
+        name: "粘贴表格",
+        text: "把标准 Markdown 表格（表头行、分隔行、数据行）粘贴到本页顶部的输入框，预览会随输入实时更新。",
       },
       {
-        name: "渲染为图片资产",
-        text: "MD2X 会把表格渲染为带样式的图片，边框和对齐规整，配色与主题匹配。",
+        name: "选择样式",
+        text: "选择亮色或暗色。分隔行里用 :---、:---: 或 ---: 设置的列对齐会保留在图片中。",
       },
       {
         name: "复制或下载 PNG",
-        text: "从 Assets 面板获取表格图片——复制到剪贴板或下载 PNG，即可在任何地方使用。",
+        text: "点“复制图片”直接粘贴到 X Articles 或文档里，或点“下载 PNG”保存文件。",
       },
     ],
     ctaTitle: "转换你的第一个 Markdown 表格",
@@ -563,7 +566,7 @@ const markdownTableToImage: FeatureLandingDef = {
       {
         question: "可以用于 X Articles 吗？",
         answer:
-          "可以。MD2X 会把 Markdown 表格转成带样式的图片，在 X Articles 里和编辑器里看起来一致，可直接从 Assets 面板粘贴。",
+          "可以。在本页复制图片，粘贴到 X Articles 编辑器即可。如果文章里有多张表格，MD2X 编辑器的 Assets 面板会一次性全部渲染。",
       },
       {
         question: "导出的是什么图片格式？",

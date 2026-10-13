@@ -598,6 +598,36 @@ export function computeBlockOffsets(rawMarkdown: string): number[] {
   return offsets;
 }
 
+export type MarkdownTable = {
+  headers: string[];
+  alignments: TableAlignment[];
+  rows: string[][];
+};
+
+/**
+ * Finds the first GFM table in `source` and returns its cells as plain text
+ * (inline Markdown such as **bold**, `code` and [links](url) is reduced to its
+ * visible text). Returns null when no valid table is present.
+ */
+export function parseMarkdownTable(source: string): MarkdownTable | null {
+  const lines = source.replace(/\r\n?/g, "\n").split("\n");
+  for (let index = 0; index < lines.length - 1; index += 1) {
+    const table = parseTableAt(lines, index);
+    if (table) {
+      const toPlain = (cell: string) =>
+        parseInline(cell)
+          .map((token) => (token.type === "image" ? token.alt : token.text))
+          .join("");
+      return {
+        headers: table.block.headers.map(toPlain),
+        alignments: table.block.alignments,
+        rows: table.block.rows.map((row) => row.map(toPlain)),
+      };
+    }
+  }
+  return null;
+}
+
 function parseTableAt(
   lines: string[],
   index: number,
