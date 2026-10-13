@@ -375,18 +375,24 @@ input {
 
 /* ── Typography ── */
 .landing h1 {
-  font-family: var(--font-display);
+  /* CJK + Latin body in neutral sans 700; only the <em> brand fragment
+     ("X Articles") switches to Instrument Serif italic — mixing serif 400
+     with CJK fallback 宋体 was breaking weight balance and baseline. */
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
   font-size: clamp(48px, 7.2vw, 96px);
-  line-height: 0.98;
+  line-height: 1.02;
   letter-spacing: -0.025em;
   margin: 0;
-  font-weight: 400;
+  font-weight: 700;
   text-wrap: balance;
   color: var(--fg);
 }
 
 .landing h1 em,
 .landing h2 em {
+  font-family: var(--font-display);
+  font-weight: 400;
   font-style: italic;
   color: var(--accent);
   /* soft underline that echoes editorial red-pencil marks */
@@ -1042,6 +1048,16 @@ input {
   .hero-masthead {
     flex-wrap: wrap;
     gap: 8px 20px;
+  }
+
+  /* Touch floor: primary / secondary CTAs reach 44px height on mobile. */
+  .landing .btn {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .topnav-actions > * {
+    min-height: 44px;
   }
 }
 
