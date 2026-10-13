@@ -138,6 +138,7 @@ const en = {
   copyableText: "Copyable article text",
   polishOriginal: "Original",
   polishPolished: "Polished",
+  tweetHint: "X embed",
 
   // Editor — placeholder
   editorPlaceholder: "Start writing Markdown...",
@@ -376,6 +377,7 @@ const zh: Translations = {
   copyableText: "可复制的文章文本",
   polishOriginal: "原文",
   polishPolished: "润色后",
+  tweetHint: "推文嵌入",
 
   // Editor — placeholder
   editorPlaceholder: "开始编写 Markdown...",

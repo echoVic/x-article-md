@@ -126,6 +126,83 @@
   }
 }
 
+/* ═══ X Articles preview — measured values, independent of brand tokens ═══ */
+.x-preview {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 24.4px;
+  font-weight: 400;
+  color: var(--x-fg);
+  word-wrap: break-word;
+}
+
+.x-preview > * {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.x-preview > :first-child { margin-top: 0; }
+.x-preview > :last-child { margin-bottom: 0; }
+
+.x-preview h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 800;
+  color: var(--x-title);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+.x-preview h2 {
+  font-size: 20px;
+  line-height: 25px;
+  font-weight: 700;
+  color: var(--x-title);
+  margin: 24px 0 12px;
+}
+
+.x-preview h3,
+.x-preview h4,
+.x-preview h5,
+.x-preview h6 {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--x-title);
+  margin: 16px 0 8px;
+}
+
+.x-preview ul,
+.x-preview ol {
+  padding-left: 24px;
+  margin: 10px 0;
+}
+
+.x-preview ul { list-style: disc; }
+.x-preview ol { list-style: decimal; }
+
+.x-preview li {
+  margin: 5px 0;
+}
+
+.x-preview blockquote {
+  border-left: 4px solid color-mix(in srgb, var(--x-fg) 25%, transparent);
+  padding-left: 16px;
+  margin: 12px 0;
+}
+
+.x-preview a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.x-preview hr {
+  border: none;
+  border-top: 1px solid var(--x-line);
+  margin: 24px 0;
+}
+
 * {
   box-sizing: border-box;
 }
