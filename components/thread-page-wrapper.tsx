@@ -7,7 +7,7 @@ export function ThreadPageWrapper({ locale }: { locale: ThreadLocale }) {
   const copy = threadCopy[locale];
 
   return (
-    <div className="flex flex-col">
+    <div className="workbench flex flex-col bg-[var(--bg)]">
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
@@ -35,8 +35,10 @@ export function ThreadPageWrapper({ locale }: { locale: ThreadLocale }) {
         }}
       />
 
-      {/* Thread Generator */}
-      <ThreadPage />
+      {/* Thread Generator — exactly one viewport tall; SEO content lives below the fold */}
+      <div className="h-[100dvh]">
+        <ThreadPage />
+      </div>
 
       {/* SEO Header — below the fold */}
       <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-10">

@@ -122,6 +122,23 @@ const en = {
   // Editor — preview
   livePreview: "Live Preview",
   xArticles: "MD2X",
+  manuscript: "Manuscript",
+  codeBlockLabel: "Code block",
+  previewEmpty: "Start writing Markdown to see the preview.",
+
+  // Editor — chrome (aria / sr)
+  navThread: "Thread",
+  sectionsNav: "Sections",
+  homeAria: "MD2X home",
+  moreActions: "More actions",
+  resizePanes: "Resize panes",
+  manualTitleCopy: "Manual title copy",
+  manualBodyCopy: "Manual rich body copy",
+  copyableBody: "Copyable rich article body",
+  copyableText: "Copyable article text",
+  polishOriginal: "Original",
+  polishPolished: "Polished",
+  tweetHint: "X embed",
 
   // Editor — placeholder
   editorPlaceholder: "Start writing Markdown...",
@@ -173,6 +190,10 @@ const en = {
   threadEmpty: "Your thread will appear here...",
   threadTweet: "tweet",
   threadTweets: "tweets",
+  threadSourceRules: "Rule split",
+  threadSourceAi: "AI split",
+  threadTweetPreview: "Tweet preview",
+  threadOverLimit: "over 280",
 
   // Preflight panel
   preflightTitle: "Preflight Check",
@@ -344,6 +365,23 @@ const zh: Translations = {
   // Editor — preview
   livePreview: "实时预览",
   xArticles: "MD2X",
+  manuscript: "手稿",
+  codeBlockLabel: "代码块",
+  previewEmpty: "开始编写 Markdown，即可看到样张。",
+
+  // Editor — chrome (aria / sr)
+  navThread: "推文流",
+  sectionsNav: "栏目",
+  homeAria: "MD2X 首页",
+  moreActions: "更多操作",
+  resizePanes: "调整分栏宽度",
+  manualTitleCopy: "手动复制标题",
+  manualBodyCopy: "手动复制正文",
+  copyableBody: "可复制的文章正文",
+  copyableText: "可复制的文章文本",
+  polishOriginal: "原文",
+  polishPolished: "润色后",
+  tweetHint: "推文嵌入",
 
   // Editor — placeholder
   editorPlaceholder: "开始编写 Markdown...",
@@ -395,6 +433,10 @@ const zh: Translations = {
   threadEmpty: "推文流将在这里显示...",
   threadTweet: "条推文",
   threadTweets: "条推文",
+  threadSourceRules: "规则拆分",
+  threadSourceAi: "AI 拆分",
+  threadTweetPreview: "推文预览",
+  threadOverLimit: "已超 280",
 
   // Preflight panel
   preflightTitle: "发布预检",

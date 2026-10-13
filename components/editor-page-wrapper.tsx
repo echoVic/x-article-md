@@ -8,7 +8,7 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
   const copy = editorCopy[locale];
 
   return (
-    <div className="flex flex-col">
+    <div className="workbench flex flex-col bg-[var(--bg)]">
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
@@ -18,8 +18,8 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
         }}
       />
 
-      {/* Editor */}
-      <div className="h-[calc(100dvh-5rem)]">
+      {/* Editor — exactly one viewport tall; SEO content lives below the fold */}
+      <div className="h-[100dvh]">
         <EditorPage />
       </div>
 

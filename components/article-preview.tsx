@@ -1,5 +1,8 @@
+"use client";
+
 import type { ArticleBlock, InlineToken } from "@/lib/markdown";
 import type { CodeImageTheme } from "@/lib/code-themes";
+import { useI18n } from "@/lib/i18n";
 import { CodeBlock } from "./code-block";
 import { MermaidBlock } from "./mermaid-block";
 
@@ -8,61 +11,52 @@ type ArticlePreviewProps = {
   codeTheme?: CodeImageTheme;
 };
 
+/**
+ * X Articles reading surface. Rendered with the independent --x-* tokens
+ * (measured from the live X editor), never the brand magazine tokens:
+ * only article content, zero decorative chrome.
+ */
 export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
+  const { t } = useI18n();
+
   if (blocks.length === 0) {
     return (
-      <div className="flex h-full min-h-64 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-sm text-[var(--muted)]">
-        开始编写 Markdown 即可看到预览
+      <div
+        className="flex min-h-48 items-center justify-center px-6 py-16 text-center text-[14px]"
+        style={{ color: "var(--x-muted)" }}
+      >
+        {t.previewEmpty}
       </div>
     );
   }
 
   return (
-    <article className="mx-auto max-w-[640px] space-y-6 text-[var(--fg)]">
+    <article className="x-preview mx-auto w-full max-w-[568px] px-4 py-6">
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading": {
             const Tag = `h${block.level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-            const size =
-              block.level === 1
-                ? "text-[28px] leading-[1.2] tracking-[-0.02em]"
-                : block.level === 2
-                  ? "text-[22px] leading-[1.25] tracking-[-0.01em]"
-                  : block.level === 3
-                    ? "text-[18px] leading-[1.3]"
-                    : block.level === 4
-                      ? "text-[16px] leading-[1.35]"
-                      : block.level === 5
-                        ? "text-[14px] leading-[1.4]"
-                        : "text-[13px] leading-[1.4]";
-
             return (
-              <Tag key={index} className={`${size} font-semibold`}>
+              <Tag key={index}>
                 <InlineContent tokens={block.content} />
               </Tag>
             );
           }
           case "paragraph":
             return (
-              <p key={index} className="text-[16px] leading-[1.75]">
+              <p key={index}>
                 <InlineContent tokens={block.content} />
               </p>
             );
           case "blockquote":
             return (
-              <blockquote
-                key={index}
-                className="border-l-4 border-[var(--border)] bg-[var(--fg-soft)] pl-4 py-3 text-[15px] leading-[1.7] text-[var(--muted)] italic"
-              >
+              <blockquote key={index}>
                 <InlineContent tokens={block.content} />
               </blockquote>
             );
           case "list":
             return block.ordered ? (
-              <ol
-                key={index}
-                className="list-decimal space-y-2 pl-6 text-[16px] leading-[1.75]"
-              >
+              <ol key={index}>
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
                     <InlineContent tokens={item} />
@@ -70,10 +64,7 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
                 ))}
               </ol>
             ) : (
-              <ul
-                key={index}
-                className="list-disc space-y-2 pl-6 text-[16px] leading-[1.75]"
-              >
+              <ul key={index}>
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
                     <InlineContent tokens={item} />
@@ -94,14 +85,19 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             return <MermaidBlock key={index} code={block.code} codeTheme={codeTheme} />;
           case "table":
             return (
-              <div key={index} className="overflow-auto rounded-[var(--radius)] border border-[var(--border)]">
+              <div
+                key={index}
+                className="overflow-auto rounded-[var(--radius)] border"
+                style={{ borderColor: "var(--x-line)" }}
+              >
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
                     <tr>
                       {block.headers.map((header, headerIndex) => (
                         <th
                           key={headerIndex}
-                          className="border-b border-[var(--border)] bg-[var(--fg-soft)] px-3 py-2.5 text-xs font-semibold text-[var(--muted)] uppercase tracking-wider"
+                          className="border-b px-3 py-2.5 text-xs font-semibold"
+                          style={{ borderColor: "var(--x-line)", color: "var(--x-muted)" }}
                         >
                           {header}
                         </th>
@@ -110,11 +106,12 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
                   </thead>
                   <tbody>
                     {block.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="transition-colors hover:bg-[var(--fg-soft)]">
+                      <tr key={rowIndex}>
                         {block.headers.map((_, cellIndex) => (
                           <td
                             key={cellIndex}
-                            className="border-b border-[var(--border)] px-3 py-2 text-[13px] font-mono tabular-nums"
+                            className="border-b px-3 py-2"
+                            style={{ borderColor: "var(--x-line)" }}
                           >
                             {row[cellIndex] ?? ""}
                           </td>
@@ -129,17 +126,18 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             return (
               <div
                 key={index}
-                className="rounded-[var(--radius)] border border-dashed border-[var(--muted)] bg-[var(--fg-soft)] p-4"
+                className="rounded-[var(--radius)] border p-4"
+                style={{ borderColor: "var(--x-line)" }}
               >
-                <p className="text-xs font-medium text-[var(--muted)]">
-                  Tweet embed
+                <p className="text-xs font-medium" style={{ color: "var(--x-muted)" }}>
+                  {t.tweetHint}
                 </p>
                 <a
                   href={block.url}
                   target="_blank"
                   rel="noreferrer"
                   title={block.url}
-                  className="mt-2 block break-all text-sm font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-4"
+                  className="mt-2 block break-all text-sm font-medium underline underline-offset-2"
                 >
                   {block.url}
                 </a>
@@ -159,24 +157,17 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
           case "text":
             return token.text;
           case "strong":
-            return <strong key={index} className="font-semibold">{token.text}</strong>;
+            return <strong key={index} style={{ fontWeight: 700 }}>{token.text}</strong>;
           case "em":
-            return <em key={index} className="italic">{token.text}</em>;
+            return <em key={index}>{token.text}</em>;
           case "code":
-            return (
-              <code
-                key={index}
-                className="rounded-[var(--radius-xs)] bg-[var(--fg-soft)] px-1.5 py-0.5 font-mono text-[0.88em]"
-              >
-                {token.text}
-              </code>
-            );
+            // X Articles has no inline-code support — paste degrades to plain text.
+            return <span key={index}>{token.text}</span>;
           case "link":
             return (
               <a
                 key={index}
                 href={token.href}
-                className="font-medium text-[var(--accent)] underline decoration-[var(--accent-soft)] underline-offset-3"
                 target="_blank"
                 rel="noreferrer"
                 title={token.text || token.href}
@@ -190,7 +181,7 @@ function InlineContent({ tokens }: { tokens: InlineToken[] }) {
                 key={index}
                 src={token.url}
                 alt={token.alt}
-                className="max-w-full h-auto rounded-[var(--radius)]"
+                className="my-2 max-w-full rounded-[var(--radius)]"
                 loading="lazy"
               />
             );

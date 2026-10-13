@@ -116,19 +116,19 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
             fontFamily: "inherit",
           },
           ".cm-line": {
-            lineHeight: "1.714",
+            lineHeight: "23px",
           },
           "&.cm-focused": {
             outline: "none",
           },
           ".cm-gutters": {
             backgroundColor: "var(--surface)",
-            color: "color-mix(in oklch, var(--muted) 40%, transparent)",
+            color: "var(--ln)",
             border: "none",
-            borderRight: "1px solid var(--border)",
+            borderRight: "1px solid var(--border-struct)",
             fontSize: "12px",
-            paddingRight: "12px",
-            minWidth: "48px",
+            paddingRight: "10px",
+            minWidth: "44px",
           },
           ".cm-gutterElement": {
             textAlign: "right",
@@ -159,7 +159,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
             fontStyle: "italic",
           },
           ".cm-heading": {
-            color: "var(--accent)",
+            color: "var(--fg)",
             fontWeight: "600",
           },
           ".cm-strong": {
@@ -175,10 +175,10 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
             textDecoration: "underline",
           },
           ".cm-url": {
-            color: "color-mix(in oklch, var(--accent) 70%, transparent)",
+            color: "var(--muted)",
           },
           ".cm-monospace": {
-            color: "var(--accent)",
+            color: "var(--fg)",
             backgroundColor: "var(--fg-soft)",
             padding: "2px 4px",
             borderRadius: "3px",
