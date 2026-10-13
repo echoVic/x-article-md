@@ -8,7 +8,7 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
   const copy = editorCopy[locale];
 
   return (
-    <div className="flex flex-col">
+    <div className="workbench flex flex-col bg-[var(--bg)]">
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
