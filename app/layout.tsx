@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -18,6 +18,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Editorial display serif — used only for landing headlines & pull-quotes.
+// Loading a single weight + italic keeps payload minimal.
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
 const defaultMetadata = buildPageMetadata("home");
 
 export const metadata: Metadata = {
@@ -32,8 +42,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f5ef" },
-    { media: "(prefers-color-scheme: dark)", color: "#1a1a2e" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f1e8" },
+    { media: "(prefers-color-scheme: dark)", color: "#171613" },
   ],
 };
 
@@ -44,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}>
         <Providers>{children}</Providers>
         <OfflineIndicator />
         <Analytics />

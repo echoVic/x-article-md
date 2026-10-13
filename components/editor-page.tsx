@@ -70,6 +70,12 @@ export default function EditorPage() {
     () => resolveTheme(codeThemeId, isDark),
     [codeThemeId, isDark],
   );
+  const headingCount = useMemo(() => blocks.filter((block) => block.type === "heading").length, [blocks]);
+  const paragraphCount = useMemo(
+    () => blocks.filter((block) => block.type === "paragraph").length,
+    [blocks],
+  );
+  const editorDensityLabel = markdown.length > 5000 ? "long draft" : markdown.length > 1800 ? "feature draft" : "short draft";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -278,7 +284,15 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr]" style={{ userSelect: isResizing ? 'none' : 'auto' }}>
+    <div
+      className="grid h-full grid-rows-[auto_auto_auto_1fr] bg-[var(--bg)]"
+      style={{
+        userSelect: isResizing ? "none" : "auto",
+        backgroundImage:
+          "linear-gradient(to right, color-mix(in oklch, var(--border) 72%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklch, var(--border) 36%, transparent) 1px, transparent 1px)",
+        backgroundSize: "100% 100%, 100% 28px",
+      }}
+    >
       {/* ═══ Global Header ═══ */}
       <AppHeader activePage="editor" />
 
@@ -304,6 +318,25 @@ export default function EditorPage() {
         showPreflightHint={showPreflightHint}
       />
 
+      <div className="grid border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_84%,transparent)] px-4 py-3 md:grid-cols-3 md:px-5">
+        <WorkbenchMeta
+          kicker="Writing desk"
+          title="Manuscript first"
+          detail={`${editorDensityLabel} · ${headingCount} headings · ${paragraphCount} passages`}
+        />
+        <WorkbenchMeta
+          kicker="Production"
+          title="Copy without cleanup"
+          detail={`${clipboard.assets.length} asset${clipboard.assets.length === 1 ? "" : "s"} · ${hasCodeBlocks ? "code-aware" : "plain text"}`}
+        />
+        <WorkbenchMeta
+          kicker="Reading"
+          title="Proof in parallel"
+          detail={`${Math.round(leftPanelWidth)} / ${100 - Math.round(leftPanelWidth)} split · ${t.xArticles}`}
+          align="end"
+        />
+      </div>
+
       {/* ═══ Hidden file input for import ═══ */}
       <input
         ref={fileInputRef}
@@ -322,38 +355,149 @@ export default function EditorPage() {
           gridTemplateColumns: `${leftPanelWidth}% 1px ${100 - leftPanelWidth}%`,
         }}
       >
-        <MarkdownEditor
-          ref={markdownEditorRef}
-          value={markdown}
-          onChange={setMarkdown}
-          onReset={resetDraft}
-          draftReady={draftReady}
-        />
+        <div className="flex min-w-0 flex-col overflow-hidden bg-[color-mix(in_oklch,var(--surface)_92%,transparent)]">
+          <div className="border-b border-[var(--border)] px-5 py-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <div>
+                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+                  Draft surface
+                </div>
+                <p
+                  className="mt-2 text-[var(--fg)]"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "22px",
+                    fontStyle: "italic",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Write like a manuscript, not a form field.
+                </p>
+              </div>
+              <div className="hidden text-right md:block">
+                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
+                  Current desk state
+                </div>
+                <p className="mt-2 text-[13px] leading-[1.6] text-[var(--muted)]">
+                  Keep the draft airy, then polish, preflight, and paste once.
+                </p>
+              </div>
+            </div>
+          </div>
+          <MarkdownEditor
+            ref={markdownEditorRef}
+            value={markdown}
+            onChange={setMarkdown}
+            onReset={resetDraft}
+            draftReady={draftReady}
+          />
+        </div>
 
-        {/* Resize handle */}
+        {/* Resize handle — editorial gutter with subtle center marker */}
         <div
           className="relative cursor-col-resize group select-none"
           onMouseDown={handleResizeMouseDown}
+          role="separator"
+          aria-label="Resize panes"
         >
           <div
             className={`absolute inset-y-0 left-0 w-px transition-colors ${
               isResizing
-                ? "bg-[var(--accent)] shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-                : "bg-[var(--border)] group-hover:bg-[var(--accent)]"
+                ? "bg-[var(--accent)]"
+                : "bg-[var(--border)] group-hover:bg-[var(--fg)]"
+            }`}
+          />
+          <div
+            aria-hidden="true"
+            className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[2px] w-[5px] h-[5px] rotate-45 transition-colors ${
+              isResizing
+                ? "bg-[var(--accent)]"
+                : "bg-[var(--border)] group-hover:bg-[var(--fg)]"
             }`}
           />
         </div>
 
         {/* Preview pane */}
-        <div className="flex flex-col overflow-hidden bg-[var(--surface)]">
-          <div className="flex items-center justify-between px-4 h-[38px] border-b border-[var(--border)] min-h-[38px]">
-            <span className="text-xs font-medium text-[var(--muted)]">
-              <span className="inline-block w-[6px] h-[6px] rounded-full bg-[var(--success)] mr-[6px] animate-pulse" />
-              {t.livePreview}
-            </span>
-            <span className="font-mono text-[10px] text-[var(--muted)] opacity-60">{t.xArticles}</span>
+        <div className="flex min-w-0 flex-col overflow-hidden bg-[var(--bg)]">
+          <div className="border-b border-[var(--border)] px-5 py-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <div>
+                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+                  Reading proof
+                </div>
+                <p
+                  className="mt-2 text-[var(--fg)]"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "22px",
+                    fontStyle: "italic",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Proof the pacing before you export the piece.
+                </p>
+              </div>
+              <div className="hidden text-right md:block">
+                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
+                  Surface target
+                </div>
+                <p className="mt-2 text-[13px] leading-[1.6] text-[var(--muted)]">
+                  {t.xArticles} · live proof · fol. 02
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex-1 overflow-y-auto px-8 py-8 sm:px-10">
+          <div className="flex items-baseline justify-between px-5 h-[38px] border-b border-[var(--border)] min-h-[38px] bg-[color-mix(in_oklch,var(--surface)_68%,transparent)]">
+            <span
+              className="inline-flex items-baseline gap-[8px]"
+              style={{
+                fontFamily: "var(--font-geist-mono)",
+                fontSize: "10px",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                lineHeight: 1,
+                color: "var(--fg)",
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-block",
+                  width: 14,
+                  height: 1,
+                  background: "var(--accent)",
+                  transform: "translateY(-3px)",
+                }}
+              />
+              Proof
+              <span
+                aria-hidden="true"
+                className="text-[var(--muted)]"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontStyle: "italic",
+                  fontSize: "12px",
+                  letterSpacing: "-0.005em",
+                  textTransform: "none",
+                }}
+              >
+                — {t.livePreview.toLowerCase()}
+              </span>
+            </span>
+            <span
+              className="text-[var(--muted)]"
+              style={{
+                fontFamily: "var(--font-geist-mono)",
+                fontSize: "9.5px",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                lineHeight: 1,
+              }}
+            >
+              {t.xArticles}&nbsp;·&nbsp;fol.&nbsp;02
+            </span>
+          </div>
+          <div className="flex-1 overflow-y-auto px-8 py-10 sm:px-12">
             <ArticlePreview blocks={blocks} codeTheme={resolvedCodeTheme} />
           </div>
         </div>
@@ -458,6 +602,35 @@ export default function EditorPage() {
           )}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+type WorkbenchMetaProps = {
+  kicker: string;
+  title: string;
+  detail: string;
+  align?: "start" | "end";
+};
+
+function WorkbenchMeta({ kicker, title, detail, align = "start" }: WorkbenchMetaProps) {
+  return (
+    <div className={`py-1 ${align === "end" ? "md:text-right" : ""}`}>
+      <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+        {kicker}
+      </div>
+      <div
+        className="mt-2 text-[var(--fg)]"
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "20px",
+          fontStyle: "italic",
+          lineHeight: 1.15,
+        }}
+      >
+        {title}
+      </div>
+      <p className="mt-2 text-[12px] leading-[1.6] text-[var(--muted)]">{detail}</p>
     </div>
   );
 }

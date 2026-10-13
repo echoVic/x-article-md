@@ -4,6 +4,12 @@ import { landingCopy } from "@/lib/landing-copy";
 import { Globe } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Editorial masthead-style navigation:
+ * — the wordmark reads like a small caps issue title ("MD · X ARTICLES")
+ * — nav links are mono ALL-CAPS with a red underline on hover
+ * — right-hand actions cluster keeps utility controls small and honest
+ */
 export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
   const editorHref = locale === "zh" ? "/zh/editor" : "/editor";
@@ -13,10 +19,45 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
     <header className="topnav">
       <div className="container topnav-inner">
         <span className="logo">
-          <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 800, fontSize: "15px", letterSpacing: "-0.03em" }}>MD</span>
-            <span style={{ color: "var(--accent)", fontSize: "12px", margin: "0 2px" }}>→</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 800, fontSize: "15px", letterSpacing: "-0.03em" }}>X</span>
+          <Link
+            href="/"
+            style={{ textDecoration: "none", color: "inherit", display: "inline-flex", alignItems: "baseline", gap: "8px" }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontWeight: 400,
+                fontSize: "22px",
+                letterSpacing: "-0.02em",
+                lineHeight: 1,
+              }}
+            >
+              MD
+            </span>
+            <span
+              style={{
+                color: "var(--accent)",
+                fontFamily: "var(--font-geist-mono)",
+                fontSize: "13px",
+                lineHeight: 1,
+              }}
+              aria-hidden="true"
+            >
+              →
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-geist-mono)",
+                fontWeight: 600,
+                fontSize: "12px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                lineHeight: 1,
+              }}
+            >
+              X Articles
+            </span>
           </Link>
         </span>
         <nav className="topnav-links">

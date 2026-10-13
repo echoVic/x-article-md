@@ -11,14 +11,51 @@ type ArticlePreviewProps = {
 export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
   if (blocks.length === 0) {
     return (
-      <div className="flex h-full min-h-64 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-sm text-[var(--muted)]">
-        开始编写 Markdown 即可看到预览
+      <div className="flex h-full min-h-64 flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-[var(--border)] px-8 py-12 text-center">
+        <span
+          className="text-[var(--muted)]"
+          style={{
+            fontFamily: "var(--font-geist-mono)",
+            fontSize: "10.5px",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+          }}
+        >
+          Live Preview
+        </span>
+        <span
+          className="text-[var(--fg)]"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontStyle: "italic",
+            fontSize: "22px",
+            lineHeight: 1.3,
+          }}
+        >
+          开始编写 Markdown，即可看到样张。
+        </span>
       </div>
     );
   }
 
   return (
-    <article className="mx-auto max-w-[640px] space-y-6 text-[var(--fg)]">
+    <article className="mx-auto max-w-[680px] space-y-7 text-[var(--fg)]">
+      <div className="border-b border-[var(--border)] pb-5">
+        <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+          X Articles proof
+        </div>
+        <p
+          className="mt-3 text-[var(--fg)]"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "24px",
+            fontStyle: "italic",
+            lineHeight: 1.18,
+          }}
+        >
+          This is the reading surface — trim friction, keep cadence, and let each block breathe.
+        </p>
+      </div>
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading": {
@@ -37,14 +74,25 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
                         : "text-[13px] leading-[1.4]";
 
             return (
-              <Tag key={index} className={`${size} font-semibold`}>
+              <Tag
+                key={index}
+                className={`${size} ${block.level <= 2 ? "font-normal" : "font-semibold"}`}
+                style={
+                  block.level <= 2
+                    ? {
+                        fontFamily: "var(--font-display)",
+                        letterSpacing: block.level === 1 ? "-0.028em" : "-0.02em",
+                      }
+                    : undefined
+                }
+              >
                 <InlineContent tokens={block.content} />
               </Tag>
             );
           }
           case "paragraph":
             return (
-              <p key={index} className="text-[16px] leading-[1.75]">
+              <p key={index} className="text-[17px] leading-[1.85] text-[color-mix(in_oklch,var(--fg)_92%,transparent)]">
                 <InlineContent tokens={block.content} />
               </p>
             );
@@ -52,7 +100,11 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             return (
               <blockquote
                 key={index}
-                className="border-l-4 border-[var(--border)] bg-[var(--fg-soft)] pl-4 py-3 text-[15px] leading-[1.7] text-[var(--muted)] italic"
+                className="border-y border-[var(--border)] py-4 pl-5 text-[16px] leading-[1.8] text-[var(--muted)]"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontStyle: "italic",
+                }}
               >
                 <InlineContent tokens={block.content} />
               </blockquote>
@@ -61,7 +113,7 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             return block.ordered ? (
               <ol
                 key={index}
-                className="list-decimal space-y-2 pl-6 text-[16px] leading-[1.75]"
+                className="list-decimal space-y-3 pl-6 text-[17px] leading-[1.8] marker:text-[var(--accent)]"
               >
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
@@ -72,7 +124,7 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             ) : (
               <ul
                 key={index}
-                className="list-disc space-y-2 pl-6 text-[16px] leading-[1.75]"
+                className="list-disc space-y-3 pl-6 text-[17px] leading-[1.8] marker:text-[var(--accent)]"
               >
                 {block.items.map((item, itemIndex) => (
                   <li key={itemIndex}>
@@ -94,7 +146,7 @@ export function ArticlePreview({ blocks, codeTheme }: ArticlePreviewProps) {
             return <MermaidBlock key={index} code={block.code} codeTheme={codeTheme} />;
           case "table":
             return (
-              <div key={index} className="overflow-auto rounded-[var(--radius)] border border-[var(--border)]">
+              <div key={index} className="overflow-auto rounded-[var(--radius)] border border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_84%,transparent)]">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
                     <tr>

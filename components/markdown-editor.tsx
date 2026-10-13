@@ -262,13 +262,102 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
   if (currentItems.length > 0) toolbarGroups.push(currentItems);
 
   return (
-    <div className="flex flex-col overflow-hidden bg-[var(--surface)] relative">
+    <div className="flex flex-col overflow-hidden bg-[var(--bg)] relative min-h-0 flex-1">
+      {/* Running head — echoes the "Proof" head on the right pane */}
+      <div className="flex items-baseline justify-between px-5 h-[38px] border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_78%,transparent)]">
+        <span
+          className="inline-flex items-baseline gap-[8px]"
+          style={{
+            fontFamily: "var(--font-geist-mono)",
+            fontSize: "10px",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            lineHeight: 1,
+            color: "var(--fg)",
+          }}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              display: "inline-block",
+              width: 14,
+              height: 1,
+              background: "var(--accent)",
+              transform: "translateY(-3px)",
+            }}
+          />
+          Manuscript
+          <span
+            className="text-[var(--muted)]"
+            aria-hidden="true"
+            style={{
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontSize: "12px",
+              letterSpacing: "-0.005em",
+              textTransform: "none",
+            }}
+          >
+            — markdown
+          </span>
+        </span>
+        <span
+          className="text-[var(--muted)] tabular-nums"
+          aria-hidden="true"
+          style={{
+            fontFamily: "var(--font-geist-mono)",
+            fontSize: "9.5px",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            lineHeight: 1,
+          }}
+        >
+          fol.&nbsp;01
+        </span>
+      </div>
+
+      <div className="grid gap-3 border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_88%,transparent)] px-5 py-3 md:grid-cols-[1fr_auto] md:items-end">
+        <div>
+          <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
+            Compose with structure
+          </div>
+          <p
+            className="mt-2 text-[var(--fg)]"
+            style={{
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontSize: "18px",
+              lineHeight: 1.2,
+            }}
+          >
+            Build the piece in Markdown, then let the right pane check rhythm and pacing.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 text-[var(--muted)] md:justify-end">
+          <span className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em]">
+            line-safe
+          </span>
+          <span className="h-px w-6 bg-[var(--border)]" aria-hidden="true" />
+          <span
+            className="text-[var(--fg)]"
+            style={{
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontSize: "14px",
+              lineHeight: 1,
+            }}
+          >
+            readable first
+          </span>
+        </div>
+      </div>
+
       {/* Toolbar */}
-      <div className="flex items-center gap-[2px] px-[10px] py-[5px] border-b border-[var(--border)] min-h-[38px]">
+      <div className="flex items-center gap-[2px] px-[10px] py-[6px] border-b border-[var(--border)] min-h-[38px] bg-[color-mix(in_oklch,var(--surface)_94%,transparent)]">
         {toolbarGroups.map((group, groupIndex) => (
           <div key={groupIndex} className="contents">
             {groupIndex > 0 && (
-              <div className="w-px h-[18px] bg-[var(--border)] mx-[6px]" />
+              <div className="w-px h-[16px] bg-[var(--border)] mx-[6px]" />
             )}
             <div className="flex items-center gap-[1px]">
               {group.map((item) => {
@@ -279,7 +368,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
                     type="button"
                     onClick={() => applyAction(item.action)}
                     aria-label={String(label)}
-                    className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
+                    className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
                   >
                     <ToolbarIcon icon={item.icon} />
                   </button>
@@ -299,12 +388,12 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
               type="button"
               disabled={isPolishing}
               aria-label={t.toolPolish}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPolishing ? (
-                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                <Loader2 size={15} className="animate-spin" aria-hidden="true" />
               ) : (
-                <Sparkles size={16} strokeWidth={1.8} aria-hidden="true" />
+                <Sparkles size={15} strokeWidth={1.6} aria-hidden="true" />
               )}
             </button>
           }
@@ -325,12 +414,12 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
               type="button"
               disabled={isTranslating}
               aria-label={t.toolTranslate}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isTranslating ? (
-                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                <Loader2 size={15} className="animate-spin" aria-hidden="true" />
               ) : (
-                <Languages size={16} strokeWidth={1.8} aria-hidden="true" />
+                <Languages size={15} strokeWidth={1.6} aria-hidden="true" />
               )}
             </button>
           }
@@ -345,9 +434,9 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
             type="button"
             onClick={onReset}
             aria-label={t.toolReset}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
+            className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
           >
-            <RotateCcw size={16} strokeWidth={1.8} aria-hidden="true" />
+            <RotateCcw size={15} strokeWidth={1.6} aria-hidden="true" />
           </button>
         </Tooltip>
       </div>
@@ -405,16 +494,54 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
         )}
       </Dialog>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between px-[14px] h-[30px] border-t border-[var(--border)] font-mono text-[11px] text-[var(--muted)]">
-        <div className="flex items-center gap-1 tabular-nums">
-          <span>{stats.lines} {t.footerLines}</span>
-          <span className="opacity-40">·</span>
-          <span>{stats.words} {t.footerWords}</span>
-          <span className="opacity-40">·</span>
-          <span>{stats.characters} {t.footerChars}</span>
+      {/* Footer — editorial colophon */}
+      <div className="flex items-baseline justify-between px-5 h-[28px] border-t border-[var(--border)] text-[var(--muted)]">
+        <div
+          className="flex items-baseline gap-[10px] tabular-nums"
+          style={{
+            fontFamily: "var(--font-geist-mono)",
+            fontSize: "10.5px",
+            letterSpacing: "0.02em",
+            lineHeight: 1,
+          }}
+        >
+          <span>
+            <span className="text-[var(--fg)] font-medium">{stats.lines}</span>{" "}
+            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
+              {t.footerLines}
+            </span>
+          </span>
+          <span aria-hidden="true" className="opacity-30">
+            ·
+          </span>
+          <span>
+            <span className="text-[var(--fg)] font-medium">{stats.words}</span>{" "}
+            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
+              {t.footerWords}
+            </span>
+          </span>
+          <span aria-hidden="true" className="opacity-30">
+            ·
+          </span>
+          <span>
+            <span className="text-[var(--fg)] font-medium">{stats.characters}</span>{" "}
+            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
+              {t.footerChars}
+            </span>
+          </span>
         </div>
-        <span className="opacity-60 text-[10px]">{t.footerShortcuts}</span>
+        <span
+          className="opacity-60"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontStyle: "italic",
+            fontSize: "12px",
+            letterSpacing: "-0.005em",
+            lineHeight: 1,
+          }}
+        >
+          {t.footerShortcuts}
+        </span>
       </div>
     </div>
   );

@@ -3,6 +3,12 @@ import { landingCopy } from "@/lib/landing-copy";
 import { getAllFeatureLandings } from "@/lib/feature-landing-copy";
 import Link from "next/link";
 
+/**
+ * Colophon-style footer: keeps the editorial voice of the landing.
+ * Left: dateline / issue mark.
+ * Middle: tools directory (feature landings).
+ * Right: tagline in mono meta type.
+ */
 export function LandingFooter({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
   const features = getAllFeatureLandings();
@@ -11,9 +17,15 @@ export function LandingFooter({ locale = "en" }: { locale?: LandingLocale }) {
   return (
     <footer className="pagefoot">
       <div className="container pagefoot-inner">
-        <span>x-article-md · 2026</span>
+        <span className="meta">
+          <span style={{ color: "var(--accent)" }}>§</span>{" "}
+          x-article-md · vol. 01 · 2026
+        </span>
         {features.length > 0 && (
-          <nav className="pagefoot-tools" aria-label={locale === "zh" ? "工具" : "Tools"}>
+          <nav
+            className="pagefoot-tools"
+            aria-label={locale === "zh" ? "工具" : "Tools"}
+          >
             {features.map((def) => (
               <Link key={def.slug} href={`${prefix}/${def.slug}`}>
                 {def[locale].heroTitle}
