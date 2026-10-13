@@ -292,7 +292,7 @@ export default function ThreadPage() {
                           fontFamily: "var(--font-geist-mono)",
                         }}
                       >
-                        {i + 1}/{threads.length} · {tweet.length} {t.threadChars}
+                        {tweet.length} {t.threadChars}
                         {over ? ` · ${t.threadOverLimit}` : ""}
                       </span>
                       <button
