@@ -89,25 +89,53 @@ async function getAccessToken(args) {
     throw new Error(`${credentialsPath} must contain an installed or web OAuth client`);
   }
 
-  const token = await readJsonIfExists(tokenPath);
+  const token = args.reauth ? null : await readJsonIfExists(tokenPath);
   if (token?.access_token && token.expiry_date && token.expiry_date > Date.now() + 60_000) {
     return { accessToken: token.access_token };
   }
 
   if (token?.refresh_token) {
-    const refreshed = await postToken(oauth.token_uri, {
-      client_id: oauth.client_id,
-      client_secret: oauth.client_secret,
-      refresh_token: token.refresh_token,
-      grant_type: "refresh_token",
-    });
-    const merged = {
-      ...token,
-      ...refreshed,
-      expiry_date: Date.now() + refreshed.expires_in * 1000,
-    };
-    await writeJson(tokenPath, merged);
-    return { accessToken: merged.access_token };
+    try {
+      const refreshed = await postToken(oauth.token_uri, {
+        client_id: oauth.client_id,
+        client_secret: oauth.client_secret,
+        refresh_token: token.refresh_token,
+        grant_type: "refresh_token",
+      });
+      const merged = {
+        ...token,
+        ...refreshed,
+        expiry_date: Date.now() + refreshed.expires_in * 1000,
+      };
+      await writeJson(tokenPath, merged);
+      return { accessToken: merged.access_token };
+    } catch (error) {
+      if (!isRevokedRefreshToken(error)) {
+        throw error;
+      }
+      // Refresh tokens issued while the OAuth consent screen is in "Testing"
+      // expire after 7 days. Fall through to a fresh interactive consent.
+      console.error(
+        "Saved refresh token was rejected (invalid_grant); starting a new authorization.\n" +
+          "Tip: publish the OAuth consent screen (Google Cloud → APIs & Services → OAuth consent screen → " +
+          "Publish app) so refresh tokens stop expiring every 7 days.\n",
+      );
+    }
+  }
+
+  return authorizeInteractively(oauth, tokenPath);
+}
+
+function isRevokedRefreshToken(error) {
+  return error?.oauthError === "invalid_grant";
+}
+
+async function authorizeInteractively(oauth, tokenPath) {
+  if (!input.isTTY) {
+    throw new Error(
+      "Search Console authorization required, but stdin is not interactive. " +
+        "Run `node scripts/gsc.mjs sites --reauth` in a terminal first.",
+    );
   }
 
   const redirectUri = oauth.redirect_uris?.[0] || "http://localhost";
@@ -163,9 +191,11 @@ async function postToken(tokenUri, values) {
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(values),
   });
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error_description || data.error || "OAuth token request failed");
+    const error = new Error(data.error_description || data.error || "OAuth token request failed");
+    error.oauthError = data.error;
+    throw error;
   }
   return data;
 }
@@ -208,6 +238,7 @@ function printHelp() {
 Options:
   --credentials <path>   OAuth client file, default credentials.json
   --token <path>         Local token cache, default .gsc-token.json
+  --reauth               Ignore the cached token and run OAuth consent again
   --site <siteUrl>       GSC property URL, default ${DEFAULT_SITE}
   --days <n>             Complete days ending yesterday, default 28
   --start YYYY-MM-DD     Explicit start date
