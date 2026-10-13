@@ -297,7 +297,7 @@ export default function ThreadPage() {
                       <button
                         type="button"
                         onClick={() => copyTweet(tweet, i)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-struct)] px-2 py-0.5 text-[11px] text-[var(--muted)] transition-opacity hover:text-[var(--fg)] md:opacity-0 md:group-hover:opacity-100"
+                        className="thread-copy-btn rounded-[var(--radius-sm)] border border-[var(--border-struct)] px-2 py-0.5 text-[11px] text-[var(--muted)] transition-opacity hover:text-[var(--fg)] md:opacity-0 md:group-hover:opacity-100"
                         aria-label={copied === i ? t.threadCopied : t.threadCopy}
                       >
                         {copied === i ? (
@@ -321,7 +321,7 @@ export default function ThreadPage() {
       {/* ═══ Mobile bottom action bar — 60px ═══ */}
       {!isDesktop && (
         <div
-          className="flex h-[60px] shrink-0 items-center gap-2 border-t px-3"
+          className="wb-mobile-actions flex h-[60px] shrink-0 items-center gap-2 border-t px-3"
           style={{ borderColor: "var(--border)", background: "var(--surface)" }}
         >
           <button type="button" onClick={copyAll} className={ghostBtn}>

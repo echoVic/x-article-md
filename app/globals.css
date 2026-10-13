@@ -133,6 +133,13 @@
     font-size: 12.5px !important;
     line-height: 20px !important;
   }
+  /* Thread touch floor: toolbar buttons, bottom bar and per-card copy ≥44px */
+  .wb-toolbar button,
+  .wb-mobile-actions button,
+  .thread-copy-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 /* ═══ Compact height (≤760px viewport height) — 40 + 40 + 28 + 32 = 140 ═══
