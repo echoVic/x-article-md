@@ -1,3 +1,5 @@
+import { describe, it, expect } from "vitest";
+
 /**
  * Import/Export .md file functionality tests
  */

@@ -33,7 +33,9 @@ describe("SEO configuration", () => {
         alt: "MD2X Markdown to X Articles converter",
       },
     ]);
-    expect(metadata.twitter?.card).toBe("summary_large_image");
+    expect((metadata.twitter as { card?: string } | null | undefined)?.card).toBe(
+      "summary_large_image",
+    );
   });
 
   it("uses focused metadata for the editor page", () => {

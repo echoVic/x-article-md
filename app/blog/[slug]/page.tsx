@@ -2,7 +2,7 @@ import { LandingFooter } from "@/components/landing-footer";
 import { LandingHeader } from "@/components/landing-header";
 import { mdxComponents } from "@/components/mdx-components";
 import { getAllSlugs, getBlogPost, getBlogPosts } from "@/lib/blog";
-import { buildArticleJsonLd, siteUrl } from "@/lib/seo";
+import { buildArticleJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";

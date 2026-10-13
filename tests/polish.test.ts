@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "@/app/api/polish/route";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Mock the AI SDK
 vi.mock("ai", () => ({
@@ -16,6 +16,13 @@ vi.mock("@ai-sdk/deepseek", () => ({
 vi.mock("@/lib/rate-limit", () => ({
   checkRateLimit: vi.fn(async () => ({ limited: false })),
 }));
+
+// The route only reads `text`; build a minimal, explicitly-cast result so the
+// tests don't break every time the AI SDK adds fields to GenerateTextResult.
+type GenerateTextResult = Awaited<ReturnType<typeof import("ai").generateText>>;
+function textResult(text: string): GenerateTextResult {
+  return { text, finishReason: "stop", warnings: [] } as unknown as GenerateTextResult;
+}
 
 describe("Polish API", () => {
   beforeEach(() => {
@@ -54,12 +61,7 @@ describe("Polish API", () => {
 
     it("should accept valid text with different styles", async () => {
       const { generateText } = await import("ai");
-      vi.mocked(generateText).mockResolvedValue({
-        text: "Polished text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("Polished text"));
 
       const styles = ["concise", "professional", "casual", "engaging"];
 
@@ -102,12 +104,7 @@ describe("Polish API", () => {
       delete process.env.OPENAI_API_KEY;
 
       const { generateText } = await import("ai");
-      vi.mocked(generateText).mockResolvedValue({
-        text: "Polished text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("Polished text"));
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",
@@ -126,12 +123,7 @@ describe("Polish API", () => {
   describe("Text polishing", () => {
     it("should return polished text", async () => {
       const { generateText } = await import("ai");
-      vi.mocked(generateText).mockResolvedValue({
-        text: "This is polished text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("This is polished text"));
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",
@@ -150,12 +142,7 @@ describe("Polish API", () => {
 
     it("should handle markdown formatting", async () => {
       const { generateText } = await import("ai");
-      vi.mocked(generateText).mockResolvedValue({
-        text: "This is **bold** and `code`",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("This is **bold** and `code`"));
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",
@@ -175,12 +162,7 @@ describe("Polish API", () => {
 
     it("should apply style-specific instructions", async () => {
       const { generateText } = await import("ai");
-      vi.mocked(generateText).mockResolvedValue({
-        text: "Brief text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("Brief text"));
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",
@@ -192,7 +174,6 @@ describe("Polish API", () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(vi.mocked(generateText)).toHaveBeenCalled();
@@ -226,9 +207,7 @@ describe("Polish API", () => {
       const { checkRateLimit } = await import("@/lib/rate-limit");
       vi.mocked(checkRateLimit).mockResolvedValue({
         limited: true,
-        response: new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
-          status: 429,
-        }),
+        response: NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 }),
       });
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
@@ -252,15 +231,12 @@ describe("Polish API", () => {
       const { generateText } = await import("ai");
       const { createDeepSeek } = await import("@ai-sdk/deepseek");
 
-      vi.mocked(generateText).mockResolvedValue({
-        text: "Polished text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("Polished text"));
 
       const mockProvider = vi.fn();
-      vi.mocked(createDeepSeek).mockReturnValue(mockProvider);
+      vi.mocked(createDeepSeek).mockReturnValue(
+        mockProvider as unknown as ReturnType<typeof createDeepSeek>,
+      );
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",
@@ -280,12 +256,7 @@ describe("Polish API", () => {
       const { generateText } = await import("ai");
       const { createDeepSeek } = await import("@ai-sdk/deepseek");
 
-      vi.mocked(generateText).mockResolvedValue({
-        text: "Polished text",
-        usage: { promptTokens: 10, completionTokens: 10, totalTokens: 20 },
-        finishReason: "stop",
-        warnings: [],
-      });
+      vi.mocked(generateText).mockResolvedValue(textResult("Polished text"));
 
       const request = new NextRequest("http://localhost:3000/api/polish", {
         method: "POST",

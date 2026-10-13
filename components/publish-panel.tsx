@@ -195,8 +195,6 @@ function StepRow({
   actionLabel?: string;
   isCheckbox?: boolean;
 }) {
-  const { t } = useI18n();
-
   return (
     <div className={`flex items-center gap-3 px-3 py-2 rounded-[var(--radius-sm)] transition-colors ${
       step.status === "active" ? "bg-[var(--fg-soft)]" : ""

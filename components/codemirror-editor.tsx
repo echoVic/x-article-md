@@ -215,7 +215,7 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
       if (onKeyDown) {
         extensions.push(
           EditorView.domEventHandlers({
-            keydown: (event, view) => {
+            keydown: (event) => {
               return onKeyDown(event);
             },
           })
