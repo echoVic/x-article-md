@@ -33,7 +33,13 @@ export function LandingFooter({ locale = "en" }: { locale?: LandingLocale }) {
             ))}
           </nav>
         )}
-        <span className="meta">{t.footerTagline}</span>
+        <span className="meta">
+          {t.footerTagline}
+          {" · "}
+          <Link href="/privacy" className="pagefoot-legal">
+            {locale === "zh" ? "隐私政策" : "Privacy"}
+          </Link>
+        </span>
       </div>
     </footer>
   );

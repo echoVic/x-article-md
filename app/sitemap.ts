@@ -113,6 +113,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: absoluteUrl("/privacy"),
+      lastModified: new Date("2026-10-13"),
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
     ...featureEntries,
     ...blogEntries,
   ];

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://markdown2x.com";
 export const githubRepoUrl = "https://github.com/echoVic/x-article-md";
 
-export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread" | "blog";
+export type SeoPage = "home" | "zhHome" | "editor" | "zhEditor" | "thread" | "zhThread" | "blog" | "privacy";
 
 type PageSeo = {
   title: string;
@@ -96,6 +96,16 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     alternates: {
       ...threadAlternates,
       canonical: "/zh/thread",
+    },
+  },
+  privacy: {
+    title: "Privacy Policy | MD2X",
+    description:
+      "How MD2X handles your data: drafts stay in your browser, AI features send only the selected text to the model provider, and analytics never include draft content.",
+    path: "/privacy",
+    locale: "en",
+    alternates: {
+      canonical: "/privacy",
     },
   },
   blog: {

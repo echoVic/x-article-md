@@ -1005,8 +1005,15 @@ input {
   transition: color 0.15s ease;
 }
 
-.pagefoot-tools a:hover {
+.pagefoot-tools a:hover,
+.pagefoot-legal:hover {
   color: var(--fg);
+}
+
+.pagefoot-legal {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 /* ── Responsive ── */

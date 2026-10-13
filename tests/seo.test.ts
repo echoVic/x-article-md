@@ -38,6 +38,13 @@ describe("SEO configuration", () => {
     );
   });
 
+  it("gives the privacy page its own canonical metadata", () => {
+    const metadata = buildPageMetadata("privacy");
+
+    expect(metadata.title).toBe("Privacy Policy | MD2X");
+    expect(metadata.alternates?.canonical).toBe("/privacy");
+  });
+
   it("uses focused metadata for the editor page", () => {
     const metadata = buildPageMetadata("editor");
 
@@ -91,6 +98,8 @@ describe("SEO configuration", () => {
     expect(byUrl.has(absoluteUrl("/thread"))).toBe(true);
     expect(byUrl.has(absoluteUrl("/zh/thread"))).toBe(true);
     expect(byUrl.has(absoluteUrl("/blog"))).toBe(true);
+    // Required by the Google OAuth consent screen (privacy policy URL).
+    expect(byUrl.has(absoluteUrl("/privacy"))).toBe(true);
 
     // Keyword-targeted feature landing pages are present in both locales,
     // each with reciprocal hreflang alternates.
