@@ -9,12 +9,12 @@ import { Globe } from "lucide-react";
 type Page = "editor" | "thread";
 
 /**
- * Editor / thread top bar — kept intentionally low-key so it never competes
- * with the writing surface. Picks up the same masthead grammar as the landing
- * (italic serif wordmark + mono ALL-CAPS nav), just at a smaller size.
+ * Quiet workbench top bar — 44px desktop (48px mobile), neutral surface.
+ * The only warm pixel is the brand "×"; the active nav link keeps a 1px
+ * brick underline. No issue plates, no folio numbers.
  */
 export function AppHeader({ activePage }: { activePage?: Page }) {
-  const { setLocale } = useI18n();
+  const { t, setLocale } = useI18n();
   const pathname = usePathname();
 
   const isZh = pathname.startsWith("/zh");
@@ -27,19 +27,14 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
     : `/zh${pathname === "/" ? "" : pathname}`;
   const nextLocale = isZh ? "en" : "zh";
 
-  // Editorial "issue number": tie the workspace to a date so it feels like a masthead.
-  // Locale-stable format so SSR/CSR match.
-  const today = new Date();
-  const issueNo = `${today.getFullYear()}·${String(today.getMonth() + 1).padStart(2, "0")}`;
-
   return (
-    <header className="flex h-11 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-5 relative z-10">
-      {/* Left: Editorial masthead + section nav */}
+    <header className="flex h-12 md:h-11 shrink-0 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 md:px-5 relative z-10">
+      {/* Left: wordmark + section nav */}
       <div className="flex items-baseline gap-4 min-w-0">
         <Link
           href={isZh ? "/zh" : "/"}
           className="flex items-baseline gap-[6px] no-underline transition-opacity hover:opacity-70"
-          aria-label="MD2X home"
+          aria-label={t.homeAria}
         >
           <span
             style={{
@@ -81,53 +76,22 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
           </span>
         </Link>
 
-        {/* Issue plate — like a magazine folio */}
-        <span
-          className="hidden sm:inline-flex items-center gap-[6px] text-[var(--muted)]"
-          style={{
-            fontFamily: "var(--font-geist-mono)",
-            fontSize: "9.5px",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            lineHeight: 1,
-          }}
-        >
-          <span
-            aria-hidden="true"
-            style={{ display: "inline-block", width: 14, height: 1, background: "var(--accent)" }}
-          />
-          Vol.&nbsp;{issueNo}
-        </span>
-
-        {/* Section nav */}
         <nav
-          className="flex items-baseline gap-[18px] pl-[6px] ml-[2px] border-l border-[var(--border)]"
-          aria-label="Sections"
-          style={{ height: 14, paddingLeft: 18 }}
+          className="flex items-center gap-[18px] border-l border-[var(--border)] pl-[18px]"
+          aria-label={t.sectionsNav}
         >
-          <SectionLink
-            href={editorHref}
-            active={activePage === "editor"}
-            index="§01"
-            label="Editor"
-            title="Markdown to X Article Editor"
-          />
-          <SectionLink
-            href={threadHref}
-            active={activePage === "thread"}
-            index="§02"
-            label="Thread"
-          />
+          <SectionLink href={editorHref} active={activePage === "editor"} label={t.navEditor} />
+          <SectionLink href={threadHref} active={activePage === "thread"} label={t.navThread} />
         </nav>
       </div>
 
-      {/* Right: Theme + Language toggle */}
+      {/* Right: theme + language toggle */}
       <div className="flex items-center gap-[10px] flex-shrink-0">
-        <ThemeToggle />
+        <ThemeToggle className="h-11 w-11 rounded-[var(--radius-sm)] md:h-[30px] md:w-[30px]" />
         <Link
           href={langHref}
           onClick={() => setLocale(nextLocale)}
-          className="inline-flex items-baseline gap-[6px] no-underline text-[var(--muted)] transition-colors hover:text-[var(--fg)]"
+          className="inline-flex items-baseline gap-[6px] no-underline text-[var(--muted)] transition-colors hover:text-[var(--fg)] h-11 items-center md:h-auto"
           aria-label={isZh ? "Switch to English" : "切换到中文"}
           style={{
             fontFamily: "var(--font-geist-mono)",
@@ -148,54 +112,35 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
 function SectionLink({
   href,
   active,
-  index,
   label,
-  title,
 }: {
   href: string;
   active: boolean;
-  index: string;
   label: string;
-  title?: string;
 }) {
   return (
     <Link
       href={href}
-      title={title}
-      className="group inline-flex items-baseline gap-[6px] no-underline transition-colors"
+      className="relative inline-flex items-center no-underline transition-colors"
       style={{
-        fontFamily: "var(--font-geist-mono)",
-        fontSize: "10.5px",
-        letterSpacing: "0.16em",
-        textTransform: "uppercase",
+        fontFamily: "var(--font-geist-sans)",
+        fontSize: "13px",
+        fontWeight: active ? 600 : 400,
+        letterSpacing: "-0.005em",
         lineHeight: 1,
         color: active ? "var(--fg)" : "var(--muted)",
+        paddingBottom: 4,
       }}
     >
+      {label}
       <span
         aria-hidden="true"
+        className="absolute left-0 right-0 bottom-0 block h-[2px] transition-transform origin-left"
         style={{
-          fontFamily: "var(--font-display)",
-          fontStyle: "italic",
-          fontSize: "11px",
-          letterSpacing: 0,
-          textTransform: "none",
-          color: active ? "var(--accent)" : "color-mix(in oklch, var(--muted) 60%, transparent)",
+          background: "var(--accent)",
+          transform: active ? "scaleX(1)" : "scaleX(0)",
         }}
-      >
-        {index}
-      </span>
-      <span className="relative">
-        {label}
-        <span
-          aria-hidden="true"
-          className="absolute left-0 right-0 -bottom-[6px] block h-px transition-transform origin-left"
-          style={{
-            background: "var(--accent)",
-            transform: active ? "scaleX(1)" : "scaleX(0)",
-          }}
-        />
-      </span>
+      />
     </Link>
   );
 }

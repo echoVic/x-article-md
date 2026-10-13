@@ -116,6 +116,16 @@
   --accent-hover: color-mix(in srgb, var(--accent) 88%, white);
 }
 
+/* Mobile writing surface — 12.5px / 20px line-height (≤767px) */
+@media (max-width: 767px) {
+  .workbench .cm-editor {
+    font-size: 12.5px !important;
+  }
+  .workbench .cm-line {
+    line-height: 20px !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

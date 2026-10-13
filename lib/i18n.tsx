@@ -122,6 +122,22 @@ const en = {
   // Editor — preview
   livePreview: "Live Preview",
   xArticles: "MD2X",
+  manuscript: "Manuscript",
+  codeBlockLabel: "Code block",
+  previewEmpty: "Start writing Markdown to see the preview.",
+
+  // Editor — chrome (aria / sr)
+  navThread: "Thread",
+  sectionsNav: "Sections",
+  homeAria: "MD2X home",
+  moreActions: "More actions",
+  resizePanes: "Resize panes",
+  manualTitleCopy: "Manual title copy",
+  manualBodyCopy: "Manual rich body copy",
+  copyableBody: "Copyable rich article body",
+  copyableText: "Copyable article text",
+  polishOriginal: "Original",
+  polishPolished: "Polished",
 
   // Editor — placeholder
   editorPlaceholder: "Start writing Markdown...",
@@ -344,6 +360,22 @@ const zh: Translations = {
   // Editor — preview
   livePreview: "实时预览",
   xArticles: "MD2X",
+  manuscript: "手稿",
+  codeBlockLabel: "代码块",
+  previewEmpty: "开始编写 Markdown，即可看到样张。",
+
+  // Editor — chrome (aria / sr)
+  navThread: "推文流",
+  sectionsNav: "栏目",
+  homeAria: "MD2X 首页",
+  moreActions: "更多操作",
+  resizePanes: "调整分栏宽度",
+  manualTitleCopy: "手动复制标题",
+  manualBodyCopy: "手动复制正文",
+  copyableBody: "可复制的文章正文",
+  copyableText: "可复制的文章文本",
+  polishOriginal: "原文",
+  polishPolished: "润色后",
 
   // Editor — placeholder
   editorPlaceholder: "开始编写 Markdown...",

@@ -18,8 +18,8 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
         }}
       />
 
-      {/* Editor */}
-      <div className="h-[calc(100dvh-5rem)]">
+      {/* Editor — exactly one viewport tall; SEO content lives below the fold */}
+      <div className="h-[100dvh]">
         <EditorPage />
       </div>
 

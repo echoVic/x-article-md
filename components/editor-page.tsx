@@ -5,7 +5,7 @@ import { ArticlePreview } from "@/components/article-preview";
 import { AssetOrchestrator } from "@/components/asset-orchestrator";
 import { CoverImagePanel } from "@/components/cover-image-panel";
 import { EditorToolbar } from "@/components/editor-toolbar";
-import { MarkdownEditor, type MarkdownEditorHandle } from "@/components/markdown-editor";
+import { MarkdownEditor, type MarkdownEditorHandle, getStats } from "@/components/markdown-editor";
 import { PreflightPanel } from "@/components/preflight-panel";
 import { initialPublishState, PublishPanel, publishReducer } from "@/components/publish-panel";
 import { TemplatePicker } from "@/components/template-picker";
@@ -16,10 +16,18 @@ import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { runPreflight, type PreflightReport } from "@/lib/preflight";
 import { sampleMarkdown } from "@/lib/sample";
 import type { ArticleTemplate } from "@/lib/templates";
+import { Check, ClipboardCopy, ListChecks, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { Sheet } from "./ui/sheet";
 
 const draftStorageKey = "x-article-md:draft";
+
+const monoLabel: React.CSSProperties = {
+  fontFamily: "var(--font-geist-mono)",
+  fontSize: "10.5px",
+  letterSpacing: "0.08em",
+  lineHeight: 1,
+};
 
 export default function EditorPage() {
   const { t, locale } = useI18n();
@@ -44,6 +52,7 @@ export default function EditorPage() {
   } | null>(null);
   const [leftPanelWidth, setLeftPanelWidth] = useState(50); // percentage
   const [isResizing, setIsResizing] = useState(false);
+  const [mobileView, setMobileView] = useState<"manuscript" | "preview">("manuscript");
   const manualCopyRef = useRef<HTMLTextAreaElement>(null);
   const manualRichCopyRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +60,7 @@ export default function EditorPage() {
   const markdownEditorRef = useRef<MarkdownEditorHandle>(null);
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
   const hasCodeBlocks = useMemo(() => blocks.some(b => b.type === "code" || b.type === "mermaid"), [blocks]);
+  const stats = useMemo(() => getStats(markdown), [markdown]);
   const clipboard = useMemo(
     () => toXArticleClipboard(markdown, { codeMode }),
     [codeMode, markdown],
@@ -66,16 +76,20 @@ export default function EditorPage() {
     () => false,
   );
 
+  const isDesktop = useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia("(min-width: 768px)");
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia("(min-width: 768px)").matches,
+    () => true,
+  );
+
   const resolvedCodeTheme = useMemo(
     () => resolveTheme(codeThemeId, isDark),
     [codeThemeId, isDark],
   );
-  const headingCount = useMemo(() => blocks.filter((block) => block.type === "heading").length, [blocks]);
-  const paragraphCount = useMemo(
-    () => blocks.filter((block) => block.type === "paragraph").length,
-    [blocks],
-  );
-  const editorDensityLabel = markdown.length > 5000 ? "long draft" : markdown.length > 1800 ? "feature draft" : "short draft";
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -164,7 +178,7 @@ export default function EditorPage() {
       return;
     }
 
-    setManualCopy({ label: "Manual title copy", text: title });
+    setManualCopy({ label: t.manualTitleCopy, text: title });
     setCopyState("manual");
   }
 
@@ -185,7 +199,7 @@ export default function EditorPage() {
     }
 
     setManualCopy({
-      label: "Manual rich body copy",
+      label: t.manualBodyCopy,
       text: clipboard.bodyText,
       html: htmlToWrite,
     });
@@ -285,13 +299,8 @@ export default function EditorPage() {
 
   return (
     <div
-      className="grid h-full grid-rows-[auto_auto_auto_1fr] bg-[var(--bg)]"
-      style={{
-        userSelect: isResizing ? "none" : "auto",
-        backgroundImage:
-          "linear-gradient(to right, color-mix(in oklch, var(--border) 72%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklch, var(--border) 36%, transparent) 1px, transparent 1px)",
-        backgroundSize: "100% 100%, 100% 28px",
-      }}
+      className="workbench flex h-full flex-col bg-[var(--bg)]"
+      style={{ userSelect: isResizing ? "none" : "auto" }}
     >
       {/* ═══ Global Header ═══ */}
       <AppHeader activePage="editor" />
@@ -318,24 +327,37 @@ export default function EditorPage() {
         showPreflightHint={showPreflightHint}
       />
 
-      <div className="grid border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_84%,transparent)] px-4 py-3 md:grid-cols-3 md:px-5">
-        <WorkbenchMeta
-          kicker="Writing desk"
-          title="Manuscript first"
-          detail={`${editorDensityLabel} · ${headingCount} headings · ${paragraphCount} passages`}
-        />
-        <WorkbenchMeta
-          kicker="Production"
-          title="Copy without cleanup"
-          detail={`${clipboard.assets.length} asset${clipboard.assets.length === 1 ? "" : "s"} · ${hasCodeBlocks ? "code-aware" : "plain text"}`}
-        />
-        <WorkbenchMeta
-          kicker="Reading"
-          title="Proof in parallel"
-          detail={`${Math.round(leftPanelWidth)} / ${100 - Math.round(leftPanelWidth)} split · ${t.xArticles}`}
-          align="end"
-        />
-      </div>
+      {/* ═══ Mobile: manuscript / preview tab strip ═══ */}
+      {!isDesktop && (
+        <div className="flex h-11 shrink-0 border-b border-[var(--border)] bg-[var(--surface)]" role="tablist" aria-label={t.livePreview}>
+          {(
+            [
+              { id: "manuscript", label: t.manuscript },
+              { id: "preview", label: t.livePreview },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={mobileView === tab.id}
+              onClick={() => setMobileView(tab.id)}
+              className="relative flex-1 text-[14px] font-medium transition-colors"
+              style={{ color: mobileView === tab.id ? "var(--fg)" : "var(--muted)" }}
+            >
+              {tab.label}
+              <span
+                aria-hidden="true"
+                className="absolute left-0 right-0 bottom-0 h-[2px] mx-auto w-16 transition-transform"
+                style={{
+                  background: "var(--accent)",
+                  transform: mobileView === tab.id ? "scaleX(1)" : "scaleX(0)",
+                }}
+              />
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ═══ Hidden file input for import ═══ */}
       <input
@@ -344,45 +366,37 @@ export default function EditorPage() {
         accept=".md"
         onChange={handleFileChange}
         style={{ display: "none" }}
-        aria-label="Import Markdown file"
+        aria-label={t.importFile}
       />
 
       {/* ═══ Main: Editor + Preview ═══ */}
       <main
         ref={containerRef}
-        className="grid overflow-hidden"
+        className="grid min-h-0 flex-1 overflow-hidden"
         style={{
-          gridTemplateColumns: `${leftPanelWidth}% 1px ${100 - leftPanelWidth}%`,
+          gridTemplateColumns: isDesktop
+            ? `${leftPanelWidth}% 1px ${100 - leftPanelWidth}%`
+            : "100%",
         }}
       >
-        <div className="flex min-w-0 flex-col overflow-hidden bg-[color-mix(in_oklch,var(--surface)_92%,transparent)]">
-          <div className="border-b border-[var(--border)] px-5 py-4">
-            <div className="flex items-baseline justify-between gap-4">
-              <div>
-                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-                  Draft surface
-                </div>
-                <p
-                  className="mt-2 text-[var(--fg)]"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "22px",
-                    fontStyle: "italic",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Write like a manuscript, not a form field.
-                </p>
-              </div>
-              <div className="hidden text-right md:block">
-                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
-                  Current desk state
-                </div>
-                <p className="mt-2 text-[13px] leading-[1.6] text-[var(--muted)]">
-                  Keep the draft airy, then polish, preflight, and paste once.
-                </p>
-              </div>
-            </div>
+        {/* Left pane */}
+        <div
+          className={`flex min-w-0 flex-col overflow-hidden bg-[var(--surface)] ${
+            !isDesktop && mobileView !== "manuscript" ? "hidden" : ""
+          }`}
+        >
+          {/* Column head — 30px */}
+          <div className="hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex">
+            <span className="flex items-baseline gap-[6px]" style={{ ...monoLabel, color: "var(--fg)" }}>
+              {t.manuscript}
+              <span className="text-[var(--muted)]">· MARKDOWN</span>
+            </span>
+            <span
+              className="tabular-nums text-[var(--muted)]"
+              style={{ fontFamily: "var(--font-geist-mono)", fontSize: "10.5px", letterSpacing: "0.02em", lineHeight: 1 }}
+            >
+              {stats.lines} {t.footerLines} · {stats.words} {t.footerWords} · {stats.characters} {t.footerChars}
+            </span>
           </div>
           <MarkdownEditor
             ref={markdownEditorRef}
@@ -393,115 +407,112 @@ export default function EditorPage() {
           />
         </div>
 
-        {/* Resize handle — editorial gutter with subtle center marker */}
-        <div
-          className="relative cursor-col-resize group select-none"
-          onMouseDown={handleResizeMouseDown}
-          role="separator"
-          aria-label="Resize panes"
-        >
+        {/* Resize handle */}
+        {isDesktop && (
           <div
-            className={`absolute inset-y-0 left-0 w-px transition-colors ${
-              isResizing
-                ? "bg-[var(--accent)]"
-                : "bg-[var(--border)] group-hover:bg-[var(--fg)]"
-            }`}
-          />
-          <div
-            aria-hidden="true"
-            className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[2px] w-[5px] h-[5px] rotate-45 transition-colors ${
-              isResizing
-                ? "bg-[var(--accent)]"
-                : "bg-[var(--border)] group-hover:bg-[var(--fg)]"
-            }`}
-          />
-        </div>
-
-        {/* Preview pane */}
-        <div className="flex min-w-0 flex-col overflow-hidden bg-[var(--bg)]">
-          <div className="border-b border-[var(--border)] px-5 py-4">
-            <div className="flex items-baseline justify-between gap-4">
-              <div>
-                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-                  Reading proof
-                </div>
-                <p
-                  className="mt-2 text-[var(--fg)]"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "22px",
-                    fontStyle: "italic",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Proof the pacing before you export the piece.
-                </p>
-              </div>
-              <div className="hidden text-right md:block">
-                <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
-                  Surface target
-                </div>
-                <p className="mt-2 text-[13px] leading-[1.6] text-[var(--muted)]">
-                  {t.xArticles} · live proof · fol. 02
-                </p>
-              </div>
-            </div>
+            className="group relative cursor-col-resize select-none"
+            onMouseDown={handleResizeMouseDown}
+            role="separator"
+            aria-label={t.resizePanes}
+          >
+            <div
+              className={`absolute inset-y-0 left-0 w-px transition-colors ${
+                isResizing
+                  ? "bg-[var(--accent)]"
+                  : "bg-[var(--border-struct)] group-hover:bg-[var(--fg)]"
+              }`}
+            />
+            <div
+              aria-hidden="true"
+              className={`absolute left-0 top-1/2 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rotate-45 transition-colors ${
+                isResizing
+                  ? "bg-[var(--accent)]"
+                  : "bg-[var(--border-struct)] group-hover:bg-[var(--fg)]"
+              }`}
+            />
           </div>
-          <div className="flex items-baseline justify-between px-5 h-[38px] border-b border-[var(--border)] min-h-[38px] bg-[color-mix(in_oklch,var(--surface)_68%,transparent)]">
-            <span
-              className="inline-flex items-baseline gap-[8px]"
-              style={{
-                fontFamily: "var(--font-geist-mono)",
-                fontSize: "10px",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                lineHeight: 1,
-                color: "var(--fg)",
-              }}
-            >
+        )}
+
+        {/* Right pane — X reading surface */}
+        <div
+          className={`flex min-w-0 flex-col overflow-hidden ${
+            !isDesktop && mobileView !== "preview" ? "hidden" : ""
+          }`}
+          style={{ background: "var(--x-bg)" }}
+        >
+          {/* Column head — 30px */}
+          <div
+            className="hidden h-[30px] shrink-0 items-center justify-between border-b border-[var(--border)] px-4 md:flex"
+            style={{ background: "var(--surface)" }}
+          >
+            <span className="flex items-center gap-[6px]" style={{ ...monoLabel, color: "var(--fg)" }}>
               <span
                 aria-hidden="true"
-                style={{
-                  display: "inline-block",
-                  width: 14,
-                  height: 1,
-                  background: "var(--accent)",
-                  transform: "translateY(-3px)",
-                }}
+                className="inline-block h-[6px] w-[6px] rounded-full"
+                style={{ background: "var(--success)" }}
               />
-              Proof
-              <span
-                aria-hidden="true"
-                className="text-[var(--muted)]"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontStyle: "italic",
-                  fontSize: "12px",
-                  letterSpacing: "-0.005em",
-                  textTransform: "none",
-                }}
-              >
-                — {t.livePreview.toLowerCase()}
-              </span>
+              {t.livePreview}
             </span>
             <span
-              className="text-[var(--muted)]"
               style={{
                 fontFamily: "var(--font-geist-mono)",
                 fontSize: "9.5px",
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
                 lineHeight: 1,
+                color: "var(--muted)",
               }}
             >
-              {t.xArticles}&nbsp;·&nbsp;fol.&nbsp;02
+              MD2X
             </span>
           </div>
-          <div className="flex-1 overflow-y-auto px-8 py-10 sm:px-12">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             <ArticlePreview blocks={blocks} codeTheme={resolvedCodeTheme} />
           </div>
         </div>
       </main>
+
+      {/* ═══ Mobile bottom action bar — 60px thumb zone ═══ */}
+      {!isDesktop && (
+        <div className="flex h-[60px] shrink-0 items-center gap-2 border-t border-[var(--border)] bg-[var(--surface)] px-3">
+          <button
+            type="button"
+            onClick={handlePreflight}
+            aria-label={t.preflightRun}
+            className="inline-flex h-11 items-center gap-[6px] rounded-[var(--radius-sm)] border border-[var(--border-struct)] px-3 text-[12.5px] font-medium text-[var(--muted)] transition-colors hover:border-[var(--fg)] hover:text-[var(--fg)]"
+          >
+            <ShieldCheck size={15} strokeWidth={1.6} aria-hidden="true" />
+            {t.preflightRun}
+          </button>
+          <button
+            type="button"
+            onClick={handlePublishOpen}
+            aria-label={t.publishTitle}
+            className="inline-flex h-11 items-center gap-[6px] rounded-[var(--radius-sm)] border border-[var(--border-struct)] px-3 text-[12.5px] font-medium text-[var(--muted)] transition-colors hover:border-[var(--fg)] hover:text-[var(--fg)]"
+          >
+            <ListChecks size={15} strokeWidth={1.6} aria-hidden="true" />
+            {t.publishTitle}
+          </button>
+          <button
+            type="button"
+            onClick={copyBody}
+            aria-label={t.copyBody}
+            className={`inline-flex h-11 flex-1 items-center justify-center gap-[6px] rounded-[var(--radius-sm)] transition-colors ${
+              copyState === "body"
+                ? "bg-[var(--success)] text-white"
+                : "bg-[var(--fg)] text-[var(--bg)] active:bg-[var(--accent)] active:text-[var(--on-accent)]"
+            }`}
+            style={{ fontSize: "13px", fontWeight: 600 }}
+          >
+            {copyState === "body" ? (
+              <Check size={15} strokeWidth={2.4} aria-hidden="true" />
+            ) : (
+              <ClipboardCopy size={15} strokeWidth={1.8} aria-hidden="true" />
+            )}
+            {copyState === "body" ? t.copied : t.copyBody}
+          </button>
+        </div>
+      )}
 
       {/* ═══ Assets & Media Drawer ═══ */}
       <Sheet
@@ -552,7 +563,7 @@ export default function EditorPage() {
 
       {/* ═══ Preflight hint toast ═══ */}
       {showPreflightHint && (
-        <div className="fixed top-14 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)] animate-in fade-in slide-in-from-top-2">
+        <div className="fixed top-14 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-[var(--radius)] border border-[var(--border-struct)] bg-[var(--surface)] shadow-[var(--shadow-md)] animate-in fade-in slide-in-from-top-2">
           <span className="text-[12px] text-[var(--fg)]">{t.preflightHint}</span>
           <button
             type="button"
@@ -566,7 +577,7 @@ export default function EditorPage() {
 
       {/* ═══ Manual copy fallback ═══ */}
       {manualCopy ? (
-        <div className="fixed inset-x-4 bottom-4 z-20 mx-auto max-w-3xl rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)]">
+        <div className="fixed inset-x-4 bottom-4 z-20 mx-auto max-w-3xl rounded-[var(--radius-lg)] border border-[var(--border-struct)] bg-[var(--surface)] shadow-[var(--shadow-md)]">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <h2 className="text-sm font-medium text-[var(--muted)]">
               {manualCopy.label}
@@ -577,7 +588,7 @@ export default function EditorPage() {
                 setManualCopy(null);
                 setCopyState("idle");
               }}
-              className="rounded-[var(--radius-sm)] border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)]"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-struct)] px-3 py-1.5 text-xs font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)]"
             >
               {t.manualClose}
             </button>
@@ -587,8 +598,8 @@ export default function EditorPage() {
               ref={manualRichCopyRef}
               contentEditable
               suppressContentEditableWarning
-              aria-label="Copyable rich article body"
-              className="max-h-80 overflow-auto p-5 text-[17px] leading-8 text-[var(--fg)] outline-none [&_a]:font-medium [&_a]:text-[var(--accent)] [&_code]:rounded [&_code]:bg-[var(--fg-soft)] [&_code]:px-1.5 [&_h2]:mb-3 [&_h2]:mt-2 [&_h2]:text-2xl [&_h2]:font-bold [&_li]:my-1 [&_pre]:overflow-auto [&_pre]:rounded-[var(--radius)] [&_pre]:bg-[oklch(16%_0.014_250)] [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-sm [&_pre]:leading-6 [&_pre]:text-[oklch(90%_0.01_250)] [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6"
+              aria-label={t.copyableBody}
+              className="max-h-80 overflow-auto p-5 text-[17px] leading-8 text-[var(--fg)] outline-none [&_a]:font-medium [&_a]:text-[var(--accent)] [&_code]:rounded [&_code]:bg-[var(--fg-soft)] [&_code]:px-1.5 [&_h2]:mb-3 [&_h2]:mt-2 [&_h2]:text-2xl [&_h2]:font-bold [&_li]:my-1 [&_pre]:overflow-auto [&_pre]:rounded-[var(--radius)] [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-sm [&_pre]:leading-6 [&_pre]:text-[oklch(90%_0.01_250)] [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6"
               dangerouslySetInnerHTML={{ __html: manualCopy.html }}
             />
           ) : (
@@ -596,41 +607,12 @@ export default function EditorPage() {
               ref={manualCopyRef}
               value={manualCopy.text}
               readOnly
-              aria-label="Copyable article text"
+              aria-label={t.copyableText}
               className="h-52 w-full resize-none border-0 p-4 font-mono text-sm leading-6 text-[var(--fg)] outline-none bg-[var(--surface)]"
             />
           )}
         </div>
       ) : null}
-    </div>
-  );
-}
-
-type WorkbenchMetaProps = {
-  kicker: string;
-  title: string;
-  detail: string;
-  align?: "start" | "end";
-};
-
-function WorkbenchMeta({ kicker, title, detail, align = "start" }: WorkbenchMetaProps) {
-  return (
-    <div className={`py-1 ${align === "end" ? "md:text-right" : ""}`}>
-      <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-        {kicker}
-      </div>
-      <div
-        className="mt-2 text-[var(--fg)]"
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "20px",
-          fontStyle: "italic",
-          lineHeight: 1.15,
-        }}
-      >
-        {title}
-      </div>
-      <p className="mt-2 text-[12px] leading-[1.6] text-[var(--muted)]">{detail}</p>
     </div>
   );
 }
@@ -643,7 +625,7 @@ async function copyRichText(html: string, text: string): Promise<boolean> {
   if (
     "ClipboardItem" in window &&
     navigator.clipboard &&
-    "write" in navigator.clipboard
+    "write" in navigator
   ) {
     try {
       await navigator.clipboard.write([

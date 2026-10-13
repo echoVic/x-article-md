@@ -23,7 +23,7 @@ import {
     Table,
     Workflow
 } from "lucide-react";
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Dialog } from "./ui/dialog";
 import { DropdownMenu } from "./ui/dropdown-menu";
 import { Tooltip } from "./ui/tooltip";
@@ -59,6 +59,9 @@ const toolbarItems: ToolbarItem[] = [
   { action: "table", labelKey: "toolTable", icon: "grid", group: 3 },
 ];
 
+const formatBtn =
+  "inline-flex shrink-0 items-center justify-center h-11 w-11 md:h-7 md:w-7 rounded-[var(--radius-sm)] bg-transparent text-[var(--muted)] transition-colors hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] disabled:opacity-50 disabled:cursor-not-allowed";
+
 export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorProps>(
   function MarkdownEditor({
   value,
@@ -68,7 +71,6 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
 }, ref) {
   const { t } = useI18n();
   const editorRef = useRef<CodeMirrorEditorHandle>(null);
-  const stats = useMemo(() => getStats(value), [value]);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isPolishing, setIsPolishing] = useState(false);
   const [polishComparison, setPolishComparison] = useState<{
@@ -262,117 +264,28 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
   if (currentItems.length > 0) toolbarGroups.push(currentItems);
 
   return (
-    <div className="flex flex-col overflow-hidden bg-[var(--bg)] relative min-h-0 flex-1">
-      {/* Running head — echoes the "Proof" head on the right pane */}
-      <div className="flex items-baseline justify-between px-5 h-[38px] border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_78%,transparent)]">
-        <span
-          className="inline-flex items-baseline gap-[8px]"
-          style={{
-            fontFamily: "var(--font-geist-mono)",
-            fontSize: "10px",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            lineHeight: 1,
-            color: "var(--fg)",
-          }}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              display: "inline-block",
-              width: 14,
-              height: 1,
-              background: "var(--accent)",
-              transform: "translateY(-3px)",
-            }}
-          />
-          Manuscript
-          <span
-            className="text-[var(--muted)]"
-            aria-hidden="true"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "12px",
-              letterSpacing: "-0.005em",
-              textTransform: "none",
-            }}
-          >
-            — markdown
-          </span>
-        </span>
-        <span
-          className="text-[var(--muted)] tabular-nums"
-          aria-hidden="true"
-          style={{
-            fontFamily: "var(--font-geist-mono)",
-            fontSize: "9.5px",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            lineHeight: 1,
-          }}
-        >
-          fol.&nbsp;01
-        </span>
-      </div>
-
-      <div className="grid gap-3 border-b border-[var(--border)] bg-[color-mix(in_oklch,var(--surface)_88%,transparent)] px-5 py-3 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <div className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
-            Compose with structure
-          </div>
-          <p
-            className="mt-2 text-[var(--fg)]"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "18px",
-              lineHeight: 1.2,
-            }}
-          >
-            Build the piece in Markdown, then let the right pane check rhythm and pacing.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 text-[var(--muted)] md:justify-end">
-          <span className="font-[var(--font-geist-mono)] text-[10px] uppercase tracking-[0.18em]">
-            line-safe
-          </span>
-          <span className="h-px w-6 bg-[var(--border)]" aria-hidden="true" />
-          <span
-            className="text-[var(--fg)]"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "14px",
-              lineHeight: 1,
-            }}
-          >
-            readable first
-          </span>
-        </div>
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex items-center gap-[2px] px-[10px] py-[6px] border-b border-[var(--border)] min-h-[38px] bg-[color-mix(in_oklch,var(--surface)_94%,transparent)]">
+    <div className="flex min-h-0 flex-1 flex-col bg-[var(--surface)]">
+      {/* Format bar — 36px desktop, 44px touch-friendly scroll on mobile */}
+      <div className="flex h-11 md:h-9 shrink-0 items-center gap-px overflow-x-auto border-b border-[var(--border)] px-2">
         {toolbarGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className="contents">
+          <div key={groupIndex} className="flex items-center">
             {groupIndex > 0 && (
-              <div className="w-px h-[16px] bg-[var(--border)] mx-[6px]" />
+              <div className="w-px h-4 bg-[var(--border-struct)] mx-1 md:mx-1.5 shrink-0" aria-hidden="true" />
             )}
-            <div className="flex items-center gap-[1px]">
+            <div className="flex items-center gap-px">
               {group.map((item) => {
                 const label = t[item.labelKey as keyof typeof t] || item.labelKey;
                 return (
-                <Tooltip key={item.action} content={item.shortcut ? `${label} (${item.shortcut})` : String(label)}>
-                  <button
-                    type="button"
-                    onClick={() => applyAction(item.action)}
-                    aria-label={String(label)}
-                    className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92]"
-                  >
-                    <ToolbarIcon icon={item.icon} />
-                  </button>
-                </Tooltip>
+                  <Tooltip key={item.action} content={item.shortcut ? `${label} (${item.shortcut})` : String(label)}>
+                    <button
+                      type="button"
+                      onClick={() => applyAction(item.action)}
+                      aria-label={String(label)}
+                      className={formatBtn}
+                    >
+                      <ToolbarIcon icon={item.icon} />
+                    </button>
+                  </Tooltip>
                 );
               })}
             </div>
@@ -388,12 +301,12 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
               type="button"
               disabled={isPolishing}
               aria-label={t.toolPolish}
-              className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+              className={formatBtn}
             >
               {isPolishing ? (
-                <Loader2 size={15} className="animate-spin" aria-hidden="true" />
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
               ) : (
-                <Sparkles size={15} strokeWidth={1.6} aria-hidden="true" />
+                <Sparkles size={16} strokeWidth={1.6} aria-hidden="true" />
               )}
             </button>
           }
@@ -414,12 +327,12 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
               type="button"
               disabled={isTranslating}
               aria-label={t.toolTranslate}
-              className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:bg-[var(--fg-soft)] hover:text-[var(--fg)] active:scale-[0.92] disabled:opacity-50 disabled:cursor-not-allowed"
+              className={formatBtn}
             >
               {isTranslating ? (
-                <Loader2 size={15} className="animate-spin" aria-hidden="true" />
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
               ) : (
-                <Languages size={15} strokeWidth={1.6} aria-hidden="true" />
+                <Languages size={16} strokeWidth={1.6} aria-hidden="true" />
               )}
             </button>
           }
@@ -434,15 +347,15 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
             type="button"
             onClick={onReset}
             aria-label={t.toolReset}
-            className="inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] bg-transparent text-[var(--muted)] transition-all hover:text-[var(--danger)] hover:bg-[color-mix(in_oklch,var(--danger)_8%,transparent)] active:scale-[0.92]"
+            className={`${formatBtn} hover:text-[var(--danger)]`}
           >
-            <RotateCcw size={15} strokeWidth={1.6} aria-hidden="true" />
+            <RotateCcw size={16} strokeWidth={1.6} aria-hidden="true" />
           </button>
         </Tooltip>
       </div>
 
       {/* Editor area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <CodeMirrorEditor
           ref={editorRef}
           value={value}
@@ -479,13 +392,13 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
         {polishComparison && (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Original</div>
+              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">{t.polishOriginal}</div>
               <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
                 {polishComparison.original}
               </div>
             </div>
             <div>
-              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">Polished</div>
+              <div className="text-xs font-medium text-[var(--muted)] mb-2 uppercase">{t.polishPolished}</div>
               <div className="bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-sm text-[var(--fg)] whitespace-pre-wrap font-mono leading-relaxed">
                 {polishComparison.polished}
               </div>
@@ -493,61 +406,11 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
           </div>
         )}
       </Dialog>
-
-      {/* Footer — editorial colophon */}
-      <div className="flex items-baseline justify-between px-5 h-[28px] border-t border-[var(--border)] text-[var(--muted)]">
-        <div
-          className="flex items-baseline gap-[10px] tabular-nums"
-          style={{
-            fontFamily: "var(--font-geist-mono)",
-            fontSize: "10.5px",
-            letterSpacing: "0.02em",
-            lineHeight: 1,
-          }}
-        >
-          <span>
-            <span className="text-[var(--fg)] font-medium">{stats.lines}</span>{" "}
-            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
-              {t.footerLines}
-            </span>
-          </span>
-          <span aria-hidden="true" className="opacity-30">
-            ·
-          </span>
-          <span>
-            <span className="text-[var(--fg)] font-medium">{stats.words}</span>{" "}
-            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
-              {t.footerWords}
-            </span>
-          </span>
-          <span aria-hidden="true" className="opacity-30">
-            ·
-          </span>
-          <span>
-            <span className="text-[var(--fg)] font-medium">{stats.characters}</span>{" "}
-            <span className="opacity-70 text-[9.5px] uppercase tracking-[0.18em]">
-              {t.footerChars}
-            </span>
-          </span>
-        </div>
-        <span
-          className="opacity-60"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontStyle: "italic",
-            fontSize: "12px",
-            letterSpacing: "-0.005em",
-            lineHeight: 1,
-          }}
-        >
-          {t.footerShortcuts}
-        </span>
-      </div>
     </div>
   );
 });
 
-function getStats(value: string) {
+export function getStats(value: string) {
   const words = value.trim() ? value.trim().split(/\s+/).length : 0;
 
   return {

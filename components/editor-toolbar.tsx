@@ -3,12 +3,10 @@
 import { CODE_THEMES } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
 import {
-  AlignLeft,
   Check,
   ClipboardCopy,
   Download,
   FileText,
-  Image,
   LayoutTemplate,
   ListChecks,
   MoreHorizontal,
@@ -17,7 +15,6 @@ import {
 } from "lucide-react";
 import { DropdownMenu } from "./ui/dropdown-menu";
 import { Select } from "./ui/select";
-import { ToggleGroup } from "./ui/toggle-group";
 import { Tooltip } from "./ui/tooltip";
 
 export type EditorToolbarProps = {
@@ -42,22 +39,12 @@ export type EditorToolbarProps = {
 };
 
 /**
- * Editorial workbench toolbar.
- *
- * Design intent: this is the strip between masthead and manuscript. It should
- * read like a compositor's rail — mono metadata on the left, hairline dividers,
- * the ink CTA on the right. No SaaS blues, no chip-shaped everything.
+ * Quiet workbench toolbar — 44px neutral strip.
+ * Left: saved state + document actions · Center: code-mode segmented ·
+ * Right: check / publish / copy-body primary. No editorial serif slogans.
  */
 const iconBtn =
-  "inline-flex items-center justify-center w-[26px] h-[26px] rounded-[var(--radius-xs)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]";
-
-const mono = {
-  fontFamily: "var(--font-geist-mono)",
-  fontSize: "10px",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase" as const,
-  lineHeight: 1,
-};
+  "inline-flex items-center justify-center h-11 w-11 md:h-[30px] md:w-[30px] rounded-[var(--radius-sm)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-colors";
 
 export function EditorToolbar({
   codeMode,
@@ -80,7 +67,6 @@ export function EditorToolbar({
   showPreflightHint,
 }: EditorToolbarProps) {
   const { t } = useI18n();
-  const showNudge = copyState === "body";
 
   const preflightIconColor =
     preflightStatus === "ok"
@@ -94,151 +80,104 @@ export function EditorToolbar({
   const preflightPulse = preflightStatus === "warning" ? "animate-pulse" : "";
   const preflightRing = showPreflightHint ? "animate-[ring-pulse_1s_ease-in-out_2]" : "";
 
-  return (
-    <div className="flex h-11 items-center justify-between border-b border-[var(--border)] bg-[var(--bg)] pl-4 pr-3">
-      {/* ─── Left: Manuscript state + document actions ─── */}
-      <div className="flex items-center gap-[14px] flex-shrink-0 min-w-0">
-        {/* Running slug: "Manuscript · Draft ready" */}
-        <div className="flex items-baseline gap-[8px]">
-          <span
-            aria-hidden="true"
-            style={{
-              display: "inline-block",
-              width: 14,
-              height: 1,
-              background: "var(--accent)",
-              transform: "translateY(-3px)",
-            }}
-          />
-          <span className="text-[var(--fg)]" style={mono}>
-            Manuscript
-          </span>
-          <Tooltip content={draftReady ? t.saved : t.loading}>
+  const docActions = (
+    <>
+      <Tooltip content={t.templatePickerTitle}>
+        <button type="button" onClick={onTemplates} className={iconBtn} aria-label={t.templatePickerTitle}>
+          <LayoutTemplate size={16} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+      </Tooltip>
+      <Tooltip content={t.importFile}>
+        <button type="button" onClick={onImport} className={iconBtn} aria-label={t.importFile}>
+          <Upload size={16} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+      </Tooltip>
+      <Tooltip content={t.exportFile}>
+        <button type="button" onClick={onExport} className={iconBtn} aria-label={t.exportFile}>
+          <Download size={16} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+      </Tooltip>
+      <Tooltip content={t.orchestratorTitle}>
+        <button
+          type="button"
+          onClick={onToggleAssets}
+          className={`${iconBtn} relative`}
+          aria-label={t.orchestratorTitle}
+        >
+          <FileText size={16} strokeWidth={1.6} aria-hidden="true" />
+          {assetsCount > 0 && (
             <span
-              className="inline-flex items-baseline gap-[6px]"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontSize: "12.5px",
-                letterSpacing: "-0.005em",
-                lineHeight: 1,
-                color: draftReady ? "var(--muted)" : "var(--warning)",
-              }}
+              className="absolute -top-[2px] -right-[2px] inline-flex items-center justify-center min-w-[15px] h-[15px] px-[3px] rounded-full bg-[var(--accent)] text-white tabular-nums"
+              style={{ fontSize: "9px", fontWeight: 600, lineHeight: 1 }}
             >
-              <span
-                aria-hidden="true"
-                className={draftReady ? "" : "animate-pulse"}
-                style={{
-                  width: 5,
-                  height: 5,
-                  borderRadius: "50%",
-                  background: draftReady ? "var(--success)" : "var(--warning)",
-                  display: "inline-block",
-                  transform: "translateY(-2px)",
-                }}
-              />
-              {draftReady ? "draft ready" : "loading…"}
+              {assetsCount}
             </span>
-          </Tooltip>
-        </div>
+          )}
+        </button>
+      </Tooltip>
+    </>
+  );
 
-        <div className="w-px h-[16px] bg-[var(--border)]" aria-hidden="true" />
-
-        {/* Document actions — small text buttons, mono */}
-        <div className="flex items-center gap-[2px]">
-          <Tooltip content={t.templatePickerTitle}>
-            <button
-              type="button"
-              onClick={onTemplates}
-              className="hidden md:inline-flex items-center gap-[6px] px-[8px] h-[26px] rounded-[var(--radius-xs)] text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] transition-all active:scale-[0.97]"
-              aria-label={t.templatePickerTitle}
-              style={mono}
-            >
-              <LayoutTemplate size={13} strokeWidth={1.6} aria-hidden="true" />
-              <span className="hidden lg:inline">{t.templatePickerTitle}</span>
-            </button>
-          </Tooltip>
-
-          <Tooltip content={t.importFile}>
-            <button
-              type="button"
-              onClick={onImport}
-              className={`${iconBtn} hidden lg:inline-flex`}
-              aria-label={t.importFile}
-            >
-              <Upload size={13} strokeWidth={1.6} aria-hidden="true" />
-            </button>
-          </Tooltip>
-
-          <Tooltip content={t.exportFile}>
-            <button
-              type="button"
-              onClick={onExport}
-              className={`${iconBtn} hidden lg:inline-flex`}
-              aria-label={t.exportFile}
-            >
-              <Download size={13} strokeWidth={1.6} aria-hidden="true" />
-            </button>
-          </Tooltip>
-
-          <Tooltip content={t.orchestratorTitle}>
-            <button
-              type="button"
-              onClick={onToggleAssets}
-              className={`${iconBtn} relative`}
-              aria-label={t.orchestratorTitle}
-            >
-              <FileText size={13} strokeWidth={1.6} aria-hidden="true" />
-              {assetsCount > 0 && (
-                <span
-                  className="absolute -top-[3px] -right-[3px] inline-flex items-center justify-center min-w-[14px] h-[14px] px-[3px] rounded-full bg-[var(--accent)] text-white tabular-nums"
-                  style={{
-                    fontFamily: "var(--font-geist-mono)",
-                    fontSize: "8.5px",
-                    letterSpacing: "0.02em",
-                    fontWeight: 600,
-                    lineHeight: 1,
-                  }}
-                >
-                  {assetsCount}
-                </span>
-              )}
-            </button>
-          </Tooltip>
+  return (
+    <div className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--surface)] pl-2 pr-2 md:pl-3">
+      {/* Left: saved state */}
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <Tooltip content={draftReady ? t.saved : t.loading}>
+          <span className="flex items-center gap-[6px] h-11 md:h-auto px-2" role="status">
+            <span
+              aria-hidden="true"
+              className={`inline-block h-[6px] w-[6px] rounded-full ${draftReady ? "" : "animate-pulse"}`}
+              style={{ background: draftReady ? "var(--success)" : "var(--warning)" }}
+            />
+            <span className="text-[12.5px] font-medium leading-none text-[var(--fg)]">
+              {draftReady ? t.saved : t.loading}
+            </span>
+          </span>
+        </Tooltip>
+        <div className="hidden md:flex items-center">
+          <div className="w-px h-4 bg-[var(--border-struct)] mx-1" aria-hidden="true" />
+          {docActions}
         </div>
       </div>
 
-      {/* ─── Center: Content config (conditional) ─── */}
-      <div className="flex-1 flex items-center justify-center min-w-0 mx-2">
-        {hasCodeBlocks ? (
-          <div className="flex items-center gap-[10px]">
-            <span className="hidden md:inline text-[var(--muted)]" style={mono}>
-              Code block
-            </span>
-            <ToggleGroup
-              value={codeMode}
-              onValueChange={(v) => onCodeModeChange(v as "quote" | "image")}
-              items={[
-                {
-                  value: "quote",
-                  label: (
-                    <>
-                      <AlignLeft size={12} strokeWidth={1.6} aria-hidden="true" className="lg:hidden" />
-                      <span className="hidden lg:inline">{t.codeQuote}</span>
-                    </>
-                  ),
-                },
-                {
-                  value: "image",
-                  label: (
-                    <>
-                      <Image size={12} strokeWidth={1.6} aria-hidden="true" className="lg:hidden" />
-                      <span className="hidden lg:inline">{t.codeImage}</span>
-                    </>
-                  ),
-                },
-              ]}
-            />
+      {/* Mobile: doc actions live on the right */}
+      <div className="flex items-center gap-0 md:hidden">{docActions}</div>
+
+      {/* Center: code-mode segmented (desktop) */}
+      <div className="hidden md:flex flex-1 items-center justify-center gap-2 min-w-0">
+        {hasCodeBlocks && (
+          <>
+            <span className="text-[12.5px] font-medium text-[var(--muted)]">{t.codeBlockLabel}</span>
+            <div
+              className="flex items-center rounded-[7px] border border-[var(--border-struct)] p-[2px] h-[30px]"
+              role="group"
+              aria-label={t.codeBlockLabel}
+            >
+              <button
+                type="button"
+                onClick={() => onCodeModeChange("quote")}
+                aria-pressed={codeMode === "quote"}
+                className="h-[26px] px-3 rounded-[5px] text-[12.5px] font-medium transition-colors"
+                style={{
+                  background: codeMode === "quote" ? "var(--fg)" : "transparent",
+                  color: codeMode === "quote" ? "var(--bg)" : "var(--muted)",
+                }}
+              >
+                {t.codeQuote}
+              </button>
+              <button
+                type="button"
+                onClick={() => onCodeModeChange("image")}
+                aria-pressed={codeMode === "image"}
+                className="h-[26px] px-3 rounded-[5px] text-[12.5px] font-medium transition-colors"
+                style={{
+                  background: codeMode === "image" ? "var(--fg)" : "transparent",
+                  color: codeMode === "image" ? "var(--bg)" : "var(--muted)",
+                }}
+              >
+                {t.codeImage}
+              </button>
+            </div>
             {codeMode === "image" && (
               <Select
                 value={codeThemeId}
@@ -249,56 +188,36 @@ export function EditorToolbar({
                 ]}
               />
             )}
-          </div>
-        ) : (
-          <span
-            className="hidden sm:inline text-[var(--muted)] opacity-70"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "13px",
-              letterSpacing: "-0.005em",
-              lineHeight: 1,
-            }}
-          >
-            {t.noCodeBlocks}
-          </span>
+          </>
         )}
       </div>
 
-      {/* ─── Right: Preflight + Publish ─── */}
-      <div className="flex items-center gap-[8px] flex-shrink-0">
-        {/* Preflight — quiet secondary */}
+      {/* Right: check / publish / copy body (desktop) */}
+      <div className="hidden md:flex items-center gap-2 flex-shrink-0">
         <Tooltip content={t.preflightRun}>
           <button
             type="button"
             onClick={onPreflight}
-            className={`inline-flex items-center gap-[6px] h-[26px] px-[10px] rounded-[var(--radius-xs)] border border-[var(--border)] bg-transparent transition-all active:scale-[0.97] hover:border-[var(--fg)] ${preflightIconColor} ${preflightPulse} ${preflightRing}`}
             aria-label={t.preflightRun}
-            style={mono}
+            className={`inline-flex items-center gap-[6px] h-[32px] px-[10px] rounded-[var(--radius-sm)] border border-[var(--border-struct)] bg-transparent transition-colors hover:border-[var(--fg)] ${preflightIconColor} ${preflightPulse} ${preflightRing}`}
           >
-            <ShieldCheck size={12} strokeWidth={1.6} aria-hidden="true" />
-            <span className="hidden md:inline">{t.preflightRun}</span>
+            <ShieldCheck size={14} strokeWidth={1.6} aria-hidden="true" />
+            <span className="text-[12.5px] font-medium">{t.preflightRun}</span>
           </button>
         </Tooltip>
 
-        {/* Publish checklist — quiet secondary */}
         <Tooltip content={t.publishTitle}>
           <button
             type="button"
             onClick={onPublish}
-            className="inline-flex items-center gap-[6px] h-[26px] px-[10px] rounded-[var(--radius-xs)] border border-[var(--border)] bg-transparent text-[var(--muted)] transition-all active:scale-[0.97] hover:text-[var(--fg)] hover:border-[var(--fg)]"
             aria-label={t.publishTitle}
-            style={mono}
+            className="inline-flex items-center gap-[6px] h-[32px] px-[10px] rounded-[var(--radius-sm)] border border-[var(--border-struct)] bg-transparent text-[var(--muted)] transition-colors hover:text-[var(--fg)] hover:border-[var(--fg)]"
           >
-            <ListChecks size={12} strokeWidth={1.6} aria-hidden="true" />
-            <span className="hidden md:inline">{t.publishTitle}</span>
+            <ListChecks size={14} strokeWidth={1.6} aria-hidden="true" />
+            <span className="text-[12.5px] font-medium">{t.publishTitle}</span>
           </button>
         </Tooltip>
 
-        <div className="w-px h-[16px] bg-[var(--border)] mx-[2px]" aria-hidden="true" />
-
-        {/* Copy Body — the ink CTA */}
         <Tooltip
           content={
             copyState === "body"
@@ -311,24 +230,18 @@ export function EditorToolbar({
           <button
             type="button"
             onClick={onCopyBody}
-            className={`inline-flex items-center gap-[8px] h-[28px] pl-[14px] pr-[14px] rounded-[var(--radius-xs)] transition-all active:scale-[0.97] ${
+            aria-label={t.copyBody}
+            className={`inline-flex items-center gap-[6px] h-[32px] px-[14px] rounded-[var(--radius-sm)] transition-colors ${
               copyState === "body"
                 ? "bg-[var(--success)] text-white"
-                : "bg-[var(--fg)] text-[var(--bg)] hover:bg-[var(--accent)] hover:text-white"
+                : "bg-[var(--fg)] text-[var(--bg)] hover:bg-[var(--accent)] hover:text-[var(--on-accent)]"
             }`}
-            style={{
-              fontFamily: "var(--font-geist-mono)",
-              fontSize: "10.5px",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              fontWeight: 600,
-              lineHeight: 1,
-            }}
+            style={{ fontSize: "13px", fontWeight: 600 }}
           >
             {copyState === "body" ? (
-              <Check size={12} strokeWidth={2.4} aria-hidden="true" />
+              <Check size={14} strokeWidth={2.4} aria-hidden="true" />
             ) : (
-              <ClipboardCopy size={12} strokeWidth={1.8} aria-hidden="true" />
+              <ClipboardCopy size={14} strokeWidth={1.8} aria-hidden="true" />
             )}
             <span>
               {copyState === "body"
@@ -340,27 +253,10 @@ export function EditorToolbar({
           </button>
         </Tooltip>
 
-        {/* Nudge — italic serif pull-note */}
-        {showNudge && (
-          <span
-            className="hidden sm:inline-flex items-baseline gap-[6px] px-[8px] text-[var(--accent)] animate-in fade-in slide-in-from-left-2"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "13px",
-              letterSpacing: "-0.005em",
-              lineHeight: 1,
-            }}
-          >
-            →&nbsp;{t.nudgePublish}
-          </span>
-        )}
-
-        {/* Overflow */}
         <DropdownMenu
           trigger={
-            <button type="button" className={iconBtn} aria-label="More actions">
-              <MoreHorizontal size={13} strokeWidth={1.6} aria-hidden="true" />
+            <button type="button" className={iconBtn} aria-label={t.moreActions}>
+              <MoreHorizontal size={16} strokeWidth={1.6} aria-hidden="true" />
             </button>
           }
           items={[
@@ -369,13 +265,6 @@ export function EditorToolbar({
               icon: <ClipboardCopy size={12} strokeWidth={1.6} />,
               onClick: onCopyTitle,
             },
-            {
-              label: t.templatePickerTitle,
-              icon: <LayoutTemplate size={12} strokeWidth={1.6} />,
-              onClick: onTemplates,
-            },
-            { label: t.importFile, icon: <Upload size={12} strokeWidth={1.6} />, onClick: onImport },
-            { label: t.exportFile, icon: <Download size={12} strokeWidth={1.6} />, onClick: onExport },
           ]}
         />
       </div>
