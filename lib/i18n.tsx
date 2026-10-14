@@ -125,6 +125,10 @@ const en = {
   manuscript: "Manuscript",
   codeBlockLabel: "Code block",
   previewEmpty: "Start writing Markdown to see the preview.",
+  copyCodeImageAria: "Copy code image",
+  copyFailed: "Copy failed",
+  mermaidRendering: "Rendering Mermaid diagram...",
+  mermaidUnavailable: "Mermaid preview unavailable",
 
   // Editor — chrome (aria / sr)
   navThread: "Thread",
@@ -368,6 +372,10 @@ const zh: Translations = {
   manuscript: "手稿",
   codeBlockLabel: "代码块",
   previewEmpty: "开始编写 Markdown，即可看到样张。",
+  copyCodeImageAria: "复制代码图片",
+  copyFailed: "复制失败",
+  mermaidRendering: "渲染 Mermaid 图表中...",
+  mermaidUnavailable: "Mermaid 图表预览不可用",
 
   // Editor — chrome (aria / sr)
   navThread: "推文流",
