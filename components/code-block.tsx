@@ -6,6 +6,7 @@ import type { CodeImageTheme } from "@/lib/code-themes";
 import { THEME_GITHUB_LIGHT } from "@/lib/code-themes";
 import { copyCodeImage } from "@/lib/image-copy";
 import { trackEvent } from "@/lib/analytics";
+import { useI18n } from "@/lib/i18n";
 
 type CodeBlockProps = {
   code: string;
@@ -14,6 +15,7 @@ type CodeBlockProps = {
 };
 
 export function CodeBlock({ code, language, codeTheme }: CodeBlockProps) {
+  const { t } = useI18n();
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
   const lines = code.split("\n");
   const theme = codeTheme ?? THEME_GITHUB_LIGHT;
@@ -43,12 +45,12 @@ export function CodeBlock({ code, language, codeTheme }: CodeBlockProps) {
         <button
           type="button"
           onClick={copyImage}
-          aria-label="复制代码图片"
+          aria-label={t.copyCodeImageAria}
           className="code-block-copy inline-flex items-center gap-1.5 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium transition-all hover:opacity-80 active:scale-[0.95]"
           style={{ color: theme.labelColor }}
         >
           <Copy size={14} strokeWidth={1.4} aria-hidden="true" />
-          {state === "copied" ? "已复制" : state === "failed" ? "失败" : "复制图片"}
+          {state === "copied" ? t.copied : state === "failed" ? t.assetsFailed : t.assetsCopyImage}
         </button>
       </div>
 

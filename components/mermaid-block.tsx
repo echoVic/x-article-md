@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import type { CodeImageTheme } from "@/lib/code-themes";
 import { THEME_GITHUB_LIGHT } from "@/lib/code-themes";
 import { copySvgImage } from "@/lib/image-copy";
+import { useI18n } from "@/lib/i18n";
 
 type MermaidBlockProps = {
   code: string;
@@ -11,9 +12,10 @@ type MermaidBlockProps = {
 };
 
 export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
+  const { t } = useI18n();
   const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const [svg, setSvg] = useState("");
-  const [error, setError] = useState("");
+  const [failed, setFailed] = useState(false);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
@@ -25,7 +27,7 @@ export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
     let cancelled = false;
 
     async function renderDiagram() {
-      setError("");
+      setFailed(false);
       setSvg("");
 
       if (!code.trim()) {
@@ -59,7 +61,7 @@ export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
         }
       } catch {
         if (!cancelled) {
-          setError("Mermaid 图表预览不可用");
+          setFailed(true);
         }
       }
     }
@@ -71,10 +73,10 @@ export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
     };
   }, [code, reactId, theme, isDark]);
 
-  if (error) {
+  if (failed) {
     return (
       <div className="rounded-[var(--radius)] border border-dashed border-[var(--muted)] bg-[var(--fg-soft)] p-4">
-        <p className="text-sm font-medium text-[var(--muted)]">{error}</p>
+        <p className="text-sm font-medium text-[var(--muted)]">{t.mermaidUnavailable}</p>
         <pre className="mt-3 overflow-auto whitespace-pre-wrap font-mono text-sm text-[var(--fg)]">
           {code}
         </pre>
@@ -85,7 +87,7 @@ export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
   if (!svg) {
     return (
       <div className="flex min-h-40 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-[var(--fg-soft)] text-sm text-[var(--muted)]">
-        渲染 Mermaid 图表中...
+        {t.mermaidRendering}
       </div>
     );
   }
@@ -108,10 +110,10 @@ export function MermaidBlock({ code, codeTheme }: MermaidBlockProps) {
           className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-[11px] font-medium text-[var(--fg)] transition hover:bg-[var(--fg-soft)] active:scale-[0.97]"
         >
           {copyState === "copied"
-            ? "已复制"
+            ? t.copied
             : copyState === "failed"
-              ? "复制失败"
-              : "复制图片"}
+              ? t.copyFailed
+              : t.assetsCopyImage}
         </button>
       </div>
       <div
