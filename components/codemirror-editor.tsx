@@ -1,5 +1,6 @@
 "use client";
 
+import type { SourceScrollPosition } from "@/lib/scroll-sync";
 import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { EditorState, type Extension } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers } from "@codemirror/view";
@@ -11,6 +12,7 @@ type CodeMirrorEditorProps = {
   value: string;
   onChange: (value: string) => void;
   onKeyDown?: (event: KeyboardEvent) => boolean;
+  onScrollPosition?: (position: SourceScrollPosition) => void;
   placeholder?: string;
 };
 
@@ -24,12 +26,14 @@ export type CodeMirrorEditorHandle = {
 };
 
 export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEditorProps>(
-  function CodeMirrorEditor({ value, onChange, onKeyDown, placeholder }, ref) {
+  function CodeMirrorEditor({ value, onChange, onKeyDown, placeholder, onScrollPosition }, ref) {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
     const isSyncingRef = useRef(false);
     const onChangeRef = useRef(onChange);
     onChangeRef.current = onChange;
+    const onScrollRef = useRef(onScrollPosition);
+    onScrollRef.current = onScrollPosition;
 
     useImperativeHandle(ref, () => ({
       getSelection: () => {
@@ -91,7 +95,18 @@ export const CodeMirrorEditor = forwardRef<CodeMirrorEditorHandle, CodeMirrorEdi
         return;
       }
 
+      const emitScroll = (view: EditorView) => {
+        const scroller = view.scrollDOM;
+        const top = scroller.getBoundingClientRect().top;
+        const line = view.lineBlockAtHeight(Math.max(0, top - view.documentTop));
+        onScrollRef.current?.({
+          offset: line.from,
+          atStart: scroller.scrollTop <= 1,
+          atEnd: scroller.scrollTop > 1 && scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop <= 2,
+        });
+      };
       const extensions: Extension[] = [
+        EditorView.domEventHandlers({ scroll: (_event, view) => { emitScroll(view); return false; } }),
         lineNumbers(),
         markdown(),
         syntaxHighlighting(defaultHighlightStyle),

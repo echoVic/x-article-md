@@ -1,5 +1,6 @@
 "use client";
 
+import { SharePostPanel } from "./share-post-panel";
 import { useI18n } from "@/lib/i18n";
 import type { XArticleAsset } from "@/lib/markdown";
 import { Check, Circle, RotateCcw } from "lucide-react";
@@ -81,6 +82,7 @@ function updateStep(state: PublishState, stepId: PublishStep["id"], status: Publ
 }
 
 type PublishPanelProps = {
+  articleTitle: string;
   state: PublishState;
   assets: XArticleAsset[];
   onPreflight: () => void;
@@ -92,6 +94,7 @@ type PublishPanelProps = {
 };
 
 export function PublishPanel({
+  articleTitle,
   state,
   assets,
   onPreflight,
@@ -167,6 +170,7 @@ export function PublishPanel({
         </div>
       )}
 
+      <SharePostPanel title={articleTitle} />
       {/* Reset */}
       <div className="pt-3 border-t border-[var(--border)] mt-4">
         <button

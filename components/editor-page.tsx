@@ -12,12 +12,13 @@ import { TemplatePicker } from "@/components/template-picker";
 import { trackEvent } from "@/lib/analytics";
 import { resolveTheme } from "@/lib/code-themes";
 import { useI18n } from "@/lib/i18n";
-import { parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
-import { runPreflight, type PreflightReport } from "@/lib/preflight";
+import { computeBlockOffsets, parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
+import { previewScrollTop, type SourceScrollPosition } from "@/lib/scroll-sync";
+import { runPreflight } from "@/lib/preflight";
 import { sampleMarkdown } from "@/lib/sample";
 import type { ArticleTemplate } from "@/lib/templates";
 import { Check, ClipboardCopy, ListChecks, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { Sheet } from "./ui/sheet";
 
 const draftStorageKey = "x-article-md:draft";
@@ -39,7 +40,7 @@ export default function EditorPage() {
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [preflightOpen, setPreflightOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
-  const [preflightReport, setPreflightReport] = useState<PreflightReport | null>(null);
+  const [preflightChecked, setPreflightChecked] = useState(false);
   const [showPreflightHint, setShowPreflightHint] = useState(false);
   const [publishState, dispatchPublish] = useReducer(publishReducer, initialPublishState);
   const [copyState, setCopyState] = useState<
@@ -58,7 +59,14 @@ export default function EditorPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const markdownEditorRef = useRef<MarkdownEditorHandle>(null);
+  const [syncScroll, setSyncScroll] = useState(true);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const lastScroll = useRef<SourceScrollPosition>({ offset: 0, atStart: true, atEnd: false });
+  const scrollFrame = useRef<number | null>(null);
+  const sourceOffsets = useMemo(() => computeBlockOffsets(markdown), [markdown]);
+  const normalizedLength = markdown.replace(/\r\n/g, "\n").length;
   const blocks = useMemo(() => parseMarkdown(markdown), [markdown]);
+  const preflightReport = useMemo(() => preflightChecked ? runPreflight(blocks, markdown, codeMode) : null, [preflightChecked, blocks, markdown, codeMode]);
   const hasCodeBlocks = useMemo(() => blocks.some(b => b.type === "code" || b.type === "mermaid"), [blocks]);
   const stats = useMemo(() => getStats(markdown), [markdown]);
   const clipboard = useMemo(
@@ -85,6 +93,34 @@ export default function EditorPage() {
     () => window.matchMedia("(min-width: 768px)").matches,
     () => true,
   );
+
+  const alignPreview = useCallback(() => {
+    const pane = previewRef.current;
+    if (!pane || !syncScroll || !isDesktop) return;
+    const article = pane.querySelector(".x-preview");
+    if (!article) return;
+    const paneTop = pane.getBoundingClientRect().top;
+    const tops = Array.from(article.children).map(child => child.getBoundingClientRect().top - paneTop + pane.scrollTop);
+    pane.scrollTop = previewScrollTop(lastScroll.current, sourceOffsets, tops, normalizedLength, pane.scrollHeight, pane.scrollHeight - pane.clientHeight);
+  }, [syncScroll, isDesktop, sourceOffsets, normalizedLength]);
+
+  const handleSourceScroll = useCallback((position: SourceScrollPosition) => {
+    lastScroll.current = position;
+    if (scrollFrame.current !== null) cancelAnimationFrame(scrollFrame.current);
+    if (!syncScroll || !isDesktop) { scrollFrame.current = null; return; }
+    scrollFrame.current = requestAnimationFrame(() => { scrollFrame.current = null; alignPreview(); });
+  }, [alignPreview, syncScroll, isDesktop]);
+
+  useEffect(() => {
+    const article = previewRef.current?.querySelector(".x-preview");
+    if (!article || !syncScroll || !isDesktop) return;
+    const observer = new ResizeObserver(() => handleSourceScroll(lastScroll.current));
+    observer.observe(article);
+    return () => {
+      observer.disconnect();
+      if (scrollFrame.current !== null) cancelAnimationFrame(scrollFrame.current);
+    };
+  }, [handleSourceScroll, syncScroll, isDesktop]);
 
   const resolvedCodeTheme = useMemo(
     () => resolveTheme(codeThemeId, isDark),
@@ -208,16 +244,17 @@ export default function EditorPage() {
   }
 
   function handlePreflight() {
-    const report = runPreflight(blocks, markdown, codeMode);
-    setPreflightReport(report);
+    setPreflightChecked(true);
     setPreflightOpen(true);
     dispatchPublish({ type: "PREFLIGHT_DONE" });
     trackEvent("preflight_run");
   }
 
   function handleJumpToSource(offset: number) {
-    markdownEditorRef.current?.jumpToOffset(offset);
     setPreflightOpen(false);
+    setAssetsOpen(false);
+    setMobileView("manuscript");
+    window.requestAnimationFrame(() => markdownEditorRef.current?.jumpToOffset(offset));
   }
 
   function handlePublishOpen() {
@@ -405,6 +442,7 @@ export default function EditorPage() {
             onChange={setMarkdown}
             onReset={resetDraft}
             draftReady={draftReady}
+            onScrollPosition={handleSourceScroll}
           />
         </div>
 
@@ -454,20 +492,12 @@ export default function EditorPage() {
               />
               {t.livePreview}
             </span>
-            <span
-              style={{
-                fontFamily: "var(--font-geist-mono)",
-                fontSize: "9.5px",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                lineHeight: 1,
-                color: "var(--muted)",
-              }}
-            >
-              MD2X
-            </span>
+            <label className="flex cursor-pointer items-center gap-1.5 text-[11px] text-[var(--muted)]" title={t.syncScrollHint}>
+              <input type="checkbox" checked={syncScroll} onChange={event => setSyncScroll(event.target.checked)} className="accent-[var(--accent)]" />
+              {t.syncScroll}
+            </label>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div ref={previewRef} className="min-h-0 flex-1 overflow-y-auto" aria-label={t.livePreview}>
             <ArticlePreview blocks={blocks} codeTheme={resolvedCodeTheme} />
           </div>
         </div>
@@ -544,6 +574,7 @@ export default function EditorPage() {
       {/* ═══ Publish Drawer ═══ */}
       <Sheet open={publishOpen} onOpenChange={setPublishOpen} title={t.publishTitle}>
         <PublishPanel
+          articleTitle={clipboard.title}
           state={publishState}
           assets={clipboard.assets}
           onPreflight={handlePreflight}

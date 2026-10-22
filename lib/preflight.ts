@@ -2,6 +2,7 @@ import { type ArticleBlock, type InlineToken, computeBlockOffsets } from "./mark
 
 export type PreflightLevel = "info" | "warning" | "error";
 export type PreflightKind =
+  | "inline-code"
   | "heading"
   | "paragraph"
   | "list"
@@ -83,7 +84,7 @@ export function runPreflight(
             sourceOffset: offset,
           });
         }
-        checkInlineImages(block.content, i, offset, items, nextId);
+        checkInlineContent(block.content, i, offset, items, nextId);
         break;
       }
       case "paragraph": {
@@ -95,7 +96,7 @@ export function runPreflight(
           blockIndex: i,
           sourceOffset: offset,
         });
-        checkInlineImages(block.content, i, offset, items, nextId);
+        checkInlineContent(block.content, i, offset, items, nextId);
         break;
       }
       case "blockquote": {
@@ -107,7 +108,7 @@ export function runPreflight(
           blockIndex: i,
           sourceOffset: offset,
         });
-        checkInlineImages(block.content, i, offset, items, nextId);
+        checkInlineContent(block.content, i, offset, items, nextId);
         break;
       }
       case "list": {
@@ -120,7 +121,7 @@ export function runPreflight(
           sourceOffset: offset,
         });
         for (const item of block.items) {
-          checkInlineImages(item, i, offset, items, nextId);
+          checkInlineContent(item, i, offset, items, nextId);
         }
         break;
       }
@@ -216,7 +217,7 @@ function isAssetKind(kind: PreflightKind, codeMode: "quote" | "image"): boolean 
   return false;
 }
 
-function checkInlineImages(
+function checkInlineContent(
   tokens: InlineToken[],
   blockIndex: number,
   sourceOffset: number | undefined,
@@ -224,6 +225,16 @@ function checkInlineImages(
   nextId: () => string,
 ) {
   for (const token of tokens) {
+    if (token.type === "code") {
+      items.push({
+        id: nextId(),
+        level: "warning",
+        kind: "inline-code",
+        message: token.text,
+        blockIndex,
+        sourceOffset,
+      });
+    }
     if (token.type === "image" && /^https?:\/\//.test(token.url)) {
       items.push({
         id: nextId(),

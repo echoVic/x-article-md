@@ -146,8 +146,10 @@ function ItemList({
           className="flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-xs)] hover:bg-[var(--fg-soft)] transition-colors"
         >
           <LevelIcon level={item.level} />
-          <span className="flex-1 text-[12px] text-[var(--fg)] truncate">
-            {item.message}
+          <span className="min-w-0 flex-1 text-[12px] text-[var(--fg)] break-words">
+            {item.kind === "inline-code"
+              ? t.preflightInlineCode.replace("{code}", item.message)
+              : item.message}
           </span>
           {item.sourceOffset != null && (
             <button

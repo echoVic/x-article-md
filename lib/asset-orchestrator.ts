@@ -1,6 +1,6 @@
 import type { CodeImageTheme } from "@/lib/code-themes";
 import { downloadBlob, renderCodeToPng, renderMermaidToPng, renderTableToPng } from "@/lib/image-copy";
-import type { XArticleAsset } from "@/lib/markdown";
+import type { TableAlignment, XArticleAsset } from "@/lib/markdown";
 import JSZip from "jszip";
 
 export type AssetRenderStatus = "idle" | "rendering" | "ready" | "error";
@@ -16,6 +16,7 @@ export type OrchestrationAsset = {
   code?: string;
   language?: string;
   headers?: string[];
+  alignments?: TableAlignment[];
   rows?: string[][];
   url?: string;
   renderedBlob?: Blob;
@@ -55,7 +56,7 @@ export function buildOrchestrationAssets(
     if (asset.type === "code" || asset.type === "mermaid") {
       result.push({ ...base, type: asset.type, code: asset.code, language: "language" in asset ? asset.language : undefined });
     } else if (asset.type === "table") {
-      result.push({ ...base, type: "table", headers: asset.headers, rows: asset.rows });
+      result.push({ ...base, type: "table", headers: asset.headers, alignments: asset.alignments, rows: asset.rows });
     } else if (asset.type === "tweet") {
       result.push({ ...base, type: "tweet", url: asset.url });
     }
@@ -74,7 +75,7 @@ export async function renderAssetToBlob(
     case "mermaid":
       return renderMermaidToPng(asset.code ?? "", codeTheme);
     case "table":
-      return renderTableToPng(asset.headers ?? [], asset.rows ?? []);
+      return renderTableToPng(asset.headers ?? [], asset.rows ?? [], { alignments: asset.alignments });
     case "cover":
       if (asset.renderedBlob) return asset.renderedBlob;
       throw new Error("Cover image has no blob");
@@ -86,6 +87,7 @@ export async function renderAssetToBlob(
 export async function downloadAllAssetsAsZip(
   assets: OrchestrationAsset[],
   codeTheme: CodeImageTheme,
+  isCurrent: () => boolean = () => true,
 ): Promise<void> {
   const zip = new JSZip();
   const renderableAssets = assets.filter((a) => a.type !== "tweet");
@@ -97,5 +99,5 @@ export async function downloadAllAssetsAsZip(
   }
 
   const content = await zip.generateAsync({ type: "blob" });
-  downloadBlob(content, "x-article-assets.zip");
+  if (isCurrent()) downloadBlob(content, "x-article-assets.zip");
 }

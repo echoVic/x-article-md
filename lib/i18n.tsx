@@ -201,6 +201,9 @@ const en = {
 
   // Preflight panel
   preflightTitle: "Preflight Check",
+  preflightInlineCode: "Inline code “{code}” may lose its monospace style when pasted into X. Check the pasted result; use a code image if the formatting matters.",
+  syncScroll: "Sync scroll",
+  syncScrollHint: "Follow the manuscript in the preview",
   preflightRun: "Check",
   preflightReady: "Ready to publish",
   preflightAssets: "Will become assets",
@@ -225,6 +228,16 @@ const en = {
   publishDone: "Ready to publish!",
   publishReset: "Reset",
   publishNoAssets: "No assets needed",
+  sharePostTitle: "Share after publishing",
+  sharePostHint: "Paste the published article link to create an editable post. This does not publish anything.",
+  sharePostUrl: "Published article URL",
+  sharePostUrlHint: "Use the public X status or article link, not a draft link.",
+  sharePostInvalid: "Enter an HTTPS X status or article URL.",
+  sharePostMissingTitle: "Add an H1 title to your article first.",
+  sharePostText: "Post draft",
+  sharePostCopy: "Copy post",
+  sharePostCopyFailed: "Copy blocked. Select the draft and copy it manually.",
+  sharePostReview: "Review wording and length in X before posting. Changing the title, URL or language resets this template.",
 
   // Toolbar UX
   nudgePublish: "Paste into X →",
@@ -260,6 +273,16 @@ const en = {
   orchestratorRendering: "Rendering…",
   orchestratorReady: "Ready",
   orchestratorError: "Error",
+  assetRetry: "Retry rendering",
+  assetCopySource: "Copy source",
+  assetSource: "Source (select to copy manually)",
+  assetRenderError: "Rendering failed. Retry, inspect the source, or copy it below.",
+  assetCopyError: "Clipboard blocked. Download the PNG or copy the source instead.",
+  assetBatchError: "Some assets failed. No ZIP was downloaded. Fix or retry the failed assets.",
+  assetBatchDone: "All assets are ready.",
+  assetDownloaded: "Download started",
+  assetWorking: "Working…",
+  assetSourceCopied: "Source copied",
 } as const;
 
 // ─── Chinese ───────────────────────────────────────────────────────────────────
@@ -448,6 +471,9 @@ const zh: Translations = {
 
   // Preflight panel
   preflightTitle: "发布预检",
+  preflightInlineCode: "行内代码「{code}」粘贴到 X 后可能丢失等宽样式。请检查粘贴结果；需要保留格式时，可改用代码图片。",
+  syncScroll: "同步滚动",
+  syncScrollHint: "预览跟随手稿滚动",
   preflightRun: "检查",
   preflightReady: "可直接发布",
   preflightAssets: "将转为资源",
@@ -472,6 +498,16 @@ const zh: Translations = {
   publishDone: "准备发布！",
   publishReset: "重置",
   publishNoAssets: "无需资源",
+  sharePostTitle: "发布后分享",
+  sharePostHint: "填入已发布的文章链接，生成可编辑的推文。这里不会自动发布。",
+  sharePostUrl: "已发布文章链接",
+  sharePostUrlHint: "使用公开的 X 帖子或文章链接，不要填草稿链接。",
+  sharePostInvalid: "请输入 HTTPS 的 X 帖子或文章链接。",
+  sharePostMissingTitle: "请先为文章添加一级标题。",
+  sharePostText: "推文草稿",
+  sharePostCopy: "复制推文",
+  sharePostCopyFailed: "复制被阻止，请选中草稿手动复制。",
+  sharePostReview: "发布前请在 X 检查文案和长度。修改标题、链接或语言将重置此模板。",
 
   // Toolbar UX
   nudgePublish: "粘贴到 X →",
@@ -507,6 +543,16 @@ const zh: Translations = {
   orchestratorRendering: "渲染中…",
   orchestratorReady: "就绪",
   orchestratorError: "错误",
+  assetRetry: "重试渲染",
+  assetCopySource: "复制源码",
+  assetSource: "源码（可选中手动复制）",
+  assetRenderError: "渲染失败。可以重试、定位源码，或复制下方源码。",
+  assetCopyError: "剪贴板被阻止，请改用下载 PNG 或复制源码。",
+  assetBatchError: "部分资源失败，未下载 ZIP。请修复或重试失败的资源。",
+  assetBatchDone: "全部资源已就绪。",
+  assetDownloaded: "已开始下载",
+  assetWorking: "处理中…",
+  assetSourceCopied: "源码已复制",
 };
 
 // ─── Context ───────────────────────────────────────────────────────────────────

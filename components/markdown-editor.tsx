@@ -1,6 +1,7 @@
 "use client";
 
 import { CodeMirrorEditor, type CodeMirrorEditorHandle } from "@/components/codemirror-editor";
+import type { SourceScrollPosition } from "@/lib/scroll-sync";
 import { trackEvent } from "@/lib/analytics";
 import {
     applyMarkdownAction,
@@ -33,6 +34,7 @@ type MarkdownEditorProps = {
   onChange: (value: string) => void;
   onReset: () => void;
   draftReady: boolean;
+  onScrollPosition?: (position: SourceScrollPosition) => void;
 };
 
 export type MarkdownEditorHandle = {
@@ -68,6 +70,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
   onChange,
   onReset,
   draftReady,
+  onScrollPosition,
 }, ref) {
   const { t } = useI18n();
   const editorRef = useRef<CodeMirrorEditorHandle>(null);
@@ -361,6 +364,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorHandle, MarkdownEditorPro
           value={value}
           onChange={onChange}
           onKeyDown={handleKeyDown}
+          onScrollPosition={onScrollPosition}
           placeholder={draftReady ? t.editorPlaceholder : ""}
         />
       </div>
