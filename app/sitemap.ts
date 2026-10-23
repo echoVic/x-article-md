@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
-import { getBlogPosts } from "@/lib/blog";
+import { getBlogPosts, hasZhTranslation } from "@/lib/blog";
 import { getAllFeatureLandings } from "@/lib/feature-landing-copy";
 import { STATIC_ROUTE_DATES } from "@/lib/sitemap-dates";
 
@@ -36,22 +36,53 @@ const compareAlternates = {
   },
 };
 
+const blogListAlternates = {
+  languages: {
+    en: absoluteUrl("/blog"),
+    "zh-CN": absoluteUrl("/zh/blog"),
+    "x-default": absoluteUrl("/blog"),
+  },
+};
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getBlogPosts();
 
-  // The blog index's lastModified is the newest post's frontmatter date,
+  // The blog indexes' lastModified is the newest post's frontmatter date,
   // never the current clock.
   const newestPostDate = posts.reduce(
     (max, post) => (post.date > max ? post.date : max),
     posts[0]?.date ?? STATIC_ROUTE_DATES.home,
   );
 
-  const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: absoluteUrl(`/blog/${post.slug}`),
-    lastModified: new Date(post.date),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+  // Pair each English post with its Chinese translation only when one exists.
+  // Posts without a zh translation are emitted as a single English entry.
+  const blogEntries: MetadataRoute.Sitemap = posts.flatMap((post) => {
+    const enEntry = {
+      url: absoluteUrl(`/blog/${post.slug}`),
+      lastModified: new Date(post.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    };
+    if (!hasZhTranslation(post.slug)) return [enEntry];
+
+    const alternates = {
+      languages: {
+        en: absoluteUrl(`/blog/${post.slug}`),
+        "zh-CN": absoluteUrl(`/zh/blog/${post.slug}`),
+        "x-default": absoluteUrl(`/blog/${post.slug}`),
+      },
+    };
+    return [
+      { ...enEntry, alternates },
+      {
+        url: absoluteUrl(`/zh/blog/${post.slug}`),
+        lastModified: new Date(post.date),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+        alternates,
+      },
+    ];
+  });
 
   const featureEntries: MetadataRoute.Sitemap = getAllFeatureLandings().flatMap(
     (def) => {
@@ -130,6 +161,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(newestPostDate),
       changeFrequency: "weekly",
       priority: 0.8,
+      alternates: blogListAlternates,
+    },
+    {
+      url: absoluteUrl("/zh/blog"),
+      lastModified: new Date(newestPostDate),
+      changeFrequency: "weekly",
+      priority: 0.7,
+      alternates: blogListAlternates,
     },
     {
       url: absoluteUrl("/compare"),

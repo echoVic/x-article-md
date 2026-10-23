@@ -1,0 +1,63 @@
+---
+title: "把代码块带语法高亮粘贴进 X Articles"
+description: "粘进 X Articles 的代码会丢失语法高亮。MD2X 用 9 种主题把代码渲染成带语法高亮的 PNG 图片，复制粘贴漂亮的代码片段到 X Articles。"
+date: "2026-06-02"
+tags: ["code", "语法高亮", "x-articles"]
+---
+
+粘进 X Articles 的代码会丢掉语法高亮和主题配色。MD2X 会把你的代码块渲染成漂亮的、带语法高亮的图片，直接贴进文章即可。
+
+## 问题：X Articles 会剥掉代码格式
+
+如果你是在 X Articles 上分享技术内容的开发者，一定撞过这堵墙：
+
+- 粘贴的代码丢失语法高亮和你选的主题
+- 缩进和等宽排版在粘贴时很容易被破坏
+- 截图变通办法产生的图片尺寸不一、质量差
+- Carbon.sh 之类工具要在应用之间来回切换、手动调整尺寸
+- 修改文章时，代码图片无法跟着同步更新
+
+## 解决方案：把代码块做成带主题的 PNG 图片
+
+MD2X 会自动识别 Markdown 里的代码块，并把它们渲染成高质量、带正确语法高亮的 PNG 图片：
+
+- **9 套专业主题**：Dracula、Nord、GitHub Dark、GitHub Light、One Dark Pro、Tokyo Night、Night Owl、Solarized Dark、One Monokai
+- **精准语法高亮**，基于 Shiki 支持 30 多种语言
+- **尺寸和内边距统一**——无需手动裁剪
+- **实时更新**——修改代码时图片自动重新生成
+- 从 Assets 面板**一键复制**，直接贴进 X Articles
+- 字号经过优化，在任何屏幕尺寸下都清晰可读
+
+## 如何把代码放进 X Articles
+
+### 1. 用 Markdown 围栏写代码
+
+用三个反引号并标注语言（`` ```typescript ``、`` ```python `` 等）。像在任何 Markdown 编辑器里一样写代码即可。
+
+### 2. 选一套代码主题
+
+在工具栏切到“Code Image”模式，从 9 种语法主题里选一个。预览面板会精确展示代码图片最终的样子。
+
+### 3. 复制并粘贴代码图片
+
+打开 Assets 面板查看所有已渲染的代码图片。在任意代码块上点“复制图片”，再把它作为内嵌图片贴进 X Articles。
+
+## 前后对比
+
+**Markdown 代码围栏：**
+
+```typescript
+type SyncEngine = {
+  id: string;
+  merge: (op: Op) => void;
+  snapshot: () => State;
+}
+```
+
+**结果：** 一张排版精美、带语法高亮、缩进整齐、使用所选配色主题的 PNG 图片——直接贴进 X Articles 即可。
+
+## 今天就在 X Articles 上分享代码
+
+免费、无需注册。9 套主题、30 多种语言。在你的浏览器中渲染——代码绝不会离开你的设备。
+
+[打开编辑器 →](/zh/editor)

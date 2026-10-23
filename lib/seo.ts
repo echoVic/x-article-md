@@ -116,6 +116,11 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     locale: "en",
     alternates: {
       canonical: "/blog",
+      languages: {
+        en: "/blog",
+        "zh-CN": "/zh/blog",
+        "x-default": "/blog",
+      },
     },
   },
 };
@@ -217,19 +222,24 @@ export function buildHowToJsonLd(data: {
   };
 }
 
-export function buildArticleJsonLd(post: {
-  title: string;
-  description: string;
-  date: string;
-  slug: string;
-}) {
+export function buildArticleJsonLd(
+  post: {
+    title: string;
+    description: string;
+    date: string;
+    slug: string;
+  },
+  opts: { locale?: "en" | "zh" } = {},
+) {
+  const basePath = opts.locale === "zh" ? "/zh/blog" : "/blog";
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    inLanguage: opts.locale === "zh" ? "zh-CN" : "en",
     datePublished: post.date,
-    url: `${siteUrl}/blog/${post.slug}`,
+    url: `${siteUrl}${basePath}/${post.slug}`,
     author: { "@type": "Organization", name: "MD2X" },
     publisher: { "@type": "Organization", name: "MD2X", url: siteUrl },
   };

@@ -64,7 +64,7 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
           <a href="#features">{t.navFeatures}</a>
           <Link href={editorHref}>{t.navEditor}</Link>
           <Link href={threadHref}>{t.navThread}</Link>
-          <Link href="/blog">Blog</Link>
+          <Link href={locale === "zh" ? "/zh/blog" : "/blog"}>Blog</Link>
           <a href="#faq">FAQ</a>
         </nav>
         <div className="topnav-actions">

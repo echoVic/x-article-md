@@ -1,7 +1,7 @@
 import { LandingFooter } from "@/components/landing-footer";
 import { LandingHeader } from "@/components/landing-header";
 import { mdxComponents } from "@/components/mdx-components";
-import { getAllSlugs, getBlogPost, getBlogPosts } from "@/lib/blog";
+import { getAllSlugs, getBlogPost, getBlogPosts, hasZhTranslation } from "@/lib/blog";
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -18,10 +18,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogPost(slug);
   if (!post) return {};
+
+  // Bidirectional hreflang: only advertise the Chinese alternate when a real
+  // translation exists at /zh/blog/<slug>.
+  const languages: Record<string, string> = {
+    en: `/blog/${slug}`,
+    "x-default": `/blog/${slug}`,
+  };
+  if (hasZhTranslation(slug)) {
+    languages["zh-CN"] = `/zh/blog/${slug}`;
+  }
+
   return {
     title: `${post.title} | MD2X Blog`,
     description: post.description,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: { canonical: `/blog/${slug}`, languages },
     openGraph: {
       title: post.title,
       description: post.description,
