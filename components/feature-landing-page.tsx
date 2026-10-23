@@ -3,7 +3,12 @@ import { LandingHeader } from "@/components/landing-header";
 import { TableImageTool } from "@/components/table-image-tool";
 import { Accordion } from "@/components/ui/accordion";
 import type { FeatureLandingDef, LandingLocale } from "@/lib/feature-landing-copy";
-import { buildFaqJsonLd, buildHowToJsonLd, githubRepoUrl } from "@/lib/seo";
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildHowToJsonLd,
+  githubRepoUrl,
+} from "@/lib/seo";
 import { Check } from "lucide-react";
 import Link from "next/link";
 
@@ -16,9 +21,21 @@ export function FeatureLandingPage({
 }) {
   const t = def[locale];
   const editorHref = locale === "zh" ? def.zhEditorPath : def.editorPath;
+  const featurePath = locale === "zh" ? `/zh/${def.slug}` : `/${def.slug}`;
+  const breadcrumbItems = [
+    { name: "MD2X", path: locale === "zh" ? "/zh" : "/" },
+    { name: t.heroTitle, path: featurePath },
+  ];
 
   return (
     <div className="landing">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbJsonLd(breadcrumbItems)),
+        }}
+      />
       <script
         type="application/ld+json"
         suppressHydrationWarning

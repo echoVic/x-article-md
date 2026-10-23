@@ -653,7 +653,7 @@ input {
   background: var(--surface);
 }
 
-.product-frame-preview h3 {
+.product-frame-preview .preview-title {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 28px;

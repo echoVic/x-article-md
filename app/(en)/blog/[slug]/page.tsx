@@ -2,7 +2,7 @@ import { LandingFooter } from "@/components/landing-footer";
 import { LandingHeader } from "@/components/landing-header";
 import { mdxComponents } from "@/components/mdx-components";
 import { getAllSlugs, getBlogPost, getBlogPosts } from "@/lib/blog";
-import { buildArticleJsonLd } from "@/lib/seo";
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
@@ -63,6 +63,19 @@ export default async function BlogPostPage({ params }: Props) {
               date: post.date,
               slug: post.slug,
             })
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: "MD2X", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: post.title, path: `/blog/${post.slug}` },
+            ])
           ),
         }}
       />

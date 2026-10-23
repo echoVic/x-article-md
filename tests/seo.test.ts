@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   absoluteUrl,
+  buildBreadcrumbJsonLd,
+  buildOrganizationJsonLd,
   buildPageMetadata,
+  buildSoftwareSourceCodeJsonLd,
+  buildWebSiteJsonLd,
   getHtmlLangForPath,
   githubRepoUrl,
   siteUrl,
@@ -153,5 +157,77 @@ describe("SEO configuration", () => {
     expect(getHtmlLangForPath("/editor")).toBe("en");
     expect(getHtmlLangForPath("/zh")).toBe("zh-CN");
     expect(getHtmlLangForPath("/zh/")).toBe("zh-CN");
+  });
+});
+
+describe("site entity and semantic structured data", () => {
+  it("Organization exposes only the real GitHub repo as sameAs and reuses the site icon as logo", () => {
+    const org = buildOrganizationJsonLd();
+
+    expect(org["@type"]).toBe("Organization");
+    expect(org.name).toBe("MD2X");
+    expect(org.url).toBe(siteUrl);
+    expect(org.logo).toBe(absoluteUrl("/icon-512"));
+    expect(org.sameAs).toEqual([githubRepoUrl]);
+    // No invented social profiles, contacts, or prices.
+    expect(JSON.stringify(org)).not.toMatch(/twitter|facebook|instagram|email|telephone/i);
+  });
+
+  it("WebSite references the publisher and supports both locales", () => {
+    const web = buildWebSiteJsonLd();
+
+    expect(web["@type"]).toBe("WebSite");
+    expect(web.url).toBe(siteUrl);
+    expect(web.inLanguage).toEqual(["en", "zh-CN"]);
+    expect(web.publisher).toMatchObject({ "@type": "Organization", name: "MD2X" });
+  });
+
+  it("SoftwareSourceCode points at the real GitHub repository", () => {
+    const src = buildSoftwareSourceCodeJsonLd();
+
+    expect(src["@type"]).toBe("SoftwareSourceCode");
+    expect(src.codeRepository).toBe(githubRepoUrl);
+    expect(src.url).toBe(siteUrl);
+    expect(src.programmingLanguage).toBe("TypeScript");
+    // No invented price / capability claims.
+    expect(src).not.toHaveProperty("offers");
+  });
+
+  it("builds a positional BreadcrumbList with absolute URLs", () => {
+    const crumbs = buildBreadcrumbJsonLd([
+      { name: "MD2X", path: "/" },
+      { name: "Blog", path: "/blog" },
+      { name: "A Post", path: "/blog/a-post" },
+    ]);
+
+    expect(crumbs["@type"]).toBe("BreadcrumbList");
+    expect(crumbs.itemListElement).toHaveLength(3);
+    expect(crumbs.itemListElement[0]).toMatchObject({
+      position: 1,
+      name: "MD2X",
+      item: absoluteUrl("/"),
+    });
+    expect(crumbs.itemListElement[2]).toMatchObject({
+      position: 3,
+      name: "A Post",
+      item: absoluteUrl("/blog/a-post"),
+    });
+  });
+
+  it("compresses the three Chinese core descriptions to at most 120 characters", () => {
+    for (const page of ["zhHome", "zhEditor", "zhThread"] as const) {
+      const description = buildPageMetadata(page).description as string;
+      expect(description.length).toBeLessThanOrEqual(120);
+      // Keeps the meaning: still mentions the converter and local/free claims.
+      expect(description).toMatch(/Markdown/);
+    }
+  });
+
+  it("demotes the landing mockup's decorative title to a non-heading element", () => {
+    const source = readFileSync("components/landing-page.tsx", "utf8");
+
+    // The product mockup preview no longer uses a heading tag for its fake title.
+    expect(source).toContain('<div className="preview-title">Writing on X Articles</div>');
+    expect(source).not.toContain("<h3>Writing on X Articles</h3>");
   });
 });

@@ -52,7 +52,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhHome: {
     title: "MD2X - Markdown 转 X Articles 编辑器",
     description:
-      "将 Markdown 一键转为 X Articles 富文本格式在线工具。代码块自动渲染为语法高亮 PNG 图片，Mermaid 图表和表格可一键复制粘贴到文章中。AI 智能生成封面图，支持 OpenAI 兼容接口。完全免费，无需注册，纯浏览器端运行，你的数据绝对不离开本地设备。",
+      "在线将 Markdown 一键转为 X Articles 富文本。代码块自动渲染为语法高亮图片，Mermaid 图表和表格可一键复制。免费、无需注册，纯浏览器端运行，数据不离开本地。",
     path: "/zh",
     locale: "zh-CN",
     alternates: {
@@ -71,7 +71,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhEditor: {
     title: "免费 Markdown 转 X Articles 在线编辑器 | MD2X",
     description:
-      "免费在线 Markdown 编辑器，实时预览 X Articles 长文发布效果。代码块自动渲染为带语法高亮的 PNG 图片，Mermaid 图表和表格支持一键复制粘贴。AI 封面图生成器让你的长文从第一眼就抓住读者注意力。完全免费，无需注册，所有数据都安全保存在你的本地浏览器中。",
+      "免费在线 Markdown 编辑器，实时预览 X Articles 长文效果。代码块渲染为语法高亮 PNG 图片，Mermaid 图表和表格一键复制，AI 生成封面图。无需注册，数据保存在本地浏览器。",
     path: "/zh/editor",
     locale: "zh-CN",
     alternates: {
@@ -90,7 +90,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
   zhThread: {
     title: "免费 Markdown 转 Twitter Thread 生成器 | MD2X",
     description:
-      "将 Markdown 一键转换为 Twitter/X 推文流的免费在线工具。支持基于段落结构的规则拆分和 AI 智能断句两种灵活模式，自动适配每条约 280 字符限制并自动添加序号标注。支持逐条复制和全部内容一键复制到剪贴板。完全免费，无需注册，纯浏览器端运行，数据不会离开本地设备。",
+      "免费在线将 Markdown 转为 Twitter/X 推文流。支持段落规则拆分与 AI 智能断句，自动适配 280 字符限制并加序号，可逐条或一键复制。无需注册，纯浏览器端运行。",
     path: "/zh/thread",
     locale: "zh-CN",
     alternates: {
@@ -232,5 +232,59 @@ export function buildArticleJsonLd(post: {
     url: `${siteUrl}/blog/${post.slug}`,
     author: { "@type": "Organization", name: "MD2X" },
     publisher: { "@type": "Organization", name: "MD2X", url: siteUrl },
+  };
+}
+
+/**
+ * Site-wide Organization entity. Only real facts: the open-source repo is the
+ * sole `sameAs` (no invented social profiles, contacts, or prices). The logo
+ * reuses the existing generated site icon route.
+ */
+export function buildOrganizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "MD2X",
+    url: siteUrl,
+    logo: absoluteUrl("/icon-512"),
+    sameAs: [githubRepoUrl],
+  };
+}
+
+export function buildWebSiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "MD2X",
+    url: siteUrl,
+    inLanguage: ["en", "zh-CN"],
+    publisher: { "@type": "Organization", name: "MD2X", url: siteUrl },
+  };
+}
+
+export function buildSoftwareSourceCodeJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: "MD2X - Markdown to X Articles Converter",
+    url: siteUrl,
+    codeRepository: githubRepoUrl,
+    programmingLanguage: "TypeScript",
+    runtimePlatform: "Web browser",
+  };
+}
+
+export function buildBreadcrumbJsonLd(
+  items: readonly { name: string; path: string }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
   };
 }

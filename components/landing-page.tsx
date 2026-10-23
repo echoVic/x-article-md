@@ -3,7 +3,14 @@ import { LandingHeader } from "@/components/landing-header";
 import { Accordion } from "@/components/ui/accordion";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
-import { buildFaqJsonLd, buildWebApplicationJsonLd, githubRepoUrl } from "@/lib/seo";
+import {
+  buildFaqJsonLd,
+  buildOrganizationJsonLd,
+  buildSoftwareSourceCodeJsonLd,
+  buildWebApplicationJsonLd,
+  buildWebSiteJsonLd,
+  githubRepoUrl,
+} from "@/lib/seo";
 import Link from "next/link";
 
 /**
@@ -58,6 +65,27 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale 
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildFaqJsonLd(t.faqs)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildWebSiteJsonLd()),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildOrganizationJsonLd()),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildSoftwareSourceCodeJsonLd()),
         }}
       />
       <LandingHeader locale={locale} />
@@ -128,7 +156,7 @@ const article = toXArticles(
 \`\`\``}
                 </div>
                 <div className="product-frame-preview">
-                  <h3>Writing on X Articles</h3>
+                  <div className="preview-title">Writing on X Articles</div>
                   <p>
                     Long-form posts deserve real formatting. Draft in Markdown,
                     publish without the busywork.
