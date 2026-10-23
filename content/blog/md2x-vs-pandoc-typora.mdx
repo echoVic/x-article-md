@@ -1,0 +1,84 @@
+---
+title: "MD2X vs Pandoc vs Typora: Choosing a Markdown Workflow Tool"
+description: "Pandoc converts between document formats, Typora is a WYSIWYG Markdown editor, and MD2X targets X Articles and threads. A grounded comparison of what each is for."
+date: "2026-10-23"
+tags: ["comparison", "pandoc", "typora", "markdown"]
+---
+
+Pandoc, Typora and MD2X all touch Markdown, but they sit on completely different points of the workflow. Pandoc is a universal document converter, Typora is a writing/reading editor, and MD2X is a narrow publishing tool aimed at X. This comparison reflects each project's own site as of 2026-10-23.
+
+## What each tool is built for
+
+**Pandoc** (pandoc.org) describes itself as a universal document converter — a "swiss-army knife" that converts Markdown and many other formats into HTML, EPUB, docx, LaTeX, PDF, PowerPoint, MediaWiki and more. It is a command-line program and Haskell library, free software under the GPL, aimed at batch and document-publishing pipelines.
+
+**Typora** (typora.io) is a minimal, WYSIWYG Markdown editor and reader for desktop. It removes the split source/preview view, renders tables, math, Mermaid and diagrams as you type, and exports to PDF, docx, OpenOffice, LaTeX, MediaWiki and Epub. It is a writing environment, not a conversion service.
+
+**MD2X** ([/editor](/editor)) is a browser tool that turns Markdown into clipboard-ready rich text for X Articles, renders code/Mermaid/table blocks as PNG images, and splits long drafts into threads. It has no file-format pipeline and no editor chrome of its own beyond the editing surface.
+
+## Selection table
+
+<table style={{ borderCollapse: "collapse", width: "100%" }}>
+  <thead>
+    <tr>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Dimension</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Pandoc</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Typora</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>MD2X</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Kind of tool</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>CLI / library converter</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Desktop WYSIWYG editor</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Browser publishing tool</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Strength</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Huge format matrix, citations, PDFs, batch jobs</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Write and read Markdown with live preview</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Clipboard-ready X Articles + thread output</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Output</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Files (docx, epub, PDF, slides, wiki, ...)</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Edited Markdown file; exports to PDF/docx/...</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Rich text on the clipboard + PNG assets</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Code / diagrams</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Converts syntax; relies on target renderer</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Highlights ~100 languages; renders Mermaid</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Code, Mermaid and tables become pasteable PNG</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Install / access</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Install on your machine; command line</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Desktop app for macOS/Windows/Linux</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Open in the browser, no sign-up</td>
+    </tr>
+  </tbody>
+</table>
+
+## When to choose each
+
+- **Pandoc** when you are producing documents for many standard destinations (ebooks, Word, slides, academic PDFs) or scripting conversions.
+- **Typora** when you want a calm, distraction-free place to write and read Markdown on the desktop, with diagrams and math rendered natively.
+- **MD2X** when the specific destination is X Articles or an X thread and you need rich text plus code/diagram/table images already prepared for that editor.
+
+## Where each is not the right fit
+
+- Pandoc does not produce X-shaped clipboard rich text, and it is not an editor.
+- Typora is a writing environment; it does not prepare numbered thread posts or pasteable X Articles assets.
+- MD2X is not a general document converter: it won't export your draft to docx, EPUB or PDF, and it renders assets to PNG rather than SVG.
+
+## Boundaries
+
+Pandoc and Typora are mature, general-purpose Markdown tools; MD2X is intentionally narrow. MD2X runs in your browser and keeps drafts local; its optional AI features (polish, translation, smart splitting, AI cover art) require your own OpenAI-compatible API key and it does not host inference. This article avoids quoting prices or tiers — check Pandoc's site (free/GPL) and Typora's purchase page for current terms.
+
+## Sources
+
+- Pandoc — https://pandoc.org
+- Typora — https://typora.io
+- MD2X editor — [/editor](/editor)
+- MD2X Markdown to X Articles — [/markdown-to-x-articles](/markdown-to-x-articles)

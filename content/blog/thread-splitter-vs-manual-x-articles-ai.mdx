@@ -1,0 +1,80 @@
+---
+title: "Thread Splitter vs Manual Writing, X Articles, and General AI: Where the Line Is"
+description: "When should you use a thread splitter, when should you write X Articles long-form, and what can a generic chatbot actually do for you? A grounded comparison of boundaries."
+date: "2026-10-23"
+tags: ["comparison", "thread", "x-articles"]
+---
+
+Turning one long idea into a publishable X presence has three very different routes: hand-split it yourself, publish it as a single long-form Article, or ask a general AI chatbot to "make it a thread." MD2X's [thread splitter](/thread) is a fourth, narrower tool. This piece draws the boundaries between them, based on X's own Articles help and MD2X's documentation as of 2026-10-23.
+
+## The four approaches
+
+**Manual splitting.** You write the draft in a notes app, cut it into posts, number them, and copy each one. Total editorial control, zero tooling — but repeated, and easy to get inconsistent breaks or numbering.
+
+**X Articles.** X's own long-form format (help.x.com/en/using-x/articles) is for publishing a single, continuous long piece, not a broken-up numbered sequence. It uses X's rich-text editor.
+
+**General AI chatbot.** Paste your draft into a chatbot and ask it to "split this into a thread." It can reason about where to break, but it is not wired to your clipboard, your local files, or consistent numbering — and it may reword your text.
+
+**MD2X thread splitter.** You paste Markdown into the browser and the tool splits it at paragraph boundaries into numbered posts, with an optional AI-assisted split, then copies each post or the whole thread to your clipboard. No draft is uploaded unless you explicitly use an AI feature.
+
+## Selection table
+
+<table style={{ borderCollapse: "collapse", width: "100%" }}>
+  <thead>
+    <tr>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Approach</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Best output</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Control over wording</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Data handling</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Manual</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Numbered thread you hand-craft</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Full</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Stays in your own editor</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>X Articles</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>One continuous long-form piece</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Full (in X's editor)</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Published to X</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>General AI chatbot</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Suggested split you must review</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Lower — it may rewrite phrasing</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Sent to the model provider</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>MD2X splitter</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Numbered, clipboard-ready posts</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>High — it splits, does not rewrite</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Local unless you enable AI assist</td>
+    </tr>
+  </tbody>
+</table>
+
+## When to use which
+
+- **Use the MD2X splitter** when you already wrote the prose and only need a clean, numbered, copy-ready break-up — without rewording.
+- **Use X Articles** when the piece reads better as one long-form article than as a sequence of posts.
+- **Split manually** when each post needs individual editorial judgment, nuanced ordering, or custom punchlines between them.
+- **Use a general chatbot** only as a second-opinion brainstorm, not as your final pipeline.
+
+## Where the tool does not reach
+
+- MD2X does not post to X for you; it prepares the clipboard content. You still paste and publish.
+- The AI-assisted split is optional and requires your own OpenAI-compatible API key; the default rule-based split needs no key.
+- It is tuned for thread-length posts, not for producing a single long-form Article — that's what X Articles is for.
+
+## Boundaries
+
+A thread and an Article solve different distribution needs: a numbered sequence invites swipe/reply momentum, while a single article keeps a reader in one document. MD2X sits between your draft and the clipboard; it does not host content, does not require an account, and does not change your words beyond deciding where the breaks go. Verify current X Articles formatting limits on X's help center.
+
+## Sources
+
+- X Articles help — https://help.x.com/en/using-x/articles
+- MD2X thread splitter — [/thread](/thread)
+- MD2X Markdown to X Articles — [/markdown-to-x-articles](/markdown-to-x-articles)

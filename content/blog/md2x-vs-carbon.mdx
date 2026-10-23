@@ -1,0 +1,86 @@
+---
+title: "MD2X vs Carbon: Which Code-Image Tool Should You Use in 2026?"
+description: "Carbon and MD2X both turn source code into clean images, but they solve different jobs. A grounded comparison of purpose, input, output, themes and who should pick each."
+date: "2026-10-23"
+tags: ["comparison", "code-to-image", "carbon"]
+---
+
+Carbon popularized the "pretty code screenshot" category, and MD2X overlaps it on purpose: both render a snippet into a themed PNG. But they are built around different workflows. This comparison is grounded in each tool's own documentation as of 2026-10-23.
+
+## What each tool actually is
+
+**Carbon** (carbon.vercel.app, open source at github.com/carbon-app/carbon) is a browser tool dedicated to creating and sharing beautiful images of source code. You paste a snippet, drop a file, or load a GitHub gist, then customize the syntax theme, background, window theme, padding, shadows and fonts. It exports PNG and SVG, lets you copy the image to the clipboard, and can save/share snippets (an account is required to save snippets).
+
+**MD2X** ([/code-to-image](/code-to-image)) renders code blocks to syntax-highlighted PNG as one step inside a larger job: converting a whole Markdown draft into [X Articles](/markdown-to-x-articles) rich text. It also turns Mermaid diagrams and Markdown tables into images, previews the article, and splits long posts into [threads](/thread).
+
+## Selection table
+
+<table style={{ borderCollapse: "collapse", width: "100%" }}>
+  <thead>
+    <tr>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Dimension</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>Carbon</th>
+      <th style={{ border: "1px solid #ccc", padding: "6px 10px", textAlign: "left" }}>MD2X</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Primary job</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>One beautiful standalone code image to share or embed</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Convert a whole Markdown post into X Articles rich text</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Input</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Paste code, drop a file, or load a GitHub gist URL</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>A Markdown document with fenced code blocks</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Export formats</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>PNG and SVG</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>PNG images only</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Account to use</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Not required to export; required to save snippets</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Not required at all</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Extra output</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Shareable snippet links, iframe embeds, Tweet button</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Clipboard-ready rich text, Mermaid/table images, thread splitting</td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Runs in the browser</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Yes, installable as a PWA for offline use</td>
+      <td style={{ border: "1px solid #ccc", padding: "6px 10px" }}>Yes, drafts stay on your device</td>
+    </tr>
+  </tbody>
+</table>
+
+## When to choose Carbon
+
+- You want a single, highly polished snippet image for social media, slides, or a blog, and you care about background color, window chrome, padding and shadow.
+- You want a shareable snippet link or an iframe embed you can drop into your own site.
+- You value editor integrations and a CLI for opening selections directly.
+
+## When to choose MD2X
+
+- You are publishing a long-form Markdown draft to X Articles and need headings, links and lists preserved as rich text, with every code block, diagram and table converted along the way.
+- You don't want to context-switch between a converter and a separate image tool for each snippet.
+- You also need to split the same draft into a numbered [thread](/thread).
+
+## Where each is not the right fit
+
+- Carbon does not turn a multi-section Markdown document into pasteable rich text; it produces one image at a time.
+- MD2X is not a snippet-hosting service: it has no save/share-by-account or iframe embeds, and it exports PNG rather than SVG.
+
+## Boundaries
+
+Both tools run in the browser and keep your code local. MD2X's code images are sized to paste cleanly into X Articles; Carbon's images are designed to be shared as standalone artifacts. Optional AI features in MD2X (polish, translation, smart thread splits, AI cover art) require your own OpenAI-compatible API key — MD2X does not host model inference. This article does not quote pricing; check each project's site for current terms.
+
+## Sources
+
+- Carbon about — https://carbon.vercel.app/about
+- Carbon GitHub repository (MIT license) — https://github.com/carbon-app/carbon
+- MD2X code-to-image tool — [/code-to-image](/code-to-image)
+- MD2X Markdown to X Articles — [/markdown-to-x-articles](/markdown-to-x-articles)
