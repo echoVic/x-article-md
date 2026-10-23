@@ -25,6 +25,13 @@ const threadAlternates = {
     "x-default": absoluteUrl("/thread"),
   },
 };
+const compareAlternates = {
+  languages: {
+    en: absoluteUrl("/compare"),
+    "zh-CN": absoluteUrl("/zh/compare"),
+    "x-default": absoluteUrl("/compare"),
+  },
+};
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getBlogPosts();
@@ -112,6 +119,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: absoluteUrl("/compare"),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+      alternates: compareAlternates,
+    },
+    {
+      url: absoluteUrl("/zh/compare"),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+      alternates: compareAlternates,
     },
     {
       url: absoluteUrl("/privacy"),

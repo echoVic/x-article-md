@@ -31,6 +31,9 @@ export function LandingFooter({ locale = "en" }: { locale?: LandingLocale }) {
                 {def[locale].heroTitle}
               </Link>
             ))}
+            <Link href={`${prefix}/compare`}>
+              {locale === "zh" ? "对比 Carbon / Pandoc / Typora" : "Compare Carbon / Pandoc / Typora"}
+            </Link>
           </nav>
         )}
         <span className="meta">
