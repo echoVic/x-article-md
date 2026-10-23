@@ -1,5 +1,6 @@
 import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
+import { SECURITY_HEADERS } from "./lib/security-headers";
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
@@ -34,6 +35,17 @@ const nextConfig: NextConfig = {
         source: "/mermaid-in-x-articles",
         destination: "/blog/mermaid-in-x-articles",
         permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: Object.entries(SECURITY_HEADERS).map(([key, value]) => ({
+          key,
+          value,
+        })),
       },
     ];
   },
