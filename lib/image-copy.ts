@@ -177,38 +177,68 @@ export async function renderCodeToPng(
 }
 
 export async function renderSvgToPng(svg: string): Promise<Blob> {
-  const image = new Image();
-  const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(svgBlob);
-
-  try {
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error("Unable to load SVG."));
-      image.src = url;
-    });
-
-    const scale = window.devicePixelRatio || 2;
-    const width = Math.max(image.naturalWidth || 720, 360);
-    const height = Math.max(image.naturalHeight || 240, 180);
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-      throw new Error("Canvas is unavailable.");
-    }
-
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    context.scale(scale, scale);
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, width, height);
-    context.drawImage(image, 0, 0, width, height);
-
-    return canvasToBlob(canvas);
-  } finally {
-    URL.revokeObjectURL(url);
+  const document = new DOMParser().parseFromString(svg, "image/svg+xml");
+  const root = document.documentElement;
+  if (document.querySelector("parsererror") || root.localName !== "svg" || root.namespaceURI !== "http://www.w3.org/2000/svg") {
+    throw new Error("Invalid SVG image.");
   }
+
+  // Mermaid's responsive width="100%" has no containing block in an Image.
+  // Resolve it from viewBox instead of accepting the browser's 300px fallback.
+  const viewBox = (root.getAttribute("viewBox") ?? "").trim().split(/[\s,]+/).map(Number);
+  const hasViewBox = viewBox.length === 4 && viewBox.every(Number.isFinite) && viewBox[2] > 0 && viewBox[3] > 0;
+  const pixelLength = (value: string | null) => {
+    if (!value || !/^\s*(?:\d+(?:\.\d*)?|\.\d+)(?:px)?\s*$/.test(value)) return undefined;
+    const number = parseFloat(value);
+    return Number.isFinite(number) && number > 0 ? number : undefined;
+  };
+  let width = pixelLength(root.getAttribute("width"));
+  let height = pixelLength(root.getAttribute("height"));
+  if (hasViewBox) {
+    const ratio = viewBox[2] / viewBox[3];
+    if (width && !height) height = width / ratio;
+    else if (height && !width) width = height * ratio;
+    else if (!width && !height) { width = viewBox[2]; height = viewBox[3]; }
+  }
+  if (width) root.setAttribute("width", String(width));
+  if (height) root.setAttribute("height", String(height));
+
+  // Chromium taints canvas for Blob-backed SVG containing foreignObject,
+  // even with local-only HTML labels. A self-contained UTF-8 data URL keeps
+  // those labels intact; do not remove foreignObject or weaken securityLevel.
+  const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(root));
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => {
+    const cleanup = () => {
+      clearTimeout(timer);
+      image.onload = null;
+      image.onerror = null;
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      image.src = "";
+      reject(new Error("SVG image loading timed out."));
+    }, 15_000);
+    image.onload = () => { cleanup(); resolve(); };
+    image.onerror = () => { cleanup(); reject(new Error("Unable to load SVG.")); };
+    try { image.src = url; }
+    catch (error) { cleanup(); reject(error); }
+  });
+
+  width = width ?? (image.naturalWidth || 720);
+  height = height ?? (image.naturalHeight || 240);
+  const scale = window.devicePixelRatio || 2;
+  const canvas = window.document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas is unavailable.");
+
+  canvas.width = Math.ceil(width * scale);
+  canvas.height = Math.ceil(height * scale);
+  context.scale(scale, scale);
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, width, height);
+  context.drawImage(image, 0, 0, width, height);
+  return canvasToBlob(canvas);
 }
 
 export type TableImageTheme = "light" | "dark";
