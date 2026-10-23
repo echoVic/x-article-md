@@ -28,6 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       publishedTime: post.date,
       url: `/blog/${slug}`,
+      siteName: "MD2X",
+      locale: "en",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [`/blog/${slug}/opengraph-image`],
     },
   };
 }
@@ -62,6 +70,7 @@ export default async function BlogPostPage({ params }: Props) {
       <main>
         <article className="section">
           <div className="container blog-prose">
+            <h1 className="blog-post-title">{post.title}</h1>
             <div className="blog-post-header">
               <Link href="/blog" className="blog-back">
                 ← Back to Blog

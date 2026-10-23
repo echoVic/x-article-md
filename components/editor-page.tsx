@@ -15,7 +15,7 @@ import { useI18n } from "@/lib/i18n";
 import { computeBlockOffsets, parseMarkdown, toXArticleClipboard } from "@/lib/markdown";
 import { previewScrollTop, type SourceScrollPosition } from "@/lib/scroll-sync";
 import { runPreflight } from "@/lib/preflight";
-import { sampleMarkdown } from "@/lib/sample";
+import { getSampleMarkdown } from "@/lib/sample";
 import type { ArticleTemplate } from "@/lib/templates";
 import { Check, ClipboardCopy, ListChecks, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
@@ -38,7 +38,7 @@ export default function EditorPage({
   onFocusChange?: (focus: boolean) => void;
 }) {
   const { t, locale } = useI18n();
-  const [markdown, setMarkdown] = useState(sampleMarkdown);
+  const [markdown, setMarkdown] = useState(() => getSampleMarkdown(locale));
   const [draftReady, setDraftReady] = useState(false);
   const [codeMode, setCodeMode] = useState<"quote" | "image">("quote");
   const [codeThemeId, setCodeThemeId] = useState("auto");
@@ -269,7 +269,7 @@ export default function EditorPage({
   }
 
   function handleTemplateSelect(template: ArticleTemplate) {
-    const isDirty = markdown !== sampleMarkdown && markdown.trim() !== "";
+    const isDirty = markdown !== getSampleMarkdown(locale) && markdown.trim() !== "";
     if (isDirty && !window.confirm(t.templateConfirmReplace)) {
       return;
     }
@@ -284,7 +284,7 @@ export default function EditorPage({
   }
 
   function resetDraft() {
-    setMarkdown(sampleMarkdown);
+    setMarkdown(getSampleMarkdown(locale));
     window.localStorage.removeItem(draftStorageKey);
   }
 
