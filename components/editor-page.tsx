@@ -30,7 +30,13 @@ const monoLabel: React.CSSProperties = {
   lineHeight: 1,
 };
 
-export default function EditorPage() {
+export default function EditorPage({
+  focus = false,
+  onFocusChange,
+}: {
+  focus?: boolean;
+  onFocusChange?: (focus: boolean) => void;
+}) {
   const { t, locale } = useI18n();
   const [markdown, setMarkdown] = useState(sampleMarkdown);
   const [draftReady, setDraftReady] = useState(false);
@@ -341,7 +347,7 @@ export default function EditorPage() {
       style={{ userSelect: isResizing ? "none" : "auto" }}
     >
       {/* ═══ Global Header ═══ */}
-      <AppHeader activePage="editor" />
+      <AppHeader activePage="editor" focus={focus} />
 
       {/* ═══ Editor Toolbar ═══ */}
       <EditorToolbar
@@ -357,6 +363,8 @@ export default function EditorPage() {
         onCopyBody={copyBody}
         onPreflight={handlePreflight}
         onPublish={handlePublishOpen}
+        focus={focus}
+        onFocusChange={onFocusChange}
         draftReady={draftReady}
         assetsCount={clipboard.assets.length}
         copyState={copyState}

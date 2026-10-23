@@ -1,8 +1,8 @@
-import { EditorPageWrapper } from "@/components/editor-page-wrapper";
+import { FocusEditorPage } from "@/components/focus-editor-page";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata = buildPageMetadata("editor");
 
 export default function Page() {
-  return <EditorPageWrapper locale="en" />;
+  return <FocusEditorPage locale="en" />;
 }

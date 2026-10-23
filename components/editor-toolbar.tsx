@@ -9,6 +9,8 @@ import {
   FileText,
   LayoutTemplate,
   ListChecks,
+  Maximize2,
+  Minimize2,
   MoreHorizontal,
   ShieldCheck,
   Upload,
@@ -30,6 +32,8 @@ export type EditorToolbarProps = {
   onCopyBody: () => void;
   onPreflight: () => void;
   onPublish: () => void;
+  focus: boolean;
+  onFocusChange?: (focus: boolean) => void;
   draftReady: boolean;
   assetsCount: number;
   copyState: "idle" | "title" | "body" | "manual";
@@ -59,6 +63,8 @@ export function EditorToolbar({
   onCopyBody,
   onPreflight,
   onPublish,
+  focus,
+  onFocusChange,
   draftReady,
   assetsCount,
   copyState,
@@ -141,7 +147,20 @@ export function EditorToolbar({
       </div>
 
       {/* Mobile: doc actions live on the right */}
-      <div className="flex items-center gap-0 md:hidden">{docActions}</div>
+      <div className="flex items-center gap-0 md:hidden">
+        {onFocusChange && (
+          <button
+            type="button"
+            onClick={() => onFocusChange(!focus)}
+            aria-label={focus ? t.focusExit : t.focusEnter}
+            aria-pressed={focus}
+            className={iconBtn}
+          >
+            {focus ? <Minimize2 size={16} strokeWidth={1.6} aria-hidden="true" /> : <Maximize2 size={16} strokeWidth={1.6} aria-hidden="true" />}
+          </button>
+        )}
+        {docActions}
+      </div>
 
       {/* Center: code-mode segmented (desktop) */}
       <div className="hidden md:flex flex-1 items-center justify-center gap-2 min-w-0">
@@ -194,6 +213,19 @@ export function EditorToolbar({
 
       {/* Right: check / publish / copy body (desktop) */}
       <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+        {onFocusChange && (
+          <Tooltip content={focus ? t.focusExit : t.focusEnter}>
+            <button
+              type="button"
+              onClick={() => onFocusChange(!focus)}
+              aria-label={focus ? t.focusExit : t.focusEnter}
+              aria-pressed={focus}
+              className={iconBtn}
+            >
+              {focus ? <Minimize2 size={16} strokeWidth={1.6} aria-hidden="true" /> : <Maximize2 size={16} strokeWidth={1.6} aria-hidden="true" />}
+            </button>
+          </Tooltip>
+        )}
         <Tooltip content={t.preflightRun}>
           <button
             type="button"

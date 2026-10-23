@@ -13,7 +13,7 @@ type Page = "editor" | "thread";
  * The only warm pixel is the brand "×"; the active nav link keeps a 1px
  * brick underline. No issue plates, no folio numbers.
  */
-export function AppHeader({ activePage }: { activePage?: Page }) {
+export function AppHeader({ activePage, focus = false }: { activePage?: Page; focus?: boolean }) {
   const { t, setLocale } = useI18n();
   const pathname = usePathname();
 
@@ -22,9 +22,10 @@ export function AppHeader({ activePage }: { activePage?: Page }) {
   const threadHref = isZh ? "/zh/thread" : "/thread";
 
   // Language switch: toggle between /zh/xxx and /xxx
-  const langHref = isZh
+  const langPath = isZh
     ? pathname.replace(/^\/zh/, "") || "/"
     : `/zh${pathname === "/" ? "" : pathname}`;
+  const langHref = focus ? `${langPath}?focus=1` : langPath;
   const nextLocale = isZh ? "en" : "zh";
 
   return (

@@ -4,11 +4,19 @@ import { editorCopy, type EditorLocale } from "@/lib/editor-copy";
 import { buildFaqJsonLd } from "@/lib/seo";
 import { Check } from "lucide-react";
 
-export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
+export function EditorPageWrapper({
+  locale,
+  focus = false,
+  onFocusChange,
+}: {
+  locale: EditorLocale;
+  focus?: boolean;
+  onFocusChange?: (focus: boolean) => void;
+}) {
   const copy = editorCopy[locale];
 
   return (
-    <div className="workbench flex flex-col bg-[var(--bg)]">
+    <div className={focus ? "workbench fixed inset-0 z-50 h-[100dvh] overflow-hidden bg-[var(--bg)]" : "workbench flex flex-col bg-[var(--bg)]"} data-focus-mode={focus ? "true" : "false"}>
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
@@ -20,10 +28,10 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
 
       {/* Editor — exactly one viewport tall; SEO content lives below the fold */}
       <div className="h-[100dvh]">
-        <EditorPage />
+        <EditorPage focus={focus} onFocusChange={onFocusChange} />
       </div>
 
-      {/* SEO Header — below the fold for search engines */}
+      <div className={focus ? "hidden" : undefined} aria-hidden={focus || undefined} inert={focus ? true : undefined}>
       <section className="border-t border-[var(--border)] bg-[var(--surface)] px-6 py-10">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-xl font-bold text-[var(--fg)]">{copy.h1}</h1>
@@ -125,6 +133,7 @@ export function EditorPageWrapper({ locale }: { locale: EditorLocale }) {
 
       {/* FAQ */}
       <EditorFaq faqs={copy.faqs} title={copy.faqTitle} />
+      </div>
     </div>
   );
 }
