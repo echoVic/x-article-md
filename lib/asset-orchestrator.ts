@@ -1,7 +1,6 @@
 import type { CodeImageTheme } from "@/lib/code-themes";
 import { downloadBlob, renderCodeToPng, renderMermaidToPng, renderTableToPng } from "@/lib/image-copy";
 import type { TableAlignment, XArticleAsset } from "@/lib/markdown";
-import JSZip from "jszip";
 
 export type AssetRenderStatus = "idle" | "rendering" | "ready" | "error";
 
@@ -89,6 +88,9 @@ export async function downloadAllAssetsAsZip(
   codeTheme: CodeImageTheme,
   isCurrent: () => boolean = () => true,
 ): Promise<void> {
+  // JSZip (~188KB gzip) is only needed for the actual ZIP export; load it on
+  // demand so it stays out of the editor's initial eager bundle.
+  const { default: JSZip } = await import("jszip");
   const zip = new JSZip();
   const renderableAssets = assets.filter((a) => a.type !== "tweet");
 
