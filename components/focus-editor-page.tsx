@@ -39,15 +39,19 @@ export function FocusEditorPage({ locale }: { locale: EditorLocale }) {
     if (!focus) return;
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
+    // Capture phase: run before Radix DismissableLayer (Tooltip/Popover) document
+    // listeners, which are bubble-phase and registered earlier. Otherwise the first
+    // Escape closes the tooltip, calls preventDefault, and focus mode only exits on
+    // the second press. Open dialogs/dropdowns still win via the guard below.
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented || event.repeat || event.isComposing) return;
       if (document.querySelector('[role="dialog"], [data-radix-menu-content][data-state="open"], [role="listbox"]')) return;
       event.preventDefault();
       setFocus(false);
     };
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, { capture: true });
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, { capture: true });
       document.documentElement.style.overflow = previousOverflow;
     };
   }, [focus, setFocus]);
