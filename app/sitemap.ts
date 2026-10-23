@@ -2,8 +2,11 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
 import { getBlogPosts } from "@/lib/blog";
 import { getAllFeatureLandings } from "@/lib/feature-landing-copy";
+import { STATIC_ROUTE_DATES } from "@/lib/sitemap-dates";
 
-const lastModified = new Date("2026-06-01");
+// Static route dates are baked strings verified once from git history — see
+// lib/sitemap-dates.ts. No `new Date()` without a fixed argument anywhere
+// here: the sitemap must stay reproducible across rebuilds.
 const homeAlternates = {
   languages: {
     en: absoluteUrl("/"),
@@ -36,6 +39,13 @@ const compareAlternates = {
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getBlogPosts();
 
+  // The blog index's lastModified is the newest post's frontmatter date,
+  // never the current clock.
+  const newestPostDate = posts.reduce(
+    (max, post) => (post.date > max ? post.date : max),
+    posts[0]?.date ?? STATIC_ROUTE_DATES.home,
+  );
+
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),
     lastModified: new Date(post.date),
@@ -52,6 +62,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           "x-default": absoluteUrl(`/${def.slug}`),
         },
       };
+      const lastModified = new Date(STATIC_ROUTE_DATES.feature);
       return [
         {
           url: absoluteUrl(`/${def.slug}`),
@@ -74,69 +85,69 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: absoluteUrl("/"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.home),
       changeFrequency: "weekly",
       priority: 1,
       alternates: homeAlternates,
     },
     {
       url: absoluteUrl("/zh"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.home),
       changeFrequency: "weekly",
       priority: 0.9,
       alternates: homeAlternates,
     },
     {
       url: absoluteUrl("/editor"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.editor),
       changeFrequency: "weekly",
       priority: 0.9,
       alternates: editorAlternates,
     },
     {
       url: absoluteUrl("/zh/editor"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.editor),
       changeFrequency: "weekly",
       priority: 0.8,
       alternates: editorAlternates,
     },
     {
       url: absoluteUrl("/thread"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.thread),
       changeFrequency: "weekly",
       priority: 0.9,
       alternates: threadAlternates,
     },
     {
       url: absoluteUrl("/zh/thread"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.thread),
       changeFrequency: "weekly",
       priority: 0.8,
       alternates: threadAlternates,
     },
     {
       url: absoluteUrl("/blog"),
-      lastModified: new Date(),
+      lastModified: new Date(newestPostDate),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: absoluteUrl("/compare"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.compare),
       changeFrequency: "monthly" as const,
       priority: 0.6,
       alternates: compareAlternates,
     },
     {
       url: absoluteUrl("/zh/compare"),
-      lastModified,
+      lastModified: new Date(STATIC_ROUTE_DATES.compare),
       changeFrequency: "monthly" as const,
       priority: 0.5,
       alternates: compareAlternates,
     },
     {
       url: absoluteUrl("/privacy"),
-      lastModified: new Date("2026-10-13"),
+      lastModified: new Date(STATIC_ROUTE_DATES.privacy),
       changeFrequency: "yearly",
       priority: 0.2,
     },
