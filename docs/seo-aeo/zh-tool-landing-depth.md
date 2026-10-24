@@ -32,3 +32,9 @@
 运行：`npx vitest run tests/feature-landing-zh.test.ts` → 8 passed。
 `tsc --noEmit` 对本批文件无错误（现存 `tests/robots.test.ts` 报错属其他批次）。
 未 build、未 add/commit，等待协调。
+
+## 评审修正（独立 fix）
+
+1. **codeMode 默认 quote**：`lib/markdown.ts:219` `codeMode ?? "quote"`，`editor-page.tsx` useState("quote")。quote 模式代码块输出 `<blockquote>[lang]<br>…`（codeBlockToQuoteHtml），不出图；只有 codeMode="image" 才产 PNG asset。zh 文案/示例已改为“默认引用块富文本，切 Code Image 模式才 PNG”；表格/Mermaid 仍为图像。
+2. **删除线无 token**：`grep "~~\|strike" lib/markdown.ts` 无命中。en/zh FAQ 一并删除“strikethrough 转富文本”，改为 `~~x~~` 原样保留（不新增功能）。
+3. **新增测试**：`codeMode=quote` 出 blockquote 且 assets 为空；`codeMode=image` 产 code asset 且无 blockquote；`~~gone~~` 原样。

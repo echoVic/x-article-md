@@ -105,7 +105,7 @@ const markdownToXArticles: FeatureLandingDef = {
       {
         question: "What Markdown formatting is preserved?",
         answer:
-          "Headings, bold, italic, strikethrough, links, ordered lists, unordered lists, and inline code are converted to rich text. Code blocks, Mermaid diagrams, and tables become pasteable visual assets.",
+          "Headings, bold, italic, links, ordered lists, unordered lists, and inline code are converted to rich text. Note: ~~strikethrough~~ is not parsed and stays as literal characters. By default a fenced code block is pasted as a labelled quote block; switch to Code Image mode to render it as a highlighted PNG. Tables and Mermaid diagrams become pasteable images.",
       },
       {
         question: "Can I use this for technical posts?",
@@ -167,15 +167,15 @@ const markdownToXArticles: FeatureLandingDef = {
           "粘贴到 X Articles 后：一级标题、两处粗体强调、可点击的项目符号列表，以及一个能直接点开的超链接——不再是带星号和方括号的纯文本。",
       },
       {
-        title: "代码块变成图片",
+        title: "代码块（切到 Code Image 模式）",
         input: "```typescript\nconst ok = deploy(feature);\n```",
         output:
-          "在 X Articles 里它是一张带语法高亮的 PNG（关键字 const 着色、字符串类型着色），而不是失去高亮的等宽纯文本。图片在 Assets 面板里单独复制。",
+          "默认（Quote 模式）它粘贴为带 [typescript] 标注的引用块富文本；切到工具栏的 Code Image 模式后，才变成一张带语法高亮的 PNG（const 着色）。图片在 Assets 面板里单独复制。",
       },
     ],
     limitationsTitle: "局限与异常恢复",
     limitations: [
-      "X Articles 本身不支持 Markdown：代码块、表格、Mermaid 一律以 PNG 图片粘贴，这些图片内容不能在 X 里二次编辑。",
+      "X Articles 本身不支持 Markdown：表格和 Mermaid 图表以 PNG 图片粘贴；围栏代码块默认是带语言标注的富文本引用块，只有切到 Code Image 模式才渲染为高亮 PNG。这些图片/引用块内容不能在 X 里二次编辑。",
       "转换器只识别顶格的 `-`/`1.` 列表项：带缩进的嵌套项会终止当前列表、合并成一段普通文字，需要层级时请用小标题代替缩进。",
       "行内只识别粗体、斜体、链接、行内代码和图片；原生 HTML 标签会被转义成纯文本，脚注 [^1] 和数学公式不会被特殊处理。",
       "粘贴后变成纯文本，说明没拿到富文本：重新点一次“复制正文”再粘贴；某张代码/图表图片没出现，去 Assets 面板手动复制；浏览器拦截剪贴板时，先下载 PNG 再上传。",
@@ -190,7 +190,7 @@ const markdownToXArticles: FeatureLandingDef = {
       {
         question: "哪些 Markdown 格式会保留？",
         answer:
-          "标题、粗体、斜体、删除线、链接、有序列表、无序列表和行内代码会转为富文本。代码块、Mermaid 图表和表格会变成可粘贴的图片资产。",
+          "标题、粗体、斜体、链接、有序列表、无序列表和行内代码会转为富文本。注意：~~删除线~~ 不会被解析，会原样保留为文字。围栏代码块默认粘贴为带语言标注的引用块，切到 Code Image 模式才会渲染为高亮 PNG；表格和 Mermaid 图表会变成可粘贴的图片。",
       },
       {
         question: "适合技术文章吗？",

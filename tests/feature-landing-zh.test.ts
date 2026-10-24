@@ -8,6 +8,7 @@ import {
   parseInline,
   parseMarkdown,
   parseMarkdownTable,
+  toXArticleClipboard,
 } from "@/lib/markdown";
 
 const SLUGS = [
@@ -99,5 +100,24 @@ describe("converter-backed boundaries (zh copy claims are source-verified)", () 
     const table = parseMarkdownTable("| A | B |\n|---|:---:|\n| 1 | 2 |");
     expect(table).not.toBeNull();
     expect(table!.alignments).toEqual(["left", "center"]);
+  });
+
+  it("code blocks are rich-text quotes by default, PNG assets only in image mode", () => {
+    const src = "```ts\nconst a = 1;\n```";
+    const quote = toXArticleClipboard(src, { codeMode: "quote" });
+    // Default: a labelled blockquote, no image asset.
+    expect(quote.bodyHtml).toContain("<blockquote>");
+    expect(quote.assets.length).toBe(0);
+
+    const image = toXArticleClipboard(src, { codeMode: "image" });
+    // Opt-in: an image asset placeholder instead.
+    expect(image.assets.map((a) => a.type)).toContain("code");
+    expect(image.bodyHtml).not.toContain("<blockquote>");
+  });
+
+  it("~~strikethrough~~ is not parsed and stays literal", () => {
+    const tokens = parseInline("use ~~gone~~ now");
+    expect(tokens.some((t) => t.type === "strong" || t.type === "em")).toBe(false);
+    expect(inlineToHtml(tokens)).toContain("~~gone~~");
   });
 });
