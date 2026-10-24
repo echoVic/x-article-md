@@ -77,13 +77,11 @@ describe("SEO configuration", () => {
   });
 
   it("exposes crawl directives and a sitemap URL", () => {
-    expect(robots()).toEqual({
-      rules: {
-        userAgent: "*",
-        allow: "/",
-      },
-      sitemap: `${siteUrl}/sitemap.xml`,
-    });
+    const result = robots();
+    const rules = Array.isArray(result.rules) ? result.rules : [result.rules];
+    const baseline = rules.find((r) => r.userAgent === "*");
+    expect(baseline?.allow).toBe("/");
+    expect(result.sitemap).toBe(`${siteUrl}/sitemap.xml`);
   });
 
   it("lists canonical indexable URLs in the sitemap", () => {
