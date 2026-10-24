@@ -1,7 +1,8 @@
 # 性能修复基线与对照（首页 mobile）
 
-> 状态：**单 delta 代码已改、未 commit / 未 push / 未部署，待串行授权**。
-> 本 delta **只解决传输/unused-JS，不是 H1 LCP 修复**；H1 LCP 根因未闭环，见末节。
+> 状态：**已交付仅 GA async 单变量**（commit `184f3fa`，未部署）。
+> prefetch/font/组合均为历史实验，**未进入产品**；本文数字是历史候选测量，非当前代码。
+> 原截图 URL/条件、legacy ~22KiB、部署后线上效果均未闭环。
 
 ## 被测 URL 与口径声明（如实）
 - 原审计报告 `https://markdown2x-com-seo-aeo-2026-10-23-rywe.pages.grok.bot` 在 Cursor/x.ai 登录墙后，
@@ -36,9 +37,9 @@
 线上追踪显示运行时以 Low 优先级额外拉 5 个 chunk（共 ~244KB gz）：
 Radix select/dropdown ~150KB、CodeMirror ~55KB、其余 editor 路由块——这是 Next App Router 对首页指向 `/editor` 的 `<Link>` 默认 prefetch 所致，下载却未使用。
 
-## D. 单 Delta（bundle/transfer，非 LCP 修复）
-- 给首页指向 `/editor` 的 4 个 `<Link>` 加 `prefetch={false}`（`landing-page.tsx` ×2、`landing-header.tsx` ×2）。
-- 不关功能、不屏蔽第三方、不改阈值；未改 shared `html-shell.tsx`。
+## D. 历史实验：prefetch={false}（已拒绝，未进产品）
+> 以下为历史候选测量，**当前代码未包含**。因导航回退被拒，patch 存 `rejected-prefetch.patch`。
+- 曾给首页指向 `/editor` 的 4 个 `<Link>` 加 `prefetch={false}`，后因 warm nav +372ms 回退撤回。
 
 ### 同环境 localhost 配对（同一机器同一工具，仅 prefetch 一变量）
 BASE = 干净 93d8979 worktree；CAND = 加 prefetch={false} worktree。mobile n=3。
@@ -73,7 +74,7 @@ npx -y lighthouse http://127.0.0.1:<port>/ --only-categories=performance --chrom
 |---|---|---|---|---|---|
 | BASE（next/script afterInteractive，gtag High preload） | 93 | 830 | 2955 | 138 | 0 |
 | E1 GA：改 async script，去 high preload | 95 | 842 | 2803 | 115 | 0 |
-| E2 字体：Geist Mono `preload:false` | 96 | 921 | 2568 | 153 | **0.004** |
+| E2 字体：Geist Mono `preload:false`（已拒绝） | 96 | 921 | 2568 | 153 | **0.004** |
 
 - **E1 GA**：gtag 仍完整加载（177KB，pageview 保留），优先级 High→Low；LCP −152ms、TBT −23ms。未禁用/未延后到不加载。
 - **E2 字体**：preload 字体 4→3；LCP −387ms，但 CLS 由 0 升至 0.004（远低于 0.1，仍记为轻微回退，需验收 FOIT/CLS）。H1 `<em>` 用的 Instrument Serif italic 保留 preload，未动。
@@ -97,19 +98,19 @@ gtag 在 COMBO 仍真实加载（177KB）。
 | BASE (prefetch on) | 310ms | 641ms | 276ms | 572ms | ✓ | ✓ | active |
 | COMBO (prefetch off) | 446ms | 793ms | 648ms | 1029ms | ✓ | ✓ | active |
 
-- prefetch=false 确实让导航变慢：warm nav +372ms、editReady +457ms（预期代价）。
+- prefetch=false 确实让导航变慢：warm nav +372ms、editReady +457ms。
 - 功能全部正常（输入正文可见），GA /collect 真实发出，SW active。
-- **补偿待做**：按用户要求，若 nav 显著变坏需加 intent-triggered preload（hover/focus 时 router.prefetch），否则不提交 prefetch 改动。
+- **结论**：因即时/warm 导航回退无法用 intent-trigger 完全补偿，prefetch=false 被拒绝、未进产品（见 `rejected-prefetch.patch`）。
 
 ## 字体 CLS 修正
 - 评审指出：`--font-geist-mono` 实际用于 landing wordmark 箭头与 "X Articles" 小标，**并非非首屏**。原"never above-fold"注释错误。
 - 因无法在本环境精确把 CLS 0.004 swap 映射到具体字体 hash，**默认恢复 Mono preload**，E2 字体实验不保留。保留 GA-only / prefetch 候选。
 
 ## H. 回归测试（可运行）
-`node docs/seo-aeo/performance/regression_checks.cjs <baseUrl>` —— 已对 COMBO 通过：
-- gtag async、无 preload link、pageview config 存在；
-- 首页 HTML 不预取 editor 大 chunk（1 chunk link）；
+`node docs/seo-aeo/performance/regression_checks.cjs <baseUrl>`（需本地注入 `NEXT_PUBLIC_GA_ID` 才会真实打 GA）：
+- 真浏览器监听：gtag/js 被请求、GA `/collect`(page_view) 真实发出；
 - /editor 可达 200。
+注：当前产品代码 **仍保留 Next 默认 prefetch**（prefetch=false 已拒绝），本脚本不再断言"首页不预取 editor chunk"。
 
 ## I. legacy-javascript 成因（修正，原"工具不覆盖"结论错误）
 - Lighthouse 13.5 仍有该审计，key 为 `legacy-javascript-insight`（非旧名）。
@@ -118,9 +119,10 @@ gtag 在 COMBO 仍真实加载（177KB）。
 - 修复方向：显式 browserslist 现代目标（如 chrome≥110/safari≥16/firefox≥110）让 webpack 丢弃该 polyfill chunk。
 - **兼容风险（未做）**：会放弃 2023 年前旧浏览器；未在本轮实验（构建被网络阻塞）。不擅自改阈值。
 
-## 未闭环 / 待授权
-- **H1 LCP 根因未修**：候选 LCP 本地回退原因未定位；gtag preload 优先级、4 字体 preload 子集化、文档体积 164KB 这三项会触及 shared `html-shell.tsx` / next/font / GA 配置——**改前需先报范围**。
-- `legacy-javascript` 审计在 Lighthouse 13.5 已不存在，无法复现截图该项。
-- 工作树另有 compare/html-shell/seo.ts 并发改动；`tests/seo.test.ts` 1 失败属 seo.ts，与本 delta 无关；typecheck 通过、197/198 测试通过。
+## 未闭环（如实保留）
+- **已交付**：仅 GA async（commit `184f3fa`，未部署）；本地单变量 LCP −152ms/TBT −23ms，线上效果待部署复验。
+- **H1 LCP 根因未修**：本 vantage 线上 LCP 1702ms ≠ 截图 5.0s（口径/vantage 不同）；gtag preload 已降权，4 字体 preload、164KB 文档体积未动。
+- `legacy-javascript-insight` 总 ~22KiB（chunk 6183 ~12KiB 为 Next 默认 browserslist polyfill），未修；现代 browserslist 是否必删 Next 硬 polyfill 未验证。
+- prefetch/font/组合均历史实验未进产品；原始数字保留于 `docs/seo-aeo/measurement/`。
 
 原始 JSON：`docs/seo-aeo/measurement/{prod,base,cand}-home-mobile-{1,2,3}.json`；解析脚本 `docs/seo-aeo/performance/diag_lcp.cjs`。

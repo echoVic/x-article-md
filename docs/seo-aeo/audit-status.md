@@ -30,7 +30,7 @@
 | 四个安全响应头 | nosniff / strict-origin-when-cross-origin / DENY / Permissions-Policy 禁 camera·mic·geo | `lib/security-headers.ts` | `ef7972e`；`tests/security-headers.test.ts` | 部署后复测四头 presence（注意 Cloudflare 边缘叠加） |
 | sitemap lastModified | 烘焙静态日期表，/blog 索引取最新文章 frontmatter 日期 | `lib/sitemap-dates.ts`；`5c7c0bc` 按 2026-10-24 实际编辑路由 bump 日期 | `b44958f`；`5c7c0bc`；`tests/sitemap-dates.test.ts` | 部署后复测日期分布 |
 | /~offline 无索引 | 离线页不被索引 | `app/(en)/~offline/layout.tsx` noindex,nofollow | `15b97b4` | 部署后确认 noindex 头/标签 |
-| **最终全量集成门（HEAD 184f3fa）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0（62 routes 静态化）；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error / 3 既有 warning；`vitest run` **237/237 通过**（34 files）；本地 `next start` 复跑 robots/canonical/hreflang/og/twitter:site/sitemap/llms.txt/19 OG 全 200 | `docs/seo-aeo/validation/{build-final,tsc-final,eslint-final,vitest-final}.log`、`README.md`；本地端口实测记录于 validation README | 部署后线上复测：og:url/canonical 根形式、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator |
+| **最终全量集成门（产品 HEAD 184f3fa）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0（62 routes 静态化）；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error；`vitest run` **237/237 通过**（34 files）；本地 `next start` 复跑 robots/canonical/hreflang/og/twitter:site/sitemap/llms.txt/19 OG 全 200 | `docs/seo-aeo/validation/{build-final,tsc-final,eslint-final,vitest-final}.log` | 部署后线上复测 og:url/canonical、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator。注：GA 本地 build 默认 `.env.local` 未注入 `NEXT_PUBLIC_GA_ID`，性能 A/B 是 worktree 临时注入后测的，本门未复跑 GA。 |
 
 ## 二、未完成（工作未闭环；未出结果前不写绿）
 
