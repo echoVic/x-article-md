@@ -1,0 +1,12 @@
+/_next/static/chunks/1722-20184660309a320d.js
+/_next/static/chunks/2904-5e89ff9b7be1689f.js
+/_next/static/chunks/6183-5ddd305acef9c1b9.js
+/_next/static/chunks/7580-e061006ec74c4a15.js
+/_next/static/chunks/8220-870da31235fe68bf.js
+/_next/static/chunks/9188-d1caddea33c04b60.js
+/_next/static/chunks/a1c49371-4472dba02b93a62d.js
+/_next/static/chunks/app/(en)/page-2978d34b06582ba3.js
+/_next/static/chunks/app/(zh)/layout-ebad9b9a24f950d3.js
+/_next/static/chunks/main-app-347eec7d09c09d88.js
+/_next/static/chunks/polyfills-42372ed130431b0a.js
+/_next/static/chunks/webpack-be4ea3c4ed8be296.js

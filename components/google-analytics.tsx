@@ -1,5 +1,3 @@
-import Script from "next/script";
-
 function getMeasurementId() {
   return process.env.NEXT_PUBLIC_GA_ID?.trim();
 }
@@ -15,18 +13,21 @@ export function GoogleAnalytics() {
     return null;
   }
 
+  // Plain async snippet instead of next/script afterInteractive: keeps gtag
+  // loading + the first-screen pageview, but avoids Next injecting a
+  // high-priority `<link rel=preload as=script>` that competes with the LCP
+  // critical path on slow networks. async = non-blocking, pageview still fires.
   return (
     <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`window.dataLayer = window.dataLayer || [];
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${measurementId}');`}
-      </Script>
+gtag('config', '${measurementId}');`,
+        }}
+      />
     </>
   );
 }

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex" />
+    <title>Signing in to Cursor</title>
+    <style>
+      /* Light by default, dark when the OS asks for it. */
+      :root {
+        --bg: #ffffff;
+        --fg: #171717;
+        --muted: #8f8f8f;
+        --border: #d4d4d4;
+        --border-hover: #a3a3a3;
+        --spinner-track: #e5e5e5;
+        --spinner-arc: #737373;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d0d0d;
+          --fg: #e6e6e6;
+          --muted: #8f8f8f;
+          --border: #3f3f3f;
+          --border-hover: #6f6f6f;
+          --spinner-track: #2e2e2e;
+          --spinner-arc: #a3a3a3;
+        }
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        /* The portal's font-sans stack (packages/tailwind-config), so the
+           interstitial matches cursor.com's default text rendering. */
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--fg);
+      }
+      main {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .spinner {
+        width: 22px;
+        height: 22px;
+        margin-bottom: 8px;
+        border: 2px solid var(--spinner-track);
+        border-top-color: var(--spinner-arc);
+        border-radius: 50%;
+        animation: xai-probe-spin 0.8s linear infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spinner {
+          animation: none;
+        }
+      }
+      @keyframes xai-probe-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+      }
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      a.continue {
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--fg);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 14px;
+      }
+      a.continue:hover {
+        border-color: var(--border-hover);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="spinner" aria-hidden="true"></div>
+      <h1>Completing sign-in</h1>
+      <p>Checking your connection to continue securely&hellip;</p>
+      <noscript>
+        <p>Click Continue to sign in with your Cursor account.</p>
+      </noscript>
+      <a class="continue" id="xai-continue" href="/api/auth/bot/login?force_authkit=1&amp;redirect_uri=%2Fapi%2Fapps-gate%2Fauthorize%3Fapex%3Dpages.grok.bot%26slug%3Dmarkdown2x-com-seo-aeo-2026-10-23-rywe%26return_to%3D%252F">Continue</a>
+    </main>
+    <script id="xai-probe-data" type="application/json">{"x":"https://api.workos.com/user_management/authorize?client_id=client_01KYNHD0JGZW3K8J0G7YBNESQX&connection_id=conn_01KZAATE3WMBHA35J0W8NEKZ3D&redirect_uri=https%3A%2F%2Fcursor.com%2Fapi%2Fauth%2Fbot%2Fcallback&response_type=code&state=%257B%2522nonce%2522%253A%2522a83af49b-e73d-451c-a3d6-373d4fff8367%2522%257D","f":"/api/auth/bot/login?force_authkit=1&redirect_uri=%2Fapi%2Fapps-gate%2Fauthorize%3Fapex%3Dpages.grok.bot%26slug%3Dmarkdown2x-com-seo-aeo-2026-10-23-rywe%26return_to%3D%252F","p":"https://accounts.x.ai/api/healthz","b":"/api/auth/xai-reachability-beacon","t":1000}</script>
+    <script>
+      (function () {
+        var targets = JSON.parse(
+          document.getElementById("xai-probe-data").textContent
+        );
+        var navigated = false;
+        var go = function (result, url) {
+          if (navigated) {
+            return;
+          }
+          navigated = true;
+          try {
+            if (typeof navigator.sendBeacon === "function") {
+              navigator.sendBeacon(targets.b, result);
+            }
+          } catch (error) {
+            // Stats only; never block the navigation.
+          }
+          location.replace(url);
+        };
+        var controller =
+          typeof AbortController === "function"
+            ? new AbortController()
+            : undefined;
+        var timeout = setTimeout(function () {
+          if (controller !== undefined) {
+            controller.abort();
+          }
+          go("blocked", targets.f);
+        }, targets.t);
+        document
+          .getElementById("xai-continue")
+          .addEventListener("click", function (event) {
+            // A modified click (Ctrl/Cmd/Shift/Alt, or a non-primary button)
+            // opens the fallback in another tab and does NOT navigate this
+            // one, so it must not lock or cancel anything; this tab still
+            // continues on its own when the probe settles.
+            if (
+              event.defaultPrevented ||
+              event.button !== 0 ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey
+            ) {
+              return;
+            }
+            // An explicit Continue click chooses AuthKit; lock out the probe
+            // so a fetch that fulfills a moment later cannot replace the
+            // in-flight anchor navigation with the (possibly blocked) xAI
+            // host.
+            navigated = true;
+            clearTimeout(timeout);
+            if (controller !== undefined) {
+              controller.abort();
+            }
+          });
+        try {
+          fetch(targets.p, {
+            mode: "cors",
+            credentials: "omit",
+            cache: "no-store",
+            redirect: "follow",
+            signal: controller !== undefined ? controller.signal : undefined,
+          }).then(
+            function (response) {
+              clearTimeout(timeout);
+              if (response.status === 403) {
+                go("blocked", targets.f);
+              } else {
+                go("open", targets.x);
+              }
+            },
+            function () {
+              clearTimeout(timeout);
+              go("blocked", targets.f);
+            }
+          );
+        } catch (error) {
+          clearTimeout(timeout);
+          go("blocked", targets.f);
+        }
+      })();
+    </script>
+  </body>
+</html>

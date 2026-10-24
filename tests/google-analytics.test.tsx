@@ -1,23 +1,6 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GoogleAnalytics } from "@/components/google-analytics";
-
-vi.mock("next/script", () => ({
-  default: ({
-    children,
-    src,
-    id,
-  }: {
-    children?: React.ReactNode;
-    src?: string;
-    id?: string;
-  }) => (
-    <div data-testid={id ?? "external-script"} data-src={src}>
-      {children}
-    </div>
-  ),
-}));
 
 describe("GoogleAnalytics", () => {
   const originalNodeEnv = process.env.NODE_ENV;
@@ -25,7 +8,6 @@ describe("GoogleAnalytics", () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
-
     vi.stubEnv("NODE_ENV", originalNodeEnv);
     if (originalGaId === undefined) {
       vi.stubEnv("NEXT_PUBLIC_GA_ID", undefined);
@@ -37,35 +19,36 @@ describe("GoogleAnalytics", () => {
   it("does not render the Google tag outside production", () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("NEXT_PUBLIC_GA_ID", "G-6PCZ5398F1");
-
     const { container } = render(<GoogleAnalytics />);
-
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("renders the Google tag in production with the configured measurement id", () => {
+  it("hoists one external async gtag script + one inline config into document.head", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("NEXT_PUBLIC_GA_ID", "G-6PCZ5398F1");
 
     render(<GoogleAnalytics />);
 
-    const externalScript = screen.getByTestId("external-script");
-    expect(externalScript).toHaveAttribute(
-      "data-src",
+    // React 19 hoists the external <script src> into document.head.
+    const ext = document.head.querySelector('script[src*="gtag/js"]');
+    expect(ext).not.toBeNull();
+    expect(ext).toHaveAttribute(
+      "src",
       "https://www.googletagmanager.com/gtag/js?id=G-6PCZ5398F1",
     );
+    expect(ext).toHaveAttribute("async");
+    expect(document.head.querySelectorAll('script[src*="gtag/js"]').length).toBe(1);
 
-    expect(screen.getByTestId("google-analytics")).toHaveTextContent(
-      "gtag('config', 'G-6PCZ5398F1')",
-    );
+    // inline pageview config appears somewhere in the document.
+    const inline = document.querySelector("script:not([src])");
+    expect(inline?.innerHTML).toContain("gtag('config', 'G-6PCZ5398F1'");
+    cleanup();
   });
 
   it("does not render the Google tag in production without a measurement id", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("NEXT_PUBLIC_GA_ID", "");
-
     const { container } = render(<GoogleAnalytics />);
-
     expect(container).toBeEmptyDOMElement();
   });
 });

@@ -1,0 +1,90 @@
+{
+ "label": "base",
+ "base": "http://127.0.0.1:3240/",
+ "out": [
+  {
+   "warm": false,
+   "i": 0,
+   "homeMs": 5649,
+   "navMs": 371,
+   "editReadyMs": 810,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  },
+  {
+   "warm": false,
+   "i": 1,
+   "homeMs": 4922,
+   "navMs": 310,
+   "editReadyMs": 641,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  },
+  {
+   "warm": false,
+   "i": 2,
+   "homeMs": 4929,
+   "navMs": 255,
+   "editReadyMs": 502,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  },
+  {
+   "warm": true,
+   "i": 0,
+   "homeMs": 4927,
+   "navMs": 255,
+   "editReadyMs": 503,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  },
+  {
+   "warm": true,
+   "i": 1,
+   "homeMs": 4929,
+   "navMs": 797,
+   "editReadyMs": 1265,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  },
+  {
+   "warm": true,
+   "i": 2,
+   "homeMs": 4935,
+   "navMs": 276,
+   "editReadyMs": 572,
+   "typedAndVisible": true,
+   "gaCollect": true,
+   "homeState": {
+    "sw": true,
+    "regs": 1,
+    "ls": 0
+   }
+  }
+ ]
+}

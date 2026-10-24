@@ -1,0 +1,105 @@
+diff --git a/components/landing-header.tsx b/components/landing-header.tsx
+index ee0e852..7efaf1d 100644
+--- a/components/landing-header.tsx
++++ b/components/landing-header.tsx
+@@ -7,6 +7,7 @@ import { swapLocalePath } from "@/lib/locale-path";
+ import { Globe } from "lucide-react";
+ import { usePathname } from "next/navigation";
+ import Link from "next/link";
++import { EditorIntentLink } from "@/components/editor-intent-link";
+ 
+ /**
+  * Editorial masthead-style navigation:
+@@ -68,7 +69,7 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
+         </span>
+         <nav className="topnav-links">
+           <a href="#features">{t.navFeatures}</a>
+-          <Link href={editorHref}>{t.navEditor}</Link>
++          <EditorIntentLink href={editorHref}>{t.navEditor}</EditorIntentLink>
+           <Link href={threadHref}>{t.navThread}</Link>
+           <Link href={locale === "zh" ? "/zh/blog" : "/blog"}>Blog</Link>
+           <a href="#faq">FAQ</a>
+@@ -83,9 +84,9 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
+             <Globe size={14} strokeWidth={1.3} aria-hidden="true" />
+             {locale === "en" ? "中文" : "EN"}
+           </Link>
+-          <Link href={editorHref} className="btn btn-primary">
++          <EditorIntentLink href={editorHref} className="btn btn-primary">
+             {t.navGetStarted}
+-          </Link>
++          </EditorIntentLink>
+         </div>
+       </div>
+     </header>
+diff --git a/components/landing-page.tsx b/components/landing-page.tsx
+index cdbce00..cbf2b8a 100644
+--- a/components/landing-page.tsx
++++ b/components/landing-page.tsx
+@@ -12,6 +12,7 @@ import {
+   githubRepoUrl,
+ } from "@/lib/seo";
+ import Link from "next/link";
++import { EditorIntentLink } from "@/components/editor-intent-link";
+ 
+ /**
+  * Editorial redesign — "MD → X, Vol. 01".
+@@ -113,9 +114,9 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale
+             <p className="lead">{t.heroLead}</p>
+ 
+             <div className="hero-cta">
+-              <Link href={editorHref} className="btn btn-primary">
++              <EditorIntentLink href={editorHref} className="btn btn-primary">
+                 {t.heroOpenEditor}
+-              </Link>
++              </EditorIntentLink>
+               <a
+                 href={githubRepoUrl}
+                 className="btn btn-secondary"
+@@ -228,9 +229,9 @@ const article = toXArticles(
+             <p className="cta-pullquote">&ldquo;{pullquote}&rdquo;</p>
+             <h2>{t.ctaTitle}</h2>
+             <p className="lead">{t.ctaDesc}</p>
+-            <Link href={editorHref} className="btn btn-primary">
++            <EditorIntentLink href={editorHref} className="btn btn-primary">
+               {t.ctaOpenEditor}
+-            </Link>
++            </EditorIntentLink>
+           </div>
+         </section>
+ 
+# rejected: editor-intent-link.tsx (not accepted, do not ship)
+
+"use client";
+
+import { useRouter } from "next/navigation";
+import {
+  forwardRef,
+  useCallback,
+  type AnchorHTMLAttributes,
+} from "react";
+
+/**
+ * A link to /editor that does NOT prefetch on viewport entry (saves ~244KB gz
+ * on the homepage), but prefetches the editor bundle when the user shows clear
+ * intent: pointer hover, keyboard focus, or pointerdown/touch start.
+ * Falls back to a normal <Link>-compatible anchor; no feature change.
+ */
+export const EditorIntentLink = forwardRef<
+  HTMLAnchorElement,
+  AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+>(function EditorIntentLink({ href, onPointerDown, onMouseEnter, onFocus, ...rest }, ref) {
+  const router = useRouter();
+  const warm = useCallback(() => {
+    try { router.prefetch(href); } catch { /* noop */ }
+  }, [router, href]);
+  return (
+    <a
+      ref={ref}
+      href={href}
+      {...rest}
+      onPointerDown={(e) => { warm(); onPointerDown?.(e); }}
+      onMouseEnter={(e) => { warm(); onMouseEnter?.(e); }}
+      onFocus={(e) => { warm(); onFocus?.(e); }}
+    />
+  );
+});
