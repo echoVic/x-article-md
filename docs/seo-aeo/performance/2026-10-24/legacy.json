@@ -1,0 +1,64 @@
+{
+  "head": "449e873",
+  "nextVersion": "16.2.6",
+  "auditKey": "legacy-javascript-insight",
+  "chunk": "6183-5ddd305acef9c1b9.js",
+  "byteAccounting": {
+    "polyfillModuleSourceBytes": 1380,
+    "polyfillModuleInChunkBytes": 1388,
+    "moduleChunkStartCol": 38440,
+    "moduleChunkEndCol": 39828,
+    "lighthouseWastedBytesEstimate": 12352,
+    "chunkTotalBytes": 227473,
+    "chunkGzipBytes": 62819,
+    "note": "Module 27920 measured in chunk 6183: cols 38440-39828 = 1388 B (source 1380 + webpack wrapper 8). Lighthouse wastedBytes 12352 is its own estimate, not module size."
+  },
+  "signals": [
+    "Array.prototype.at",
+    "Array.prototype.flat",
+    "Array.prototype.flatMap",
+    "Object.fromEntries",
+    "Object.hasOwn",
+    "String.prototype.trimEnd",
+    "String.prototype.trimStart"
+  ],
+  "source": {
+    "package": "next",
+    "path": "dist/build/polyfills/polyfill-module.js",
+    "entry": "dist/client/app-globals.js hardcoded require",
+    "webpackModuleId": "27920",
+    "chunkColumnRange": "38484-39574"
+  },
+  "featureByteRanges": {
+    "trimStart_trimEnd": "0-170",
+    "Symbol.description": "171-352",
+    "Array.flat_flatMap": "353-556",
+    "Promise.finally": "557-843",
+    "Object.fromEntries": "844-966",
+    "Array.at": "967-1106",
+    "Object.hasOwn": "1107-1286",
+    "URL.canParse": "1287-1379"
+  },
+  "nextClientDirectUse": [
+    "route-params.js:185 Object.fromEntries(new URLSearchParams(...))",
+    "redirect.js:82 error.digest.split(';').at(-2)",
+    "redirect-error.js:32 digest.at(-2)",
+    "segment-cache/scheduler.js:1104 Object.fromEntries(...)"
+  ],
+  "devOnlyUse": [
+    "dev/hot-reloader/get-socket-url.js:23 URL.canParse(...) — dev-only, not production evidence"
+  ],
+  "appClientUse": [],
+  "appServerOnlyUse": [
+    "app/sitemap.ts:59 posts.flatMap(...)",
+    "app/sitemap.ts:87 featureEntries.flatMap(...)"
+  ],
+  "nextConfigFlag": "none — no experimental.legacy / browserslist / modern flag in Next 16.2.6 schema",
+  "verdict": "有据不改",
+  "why": [
+    "Next client itself uses Object.fromEntries / Array.at / URL.canParse on production paths",
+    "removing polyfill lowers Next 16 runtime guarantee on browsers Next officially supports",
+    "real polyfill source is 1.4 KB; Lighthouse 12 KiB is estimate, not gzip tax"
+  ],
+  "riskAlternative": "NormalModuleReplacementPlugin stub would lower runtime guarantee; not recommended by default."
+}
