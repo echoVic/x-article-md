@@ -56,7 +56,7 @@ BASE = 干净 93d8979 worktree；CAND = 加 prefetch={false} worktree。mobile n
 
 - localhost 无第三方、无带宽约束，**此表不与线上比较**，也不据此宣称线上 LCP 改善。
 - 该 delta 已证实：去掉 244KB gz 投机下载、unused JS −159KB。
-- **未证实/未闭环**：localhost LCP 中位 +453ms 的原因；prefetch=false 对"Open Editor"导航交互时间的影响**尚未测量**（不能以导航变慢换指标）。
+- localhost LCP 中位 +453ms 的原因未定位；后续 G 节已实测导航回退，故 prefetch=false 被拒绝、未入产品。
 
 ## 复现（worktree 已清理，需按 ref 重建）
 ```bash
@@ -76,11 +76,12 @@ npx -y lighthouse http://127.0.0.1:<port>/ --only-categories=performance --chrom
 | E1 GA：改 async script，去 high preload | 95 | 842 | 2803 | 115 | 0 |
 | E2 字体：Geist Mono `preload:false`（已拒绝） | 96 | 921 | 2568 | 153 | **0.004** |
 
-- **E1 GA**：gtag 仍完整加载（177KB，pageview 保留），优先级 High→Low；LCP −152ms、TBT −23ms。未禁用/未延后到不加载。
-- **E2 字体**：preload 字体 4→3；LCP −387ms，但 CLS 由 0 升至 0.004（远低于 0.1，仍记为轻微回退，需验收 FOIT/CLS）。H1 `<em>` 用的 Instrument Serif italic 保留 preload，未动。
-- 两项均为小幅度本地结果，**未闭环线上 LCP**；差异在本机也存在 run 间波动。
+- **E1 GA 已交付**（commit `184f3fa`，未部署）：本地小幅 LCP −152ms/TBT −23ms，线上未复验。
+- **E2 字体已回退**：CLS 0.004 swap 无法排除 Mono 实际首屏使用，不保留。
+- 均为本机 localhost 结果，不据此宣称线上 LCP 改善。
 
-## F. 组合候选（prefetch+GA+font 一起，非拼单变量最优）
+## F. 历史组合候选（prefetch+GA+font，已拒绝未入产品）
+> 历史测量，当前代码不含；仅留作记录。
 同环境 c4d5d5c + 注入同一 GA id，BASE=gabase（未改），COMBO=三改动，各 n=3 中位：
 
 | 配置 | Perf | FCP | LCP | TBT | CLS | chunks | 传输 | unused JS |
@@ -90,7 +91,8 @@ npx -y lighthouse http://127.0.0.1:<port>/ --only-categories=performance --chrom
 
 gtag 在 COMBO 仍真实加载（177KB）。
 
-## G. 导航交互对照（Slow4G+CPU4×，真点击+试写，BASE vs COMBO 各 cold/warm×3）
+## G. 历史导航交互对照（Slow4G+CPU4×，真点击+试写，BASE vs COMBO 各 cold/warm×3）
+> 历史实验数据，用于裁决 prefetch=false（已拒绝）；当前代码仍默认 prefetch on。
 脚本 `nav_throttle.cjs`：click→等 URL=/editor→editor 可交互→输入并确认正文出现，超时即失败；同时记录 GA /collect 请求与 SW/controller。
 
 | | cold nav | cold editReady | warm nav | warm editReady | typed | GA collect | SW |
@@ -114,10 +116,8 @@ gtag 在 COMBO 仍真实加载（177KB）。
 
 ## I. legacy-javascript 成因（修正，原"工具不覆盖"结论错误）
 - Lighthouse 13.5 仍有该审计，key 为 `legacy-javascript-insight`（非旧名）。
-- 线上 chunk `6183-…js` 浪费 12236B，命中 `Array.at/flat/flatMap`、`Object.fromEntries/hasOwn`、`trimStart/End` 等——这是 **Next 默认 browserslist 覆盖旧浏览器而打入的 polyfill**。
-- 工程无 `.browserslistrc` / package browserslist，走 Next 默认（含旧浏览器）。
-- 修复方向：显式 browserslist 现代目标（如 chrome≥110/safari≥16/firefox≥110）让 webpack 丢弃该 polyfill chunk。
-- **兼容风险（未做）**：会放弃 2023 年前旧浏览器；未在本轮实验（构建被网络阻塞）。不擅自改阈值。
+- Lighthouse 归因：chunk `6183-…js` 命中 `Array.at/flat/flatMap`、`Object.fromEntries/hasOwn`、`trimStart/End` 等 modern-method polyfill，浪费 12236B；工程无显式 browserslist，走 Next 默认。该 chunk 是否整段由默认 browserslist 打入、现代 browserslist 能否安全移除，**未做 bundle 级溯源验证**。
+- **未做**：未实验显式现代 browserslist（chrome≥110/safari≥16/firefox≥110）；不擅自改阈值，现代目标是否真能去掉该 chunk 待验证。
 
 ## 未闭环（如实保留）
 - **已交付**：仅 GA async（commit `184f3fa`，未部署）；本地单变量 LCP −152ms/TBT −23ms，线上效果待部署复验。
