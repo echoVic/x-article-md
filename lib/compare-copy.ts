@@ -401,8 +401,6 @@ export function buildCompareMetadata(locale: CompareLocale): Metadata {
   const enPath = "/compare";
   const zhPath = "/zh/compare";
   const canonical = locale === "zh" ? zhPath : enPath;
-  // This page's own colocated OG image, prerendered per locale.
-  const ogImage = `${canonical}/opengraph-image`;
 
   return {
     metadataBase: new URL(siteUrl),

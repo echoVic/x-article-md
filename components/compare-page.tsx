@@ -6,7 +6,6 @@ import {
   getCompareContent,
   getComparePath,
   type CompareLocale,
-  type CompareTool,
 } from "@/lib/compare-copy";
 import { buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Check, ExternalLink } from "lucide-react";
