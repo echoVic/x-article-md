@@ -7,7 +7,7 @@ index ee0e852..7efaf1d 100644
  import { usePathname } from "next/navigation";
  import Link from "next/link";
 +import { EditorIntentLink } from "@/components/editor-intent-link";
- 
+
  /**
   * Editorial masthead-style navigation:
 @@ -68,7 +69,7 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
@@ -40,12 +40,12 @@ index cdbce00..cbf2b8a 100644
  } from "@/lib/seo";
  import Link from "next/link";
 +import { EditorIntentLink } from "@/components/editor-intent-link";
- 
+
  /**
   * Editorial redesign — "MD → X, Vol. 01".
 @@ -113,9 +114,9 @@ export default function LandingPage({ locale = "en" }: { locale?: LandingLocale
              <p className="lead">{t.heroLead}</p>
- 
+
              <div className="hero-cta">
 -              <Link href={editorHref} className="btn btn-primary">
 +              <EditorIntentLink href={editorHref} className="btn btn-primary">
@@ -66,7 +66,7 @@ index cdbce00..cbf2b8a 100644
 +            </EditorIntentLink>
            </div>
          </section>
- 
+
 # rejected: editor-intent-link.tsx (not accepted, do not ship)
 
 "use client";
