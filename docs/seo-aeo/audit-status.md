@@ -30,21 +30,22 @@
 | 四个安全响应头 | nosniff / strict-origin-when-cross-origin / DENY / Permissions-Policy 禁 camera·mic·geo | `lib/security-headers.ts` | `ef7972e`；`tests/security-headers.test.ts` | 部署后复测四头 presence（注意 Cloudflare 边缘叠加） |
 | sitemap lastModified | 烘焙静态日期表，/blog 索引取最新文章 frontmatter 日期 | `lib/sitemap-dates.ts`；`5c7c0bc` 按 2026-10-24 实际编辑路由 bump 日期 | `b44958f`；`5c7c0bc`；`tests/sitemap-dates.test.ts` | 部署后复测日期分布 |
 | /~offline 无索引 | 离线页不被索引 | `app/(en)/~offline/layout.tsx` noindex,nofollow | `15b97b4` | 部署后确认 noindex 头/标签 |
-| **最终全量集成门（产品 HEAD 184f3fa）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0（62 routes 静态化）；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error；`vitest run` **237/237 通过**（34 files）；本地 `next start` 复跑 robots/canonical/hreflang/og/twitter:site/sitemap/llms.txt/19 OG 全 200 | `docs/seo-aeo/validation/{build-final,tsc-final,eslint-final,vitest-final}.log` | 部署后线上复测 og:url/canonical、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator。注：GA 本地 build 默认 `.env.local` 未注入 `NEXT_PUBLIC_GA_ID`，性能 A/B 是 worktree 临时注入后测的，本门未复跑 GA。 |
+| **最终全量集成门（产品 HEAD 83bd64e）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error；`vitest run` **242/242 通过**（35 files，含新增 `tests/editor-mobile-cls.test.tsx` 3 cases）；`git diff --check origin/main..HEAD` 干净；本地 `next start -p 3458` 复跑 /editor、/zh/editor、/compare、/zh/compare、/robots.txt、/sitemap.xml 全 200 | 本批次落盘；LH throttled mobile 证据见 `performance/2026-10-24/lh/` | 部署后线上复测 og:url/canonical、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator。 |
+| **editor mobile CLS 修复** | SSR→hydration 插入 mobile bar 导致 CLS 0.047 | `ee7fd61`：mobile tab strip (h-11) + bottom bar (h-[60px]) 改为始终渲染 + `md:hidden`，不再用 `{!isDesktop && ...}` 条件渲染；`e10a2b6`：回归测试钉住 DOM 节点 identity 在 matchMedia 翻转时不变 | `components/editor-page.tsx`；`tests/editor-mobile-cls.test.tsx`；`performance/2026-10-24/cls.md`；`performance/2026-10-24/lh/`（LH13.5 throttled mobile, n=3 EN + n=3 ZH, CLS 6/6 runs = 0, vs base 0.047） | 部署后线上 LH 复测 /editor 与 /zh/editor CLS。 |
 
 ## 二、未完成（工作未闭环；未出结果前不写绿）
 
 | 项 | 原要求 | 现状 | 证据 | 剩余阻塞 |
 | --- | --- | --- | --- | --- |
 | 原审计截图条目复现 | 原截图条目可复现展示 | 截图条目文案保留；**截图 URL 从未获知** | 本清单批次记录 | **原审计报告托管于 pages.grok.bot，访问被认证阻挡（跳转 accounts.x.ai/Cursor）；截图未提供被测 URL/环境，故原条件无法确认。本轮线上首页测试可公开进行（被测站 markdown2x.com 本身不要求登录）。** |
-| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **已收敛**：GA 改 native async script（去 high-priority preload）落地 `184f3fa`（本地已修）；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回；legacy-javascript 22KiB 未修、原审计截图未闭环 | `measurement/`（base/cand/candfont/candga/gabase 原始 JSON）、`performance/`（diag_lcp.cjs、original-audit-page.html、README.md）；`184f3fa` | **GA 单变量本地已修（`184f3fa`），但 prefetch rejected、legacy 22KiB 与原审计截图项未修，线上未闭环。** |
+| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **CLS 已修（`ee7fd61`），GA async 单变量已落地（`184f3fa`）**；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回；legacy-javascript-insight ~12KiB（Lighthouse 估算）已溯源为 Next 内置 polyfill，有据不改；原审计 22KiB 数字不是绿、未修；LCP ~3.3s / TBT 114–281ms / unused JS / 传输体积未整体闭环 | `performance/2026-10-24/`（base/prod 原始 JSON、`legacy.md`、`cls.md`、`lh/` candidate 证据）；`184f3fa`；`ee7fd61` | **GA 单变量 + CLS 本地已修，线上待部署复验；prefetch rejected、legacy、LCP/TBT/unused/transfer 未闭环。** |
 
 ## 三、待确认（事实已核到边界，等 owner 或外部条件）
 
 | 项 | 原要求 | 本地实现 | 证据 | 剩余阻塞 |
 | --- | --- | --- | --- | --- |
 | twitter:creator 逐篇署名 | 不自动给全部文章加 creator | 全站未设置 creator | `15b97b4` 明确不设全局 creator；`echo-vic-attribution.md` | **待逐篇 frontmatter author 字段确认**；确认前不得批量上线 |
-| Article Studio 对比对象 | 保留该条目，仅陈述可核实事实 | 页面标 "unknown"，无功能/负面断言 | `compare-competitors.md` | **官方产品链接未核实**：找到可信官方页面前维持 unknown |
+| Article Studio 对比对象 | 保留该条目，仅陈述可核实事实 | 官方 snapshot `sources/article-studio-2026-10-24.html` + md 映射已补；vendor self-stated，无 pricing、无负面，同名 UK 摄影工作室辨析保留；owner/affiliation 未独立确认（不强制查清才描述功能） | `compare-competitors.md`；`449e873` | **官方 snapshot 已存；vendor/owner 归属仍未独立确认，文案按"self-stated"最小陈述。** |
 | echovic.com 作为 sameAs | 不把未核实归属写进结构化数据 | 未加入 sameAs | attribution 修订版（`dbf52f1`） | 待 owner 确认同人后再议 |
 
 ## 四、有据不改（审计结论，维持现状；不作为新增成果）
