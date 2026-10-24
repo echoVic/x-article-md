@@ -1,0 +1,26 @@
+{
+  "url": "http://localhost:3458/zh/editor",
+  "viewport": "390x844 dsf=2 mobile",
+  "runs": 3,
+  "generatedAt": "2026-10-24T11:00:07.010Z",
+  "results": [
+    {
+      "run": 1,
+      "wallMs": 6013,
+      "shifts": [],
+      "totalCls": 0
+    },
+    {
+      "run": 2,
+      "wallMs": 6015,
+      "shifts": [],
+      "totalCls": 0
+    },
+    {
+      "run": 3,
+      "wallMs": 6012,
+      "shifts": [],
+      "totalCls": 0
+    }
+  ]
+}
