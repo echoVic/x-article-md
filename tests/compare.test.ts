@@ -53,12 +53,12 @@ describe("compare page content", () => {
     expect(blob).not.toMatch(/Carbon|Pandoc|Typora/i);
   });
 
-  it.each(locales)("marks Article Studio as unknown with no link or strengths in %s", (locale) => {
+  it.each(locales)("pins Article Studio to its official site with grounded strengths in %s", (locale) => {
     const t = getCompareContent(locale);
     const studio = t.tools.find((tool) => tool.name === "Article Studio");
     expect(studio).toBeDefined();
-    expect(studio!.url).toBe("");
-    expect(studio!.strengths).toHaveLength(0);
+    expect(studio!.url).toBe("https://md2xarticle.com/");
+    expect(studio!.strengths.length).toBeGreaterThan(0);
   });
 
   it.each(locales)("never mentions pricing, tiers, or character limits in %s", (locale) => {
@@ -76,6 +76,7 @@ describe("compare page content", () => {
     expect(urls).toContain("https://xmdpaste.icy-cat.com/");
     expect(urls).toContain("https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj");
     expect(urls).toContain("https://github.com/ginobefun/xposter");
+    expect(urls).toContain("https://md2xarticle.com/");
     expect(urls).toContain("https://help.x.com/en/using-x/articles");
     // Same-name disambiguation source is cited.
     expect(urls).toContain("https://xposterpro.com");

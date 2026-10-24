@@ -8,7 +8,7 @@ Rule applied: only state what an official/vendor source supports; unknowns are m
 
 ### MD2X (the product being compared)
 - Web app at https://markdown2x.com/editor.
-- Browser-based Markdown → X Articles rich text on the clipboard; code blocks, tables and Mermaid diagrams render to PNG; thread splitter; optional AI cover image; no sign-up; drafts stay local; PWA.
+- Browser-based Markdown to X Articles: rich text on the clipboard; code blocks can render as PNG images (toggleable, not the default paste behavior), tables and Mermaid diagrams render to images; thread splitter; optional AI cover image; no sign-up; drafts stay local; PWA.
 - Source: this repo + https://markdown2x.com/editor.
 
 ### X Article Markdown Paste
@@ -26,12 +26,13 @@ Rule applied: only state what an official/vendor source supports; unknowns are m
 #### Same-name lookalike (NOT the compared product)
 - **WordPress "XPoster" / "WP to Twitter"** by Joe Dolson (https://xposterpro.com) crossposts WordPress blog posts to X. It is unrelated to the Chrome extension above. Disambiguated on the page.
 
-### Article Studio — UNVERIFIED
-- As of 2026-10-24, no distinct, official product named "Article Studio" could be verified in the Markdown → X Articles category.
-- Same-name lookalikes found (and explicitly NOT compared):
-  - https://www.article-studio.com/ — a UK photography/studio business.
-  - Generic AI article generators (e.g. WordPress "AI Article Studio" plugins, OpsIQ "Article Studio").
-- Decision: list as "unknown" with no feature claims and no negative claims.
+### Article Studio (md2xarticle.com)
+- Verified 2026-10-24 at https://md2xarticle.com/ (self-branded "Article Studio").
+- Web app that previews Markdown locally; attach local images from a chosen folder; Mermaid → PNG at 2x; tables stay native or render to image.
+- Two output paths: (a) Copy title + body for manual paste; (b) optional Chrome companion creates an unpublished X Article draft with images placed; you review and publish from X.
+- Local-first; content stays in the browser until draft creation.
+- Vendor self-stated; we report it as such. No price numbers quoted.
+- Same-name lookalike (NOT this product): https://www.article-studio.com/ — a UK photography/studio business. Disambiguated on the page.
 
 ## External reference
 - X Articles official help: https://help.x.com/en/using-x/articles
