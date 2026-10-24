@@ -5,6 +5,7 @@ export type LandingLocale = "en" | "zh";
 
 export type FeatureFaq = { question: string; answer: string };
 export type FeatureStep = { name: string; text: string };
+export type FeatureExample = { title: string; input: string; output: string };
 
 export type FeatureLandingContent = {
   /** SEO meta title */
@@ -26,6 +27,12 @@ export type FeatureLandingContent = {
   howToTitle: string;
   howToDescription: string;
   steps: FeatureStep[];
+  /** Optional real input/output examples (only populated where useful) */
+  examplesTitle?: string;
+  examples?: FeatureExample[];
+  /** Optional honest limitations + recovery notes */
+  limitationsTitle?: string;
+  limitations?: string[];
   ctaTitle: string;
   ctaDesc: string;
   faqTitle: string;
@@ -151,6 +158,28 @@ const markdownToXArticles: FeatureLandingDef = {
     ],
     ctaTitle: "转换你的下一篇 X Article",
     ctaDesc: "免费、无需注册，为 Markdown 写作者打造。",
+    examplesTitle: "真实例子",
+    examples: [
+      {
+        title: "一段带格式的 Markdown",
+        input: "# 用特性开关更快发布\n**部署**和**发布**解耦。\n\n- 即时回滚\n- [阅读文档](https://example.com)",
+        output:
+          "粘贴到 X Articles 后：一级标题、两处粗体强调、可点击的项目符号列表，以及一个能直接点开的超链接——不再是带星号和方括号的纯文本。",
+      },
+      {
+        title: "代码块变成图片",
+        input: "```typescript\nconst ok = deploy(feature);\n```",
+        output:
+          "在 X Articles 里它是一张带语法高亮的 PNG（关键字 const 着色、字符串类型着色），而不是失去高亮的等宽纯文本。图片在 Assets 面板里单独复制。",
+      },
+    ],
+    limitationsTitle: "局限与异常恢复",
+    limitations: [
+      "X Articles 本身不支持 Markdown：代码块、表格、Mermaid 一律以 PNG 图片粘贴，这些图片内容不能在 X 里二次编辑。",
+      "转换器只识别顶格的 `-`/`1.` 列表项：带缩进的嵌套项会终止当前列表、合并成一段普通文字，需要层级时请用小标题代替缩进。",
+      "行内只识别粗体、斜体、链接、行内代码和图片；原生 HTML 标签会被转义成纯文本，脚注 [^1] 和数学公式不会被特殊处理。",
+      "粘贴后变成纯文本，说明没拿到富文本：重新点一次“复制正文”再粘贴；某张代码/图表图片没出现，去 Assets 面板手动复制；浏览器拦截剪贴板时，先下载 PNG 再上传。",
+    ],
     faqTitle: "常见问题",
     faqs: [
       {
@@ -284,6 +313,22 @@ const codeToImage: FeatureLandingDef = {
     ],
     ctaTitle: "生成你的第一张代码图片",
     ctaDesc: "完全免费，无需注册，纯浏览器端运行，代码保存在本地。",
+    examplesTitle: "真实例子",
+    examples: [
+      {
+        title: "一段 TypeScript 函数",
+        input: "```typescript\nfunction greet(name: string) {\n  return `Hi, ${name}`;\n}\n```",
+        output:
+          "渲染成一张圆角、带背景的 PNG：function 关键字、string 类型、模板字符串各自按主题着色，缩进保留。选 Dracula 就是深色底，选 GitHub Light 就是浅色底。",
+      },
+    ],
+    limitationsTitle: "局限与异常恢复",
+    limitations: [
+      "只导出 PNG：代码图片由 Canvas 光栅化生成（renderCodeToPng），不提供 SVG 矢量导出。",
+      "超长代码会整张渲染成一张高图，单行过长时图片会很宽；建议把超长函数拆成多个代码块，而不是塞进一个围栏里。",
+      "只有围栏代码块会被渲染成图片；行内代码仍作为行内样式保留，不会变成图片。",
+      "语言没识别出来时，在 ``` 后手动标注语言（如 ```python）；主题不对就在工具栏重新选；复制失败时改用“下载 PNG”再上传到 X。",
+    ],
     faqTitle: "常见问题",
     faqs: [
       {
@@ -417,6 +462,22 @@ const mermaidToPng: FeatureLandingDef = {
     ],
     ctaTitle: "渲染你的第一张 Mermaid 图表",
     ctaDesc: "完全免费，无需注册，纯浏览器端运行，图表保存在本地。",
+    examplesTitle: "真实例子",
+    examples: [
+      {
+        title: "一张流程图",
+        input: "```mermaid\ngraph TD\n  A[写 Markdown] --> B[复制富文本]\n  B --> C[粘贴到 X]\n```",
+        output:
+          "渲染成一张带箭头的流程图 PNG：A、B、C 三个节点按顺序连线，配色跟随你当前的亮色/暗色主题，粘贴到 X Articles 就是一张静态图。",
+      },
+    ],
+    limitationsTitle: "局限与异常恢复",
+    limitations: [
+      "只导出 PNG：Mermaid 在内部渲染成 SVG 后由 renderSvgToPng 光栅化，复制/下载拿到的都是 PNG。",
+      "节点很多或标签很长时图会变宽，粘贴到 X 后可能偏小；建议拆成两张图或缩短节点文字。",
+      "Mermaid 以 securityLevel: \"strict\" 初始化，图里的外链图片和点击交互会被禁用。",
+      "语法错误时渲染区会显示错误占位框并保留源码：按提示修正 Mermaid 语法；图太宽就减少节点；导出后模糊时确认拿到的是高分辨率 PNG 再粘贴。",
+    ],
     faqTitle: "常见问题",
     faqs: [
       {
@@ -551,6 +612,22 @@ const markdownTableToImage: FeatureLandingDef = {
     ],
     ctaTitle: "转换你的第一个 Markdown 表格",
     ctaDesc: "完全免费，无需注册，纯浏览器端运行，数据保存在本地。",
+    examplesTitle: "真实例子",
+    examples: [
+      {
+        title: "一张带对齐的小表格",
+        input: "| 主题 | 适用 |\n|---|:---:|\n| Dracula | 暗色 |\n| Nord | 亮色 |",
+        output:
+          "渲染成一张带边框的表格 PNG：表头加粗，第二列按 `:---:` 居中对齐，亮色/暗色两种样式可选。直接粘贴到 X Articles 就是一张规整的表。",
+      },
+    ],
+    limitationsTitle: "局限与异常恢复",
+    limitations: [
+      "只导出 PNG；Markdown 表格本身没有合并单元格语法，渲染出的图片也就没有合并格。",
+      "解析器不设列数上限，但列很多或单元格文字过长时图片会很宽；列太宽时建议把长文本拆行或拆表。",
+      "单元格按纯文本解析，不支持表格内嵌图片或嵌套代码块。",
+      "边框/对齐错乱时检查分隔行是否写成 `|---|:---:|`；列对齐不对就用 `:---`、`:---:`、`---:` 重标；复制失败时先下载 PNG 再上传。",
+    ],
     faqTitle: "常见问题",
     faqs: [
       {

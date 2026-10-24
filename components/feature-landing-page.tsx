@@ -127,6 +127,46 @@ export function FeatureLandingPage({
           </div>
         </section>
 
+        {/* ═══ Examples (optional, only where the copy provides them) ═══ */}
+        {t.examples?.length ? (
+          <section className="section" id="examples">
+            <div className="container section-col">
+              <div className="section-header">
+                <p className="eyebrow">{t.howToEyebrow}</p>
+                <h2>{t.examplesTitle}</h2>
+              </div>
+              <div className="workflow-steps">
+                {t.examples.map((ex) => (
+                  <div className="workflow-step" key={ex.title}>
+                    <h3>{ex.title}</h3>
+                    <div className="preview-code whitespace-pre-wrap">{ex.input}</div>
+                    <p>{ex.output}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {/* ═══ Limitations & recovery (optional) ═══ */}
+        {t.limitations?.length ? (
+          <section className="section" id="limitations">
+            <div className="container section-col">
+              <div className="section-header">
+                <h2>{t.limitationsTitle}</h2>
+              </div>
+              <ul className="feature-checklist">
+                {t.limitations.map((item) => (
+                  <li key={item}>
+                    <Check size={18} strokeWidth={2} aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ) : null}
+
         {/* ═══ CTA ═══ */}
         <section className="section cta-section">
           <div className="container">
