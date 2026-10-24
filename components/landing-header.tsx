@@ -1,7 +1,11 @@
+"use client";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { LandingLocale } from "@/lib/landing-copy";
 import { landingCopy } from "@/lib/landing-copy";
+import { swapLocalePath } from "@/lib/locale-path";
 import { Globe } from "lucide-react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 /**
@@ -14,6 +18,8 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
   const t = landingCopy[locale];
   const editorHref = locale === "zh" ? "/zh/editor" : "/editor";
   const threadHref = locale === "zh" ? "/zh/thread" : "/thread";
+  const pathname = usePathname() ?? "/";
+  const switchHref = swapLocalePath(pathname).href;
 
   return (
     <header className="topnav">
@@ -70,7 +76,7 @@ export function LandingHeader({ locale = "en" }: { locale?: LandingLocale }) {
         <div className="topnav-actions">
           <ThemeToggle />
           <Link
-            href={locale === "en" ? "/zh" : "/"}
+            href={switchHref}
             className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:text-[var(--fg)] hover:bg-[var(--fg-soft)] no-underline"
             aria-label={locale === "en" ? "切换到中文" : "Switch to English"}
           >

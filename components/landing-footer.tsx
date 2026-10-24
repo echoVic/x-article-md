@@ -32,7 +32,7 @@ export function LandingFooter({ locale = "en" }: { locale?: LandingLocale }) {
               </Link>
             ))}
             <Link href={`${prefix}/compare`}>
-              {locale === "zh" ? "对比 Carbon / Pandoc / Typora" : "Compare Carbon / Pandoc / Typora"}
+              {locale === "zh" ? "工具对比" : "Compare tools"}
             </Link>
           </nav>
         )}
