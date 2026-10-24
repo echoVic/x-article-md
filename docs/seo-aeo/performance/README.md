@@ -1,8 +1,8 @@
 # 性能修复基线与对照（首页 mobile）
 
-> 状态：**已交付仅 GA async 单变量**（commit `184f3fa`，未部署）。
-> prefetch/font/组合均为历史实验，**未进入产品**；本文数字是历史候选测量，非当前代码。
-> 原截图 URL/条件、legacy ~22KiB、部署后线上效果均未闭环。
+> **当前状态（2026-10-24 收尾，详见 `2026-10-24/README.md`、`2026-10-24/cls.md`、`2026-10-24/lh/`）**：本文是历史实验记录。产品现状：GA native async（`184f3fa`）已在线上 feature-match 部署；editor mobile CLS 修复（`ee7fd61`）本地 LH 已验证归零，待线上部署后 LH 复验；legacy polyfill 有据不删；prefetch/font/组合方案历史 rejected 不复活。
+>
+> **历史状态（本文件记录时）**：仅 GA async 单变量（commit `184f3fa`）当时未部署；prefetch/font/组合均为历史实验，未进入产品；本文数字是历史候选测量，非当前代码。原截图 URL/条件、legacy ~22KiB、部署后线上效果均未闭环。
 
 ## 被测 URL 与口径声明（如实）
 - 原审计报告 `https://markdown2x-com-seo-aeo-2026-10-23-rywe.pages.grok.bot` 在 Cursor/x.ai 登录墙后，
@@ -120,7 +120,7 @@ gtag 在 COMBO 仍真实加载（177KB）。
 - **未做**：未实验显式现代 browserslist（chrome≥110/safari≥16/firefox≥110）；不擅自改阈值，现代目标是否真能去掉该 chunk 待验证。
 
 ## 未闭环（如实保留）
-- **已交付**：仅 GA async（commit `184f3fa`，未部署）；本地单变量 LCP −152ms/TBT −23ms，线上效果待部署复验。
+- **已交付（历史测量时状态）**：仅 GA async（commit `184f3fa`）当时未部署；本地单变量 LCP −152ms/TBT −23ms。**后续更新**：GA native async 已在线上 feature-match 部署；editor mobile CLS 修复 `ee7fd61` 本地 LH 验证归零，待线上部署后 LH 复验（见 `2026-10-24/cls.md`、`lh/`）。
 - **H1 LCP 根因未修**：本 vantage 线上 LCP 1702ms ≠ 截图 5.0s（口径/vantage 不同）；gtag preload 已降权，4 字体 preload、164KB 文档体积未动。
 - `legacy-javascript-insight` 总 ~22KiB（chunk 6183 ~12KiB 为 Next 默认 browserslist polyfill），未修；现代 browserslist 是否必删 Next 硬 polyfill 未验证。
 - prefetch/font/组合均历史实验未进产品；原始数字保留于 `docs/seo-aeo/measurement/`。
