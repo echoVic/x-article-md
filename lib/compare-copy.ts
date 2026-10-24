@@ -401,6 +401,8 @@ export function buildCompareMetadata(locale: CompareLocale): Metadata {
   const enPath = "/compare";
   const zhPath = "/zh/compare";
   const canonical = locale === "zh" ? zhPath : enPath;
+  // This page's own colocated OG image, prerendered per locale.
+  const ogImage = `${canonical}/opengraph-image`;
 
   return {
     metadataBase: new URL(siteUrl),
@@ -421,20 +423,14 @@ export function buildCompareMetadata(locale: CompareLocale): Metadata {
       siteName: "MD2X",
       locale: locale === "zh" ? "zh-CN" : "en",
       type: "article",
-      images: [
-        {
-          url: "/opengraph-image",
-          width: 1200,
-          height: 630,
-          alt: "MD2X Markdown to X Articles converter",
-        },
-      ],
+      // openGraph.images omitted: the colocated opengraph-image.tsx for this
+      // segment is auto-attached by Next per page + locale.
     },
     twitter: {
       card: "summary_large_image",
       title: t.metaTitle,
       description: t.metaDescription,
-      images: ["/opengraph-image"],
+      // twitter.images omitted: colocated twitter-image.tsx auto-attached.
     },
   };
 }

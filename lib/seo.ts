@@ -9,6 +9,8 @@ type PageSeo = {
   title: string;
   description: string;
   path: string;
+  /** Route of this page's own 1200x630 OG image (colocated opengraph-image). */
+  ogImage: string;
   locale?: "en" | "zh-CN";
   alternates?: Metadata["alternates"];
 };
@@ -46,6 +48,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "Online Markdown to X Articles converter. Code blocks become images, Mermaid diagrams and tables copy in one click. Free, no sign-up, runs in your browser.",
     path: "/",
+    ogImage: "/opengraph-image",
     locale: "en",
     alternates: homeAlternates,
   },
@@ -54,6 +57,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "在线将 Markdown 一键转为 X Articles 富文本。代码块自动渲染为语法高亮图片，Mermaid 图表和表格可一键复制。免费、无需注册，纯浏览器端运行，数据不离开本地。",
     path: "/zh",
+    ogImage: "/zh/opengraph-image",
     locale: "zh-CN",
     alternates: {
       ...homeAlternates,
@@ -65,6 +69,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "Convert Markdown to clipboard-ready rich text for X Articles. Code blocks render as images, tables and Mermaid diagrams copy in one click. Free, no sign-up.",
     path: "/editor",
+    ogImage: "/editor/opengraph-image",
     locale: "en",
     alternates: editorAlternates,
   },
@@ -73,6 +78,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "免费在线 Markdown 编辑器，实时预览 X Articles 长文效果。代码块渲染为语法高亮 PNG 图片，Mermaid 图表和表格一键复制，AI 生成封面图。无需注册，数据保存在本地浏览器。",
     path: "/zh/editor",
+    ogImage: "/zh/editor/opengraph-image",
     locale: "zh-CN",
     alternates: {
       ...editorAlternates,
@@ -84,6 +90,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "Use Markdown to split long posts into numbered X/Twitter threads. Create 280-character tweets, copy each tweet or copy the entire thread. Free, no sign-up.",
     path: "/thread",
+    ogImage: "/thread/opengraph-image",
     locale: "en",
     alternates: threadAlternates,
   },
@@ -92,6 +99,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "免费在线将 Markdown 转为 Twitter/X 推文流。支持段落规则拆分与 AI 智能断句，自动适配 280 字符限制并加序号，可逐条或一键复制。无需注册，纯浏览器端运行。",
     path: "/zh/thread",
+    ogImage: "/zh/thread/opengraph-image",
     locale: "zh-CN",
     alternates: {
       ...threadAlternates,
@@ -103,6 +111,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "How MD2X handles your data: drafts stay in your browser, AI features send only the selected text to the model provider, and analytics never include draft content.",
     path: "/privacy",
+    ogImage: "/opengraph-image",
     locale: "en",
     alternates: {
       canonical: "/privacy",
@@ -113,6 +122,7 @@ const pageSeo: Record<SeoPage, PageSeo> = {
     description:
       "Tutorials for converting Markdown to X Articles, code screenshots, Mermaid diagrams, tables, and Twitter/X threads with MD2X.",
     path: "/blog",
+    ogImage: "/blog/opengraph-image",
     locale: "en",
     alternates: {
       canonical: "/blog",
@@ -126,7 +136,10 @@ const pageSeo: Record<SeoPage, PageSeo> = {
 };
 
 export function absoluteUrl(path: string) {
-  return new URL(path, siteUrl).toString();
+  const url = new URL(path, siteUrl).toString();
+  // Keep the root form consistent with how Next renders canonical "/" (no
+  // trailing slash) across sitemap, hreflang and structured data.
+  return url === `${siteUrl}/` ? siteUrl : url;
 }
 
 export function getHtmlLangForPath(pathname: string | null) {
@@ -137,12 +150,6 @@ export function getHtmlLangForPath(pathname: string | null) {
 
 export function buildPageMetadata(page: SeoPage): Metadata {
   const seo = pageSeo[page];
-  const ogImage = {
-    url: "/opengraph-image",
-    width: 1200,
-    height: 630,
-    alt: "MD2X Markdown to X Articles converter",
-  };
 
   return {
     metadataBase: new URL(siteUrl),
@@ -156,13 +163,16 @@ export function buildPageMetadata(page: SeoPage): Metadata {
       siteName: "MD2X",
       locale: seo.locale,
       type: "website",
-      images: [ogImage],
+      // openGraph.images intentionally omitted: the colocated opengraph-image
+      // for this segment is auto-attached by Next per page + locale.
     },
     twitter: {
       card: "summary_large_image",
+      site: "@echo_vic",
       title: seo.title,
       description: seo.description,
-      images: [ogImage.url],
+      // twitter.images intentionally omitted: colocated twitter-image.tsx
+      // (re-export of the page's OG generator) is auto-attached by Next.
     },
   };
 }

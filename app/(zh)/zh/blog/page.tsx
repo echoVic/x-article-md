@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Markdown 转 X Articles 教程 | MD2X 博客",
     description: "用 MD2X 把 Markdown 转成 X Articles 的教程与技巧。",
+    // twitter.images omitted: colocated opengraph-image auto-attached.
   },
 };
 

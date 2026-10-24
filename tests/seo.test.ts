@@ -29,14 +29,10 @@ describe("SEO configuration", () => {
       "x-default": "/",
     });
     expect(metadata.openGraph?.url).toBe("/");
-    expect(metadata.openGraph?.images).toEqual([
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "MD2X Markdown to X Articles converter",
-      },
-    ]);
+    // og:image and twitter.images are both intentionally NOT set in metadata:
+    // Next auto-attaches the colocated opengraph-image.tsx + twitter-image.tsx.
+    expect(metadata.openGraph?.images).toBeUndefined();
+    expect((metadata.twitter as { images?: string[] } | null | undefined)?.images).toBeUndefined();
     expect((metadata.twitter as { card?: string } | null | undefined)?.card).toBe(
       "summary_large_image",
     );

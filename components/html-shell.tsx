@@ -78,4 +78,7 @@ export const groupBaseMetadata: Metadata = {
   applicationName: "MD2X",
   manifest: "/manifest.webmanifest",
   icons: sharedIcons,
+  // Site-level associated account only; no creator — per-post authorship is not
+  // assumed site-wide (see docs/seo-aeo/echo-vic-attribution.md).
+  twitter: { site: "@echo_vic" },
 };
