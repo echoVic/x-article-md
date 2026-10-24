@@ -3,11 +3,12 @@ import { absoluteUrl, siteUrl } from "@/lib/seo";
 
 export type CompareLocale = "en" | "zh";
 
-/** Facts below were checked against the official sources listed in the page on 2026-10-23. */
-export const compareCheckedDate = "2026-10-23";
+/** Entities and facts below were checked against the official sources listed on the page on 2026-10-24. */
+export const compareCheckedDate = "2026-10-24";
 
 export type CompareTool = {
   name: string;
+  /** Empty string when no verifiable official URL exists (e.g. an unverified entity). */
   url: string;
   sourceLabel: string;
   whatItIs: string;
@@ -17,330 +18,374 @@ export type CompareTool = {
 
 export type CompareRow = {
   capability: string;
-  md2x: string;
-  carbon: string;
-  pandoc: string;
-  typora: string;
+  /** Values aligned to `tools` order: [MD2X, X Article Markdown Paste, xPoster, Article Studio]. */
+  values: string[];
 };
 
 const en = {
-  metaTitle: "MD2X vs Carbon, Pandoc & Typora: Honest Comparison | MD2X",
+  metaTitle: "MD2X vs X Article Markdown Paste, xPoster & Article Studio | MD2X",
   metaDescription:
-    "An honest, source-checked comparison of MD2X, Carbon, Pandoc and Typora: what each tool does best, where they overlap, and when to reach for which. No exaggeration, no false negatives.",
-  heroEyebrow: "HONEST COMPARISON · CHECKED 2026-10-23",
-  heroTitle: "MD2X vs Carbon, Pandoc & Typora",
+    "A source-checked comparison of how MD2X, X Article Markdown Paste, xPoster and Article Studio get Markdown into X Articles. Honest trade-offs, no fabricated claims.",
+  heroEyebrow: "HONEST COMPARISON · CHECKED 2026-10-24",
+  heroTitle: "MD2X vs tools that put Markdown into X Articles",
   heroLead:
-    "These four tools are often mentioned together, but they solve different jobs. Here is what each one is actually best at — straight from their official docs.",
-  introTitle: "Different jobs, not a winner",
+    "These tools all aim at the same destination — a formatted X Article — but they take different paths: a web app that puts rich text on your clipboard, and browser extensions that write straight into the X editor. Here is what each one actually does, based on their own sources.",
+  introTitle: "Three ways in, one destination",
   introBody:
-    "MD2X turns a Markdown draft into clipboard-ready rich text for X Articles. Carbon turns source code into beautiful standalone images. Pandoc converts whole documents between hundreds of formats. Typora is a distraction-free WYSIWYG Markdown editor. The right choice depends on what you are trying to publish.",
-  toolsTitle: "What each tool does",
+    "MD2X is a web app: you write or paste Markdown in your browser, it renders rich text and copies it to your clipboard, and you paste into X. X Article Markdown Paste and xPoster are Chrome extensions that run against the X editor itself. Article Studio could not be verified as a distinct product in this category, so it is reported as unknown rather than guessed at.",
+  toolsTitle: "What each tool is",
   tableTitle: "Capability at a glance",
   whenTitle: "When to reach for which",
   whenItems: [
-    "Use MD2X when your goal is pasting a formatted long-form article into X Articles — code blocks render as images automatically, tables and Mermaid diagrams copy as assets.",
-    "Use Carbon when you need one gorgeous standalone code screenshot for a tweet, slide, or embed. Its themes and share links are excellent.",
-    "Use Pandoc when converting whole documents between Markdown, Word, EPUB, LaTeX, or PDF. It is a command-line converter, not a clipboard tool.",
-    "Use Typora when you want a calm desktop writing environment for reading and editing Markdown files locally.",
+    "Use MD2X when you want a no-install web page that converts Markdown to clipboard-ready rich text, renders code blocks, tables and Mermaid diagrams as PNG images, and works offline as a PWA.",
+    "Use X Article Markdown Paste when you want a Chrome extension that pastes straight into the X editor, uploads images through X's media pipeline, and keeps code blocks as native X code blocks.",
+    "Use xPoster when you prefer a side-panel console that queues several .md files and writes them into the active X Article draft. Note this is the Chrome extension (ginobefun/xposter) — not the WordPress \"XPoster / WP to Twitter\" plugin by Joe Dolson, which is a different product.",
+    "Article Studio: no distinct official product in this category could be verified as of 2026-10-24, so we make no claims for it.",
   ],
   faqTitle: "Frequently asked questions",
   faqs: [
     {
-      question: "Is MD2X a replacement for Carbon?",
+      question: "Does MD2X upload my images into the X draft?",
       answer:
-        "No. Carbon specializes in standalone code screenshots with shareable links and embeds, and it does that beautifully. MD2X renders code blocks as images inside a full-article workflow for X Articles. If you only need a pretty code image, Carbon is a great choice.",
+        "No. MD2X runs in your browser and produces rich text on the clipboard; it cannot push files into your X draft. Remote images are not uploaded for you — you add images from the Assets panel by hand after pasting. Extensions like X Article Markdown Paste and xPoster run inside the X tab and can upload images through X's own media path.",
     },
     {
-      question: "Can I use Pandoc to publish to X Articles?",
+      question: "Is the Chrome xPoster the same as the WordPress XPoster plugin?",
       answer:
-        "Pandoc converts files between formats like Markdown, docx, EPUB, and PDF. X Articles needs rich text on the clipboard, not an exported file, so Pandoc is the wrong tool for that specific step — though it is unmatched for document conversion.",
+        "No. The xPoster compared here is a Chrome extension (ginobefun/xposter) for importing Markdown into X Articles. The WordPress \"XPoster\" (formerly WP to Twitter, by Joe Dolson, xposterpro.com) is a different product that crossposts WordPress blog posts to X. They share a name but are unrelated.",
     },
     {
-      question: "Does Typora support Mermaid diagrams?",
+      question: "What is Article Studio in this comparison?",
       answer:
-        "Yes, Typora renders flowcharts, sequence, and Gantt diagrams through Mermaid while you write. MD2X instead exports those diagrams as pasteable PNG images for X Articles.",
+        "As of 2026-10-24 we could not identify a distinct, official product named Article Studio in the Markdown-to-X-Articles space. The name is used by unrelated entities (e.g. article-studio.com, a UK photography studio, and generic AI article-generation tools). We therefore list it as unknown and make no claims about its features.",
+    },
+    {
+      question: "How do code blocks differ between MD2X and the extensions?",
+      answer:
+        "MD2X renders code blocks to syntax-highlighted PNG images so they survive the paste. The extensions instead target X's native code block, which keeps the code as selectable text inside X. Both are valid; images are self-contained, while native blocks are lighter.",
     },
   ],
   sourcesTitle: "Sources",
-  sourcesNote: "Checked 2026-10-23 against the following official pages:",
+  sourcesNote: "Checked 2026-10-24 against the following pages:",
   sources: [
-    { label: "Carbon — About (carbon.vercel.app/about)", url: "https://carbon.vercel.app/about" },
-    { label: "carbon-app/carbon — GitHub README", url: "https://github.com/carbon-app/carbon" },
-    { label: "Pandoc — pandoc.org", url: "https://pandoc.org" },
-    { label: "Typora — typora.io", url: "https://typora.io" },
+    { label: "MD2X — editor (markdown2x.com)", url: "https://markdown2x.com/editor" },
+    { label: "X Article Markdown Paste — vendor site", url: "https://xmdpaste.icy-cat.com/" },
+    { label: "X Article Markdown Paste — vendor comparison page", url: "https://xmdpaste.icy-cat.com/compare.html" },
+    { label: "xPoster — Chrome Web Store listing", url: "https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj" },
+    { label: "xPoster — GitHub (ginobefun/xposter)", url: "https://github.com/ginobefun/xposter" },
+    { label: "xPoster — privacy policy", url: "https://nevertoday.github.io/xposter-privacy/" },
+    { label: "X Articles — official help", url: "https://help.x.com/en/using-x/articles" },
+    { label: "Same-name note: WordPress XPoster / WP to Twitter (different product)", url: "https://xposterpro.com" },
   ],
-  md2x: {
-    name: "MD2X",
-    url: "/editor",
-    sourceLabel: "markdown2x.com",
-    whatItIs:
-      "A browser-based Markdown to X Articles converter. Paste Markdown, copy formatted rich text, paste it into X Articles.",
-    strengths: [
-      "Code blocks render as syntax-highlighted PNG images on the clipboard",
-      "Tables and Mermaid diagrams copy as pasteable image assets",
-      "Runs entirely in the browser, no sign-up, PWA offline mode",
-      "Thread splitter and AI cover image generation included",
-    ],
-    bestFor: "Publishing a long-form article to X Articles.",
-  },
-  carbon: {
-    name: "Carbon",
-    url: "https://carbon.now.sh",
-    sourceLabel: "carbon.now.sh · MIT, open source",
-    whatItIs:
-      "A web app that turns source code into beautiful, customizable images you can share as screenshots, links, or embeds.",
-    strengths: [
-      "Excellent syntax themes, background, window, and padding customization",
-      "PNG/SVG export, clipboard copy, saved snippets with unfurled links",
-      "Embed snippets in your own site via iframe",
-      "Open source (MIT), with editor plugins and a CLI",
-    ],
-    bestFor: "Standalone gorgeous code screenshots for social posts.",
-  },
-  pandoc: {
-    name: "Pandoc",
-    url: "https://pandoc.org",
-    sourceLabel: "pandoc.org · free command-line tool",
-    whatItIs:
-      "A universal document converter: a command-line program and Haskell library that converts between hundreds of markup and document formats.",
-    strengths: [
-      "Converts Markdown to Word, HTML, EPUB, LaTeX, PDF, PowerPoint and more",
-      "Built-in citations, bibliographies, templates, and Lua filters",
-      "Free open-source software, mature and scriptable",
-    ],
-    bestFor: "Converting whole documents between file formats.",
-  },
-  typora: {
-    name: "Typora",
-    url: "https://typora.io",
-    sourceLabel: "typora.io · desktop app",
-    whatItIs:
-      "A minimal Markdown editor and reader with a true WYSIWYG experience — no split preview, no visible syntax symbols.",
-    strengths: [
-      "Seamless live preview while writing",
-      "Tables, math, Mermaid diagrams, TOC, and CSS theming",
-      "Imports and exports docx, HTML, PDF, EPUB, LaTeX",
-      "Works offline as a desktop application",
-    ],
-    bestFor: "Writing and reading Markdown files locally.",
-  },
+  tools: [
+    {
+      name: "MD2X",
+      url: "/editor",
+      sourceLabel: "markdown2x.com · web app",
+      whatItIs:
+        "A browser-based Markdown to X Articles converter. Paste Markdown, copy formatted rich text to the clipboard, then paste into the X Articles editor.",
+      strengths: [
+        "No install, no sign-up; drafts stay in your browser, works offline as a PWA",
+        "Code blocks render as syntax-highlighted PNG images",
+        "Tables and Mermaid diagrams render to pasteable PNG images",
+        "Includes a thread splitter and optional AI cover image generation",
+      ],
+      bestFor: "People who want a clipboard workflow without installing an extension.",
+    },
+    {
+      name: "X Article Markdown Paste",
+      url: "https://xmdpaste.icy-cat.com/",
+      sourceLabel: "xmdpaste.icy-cat.com · Chrome extension",
+      whatItIs:
+        "A Chrome extension that runs on the X Articles editor and intercepts paste: it converts Markdown into the editor's own block structure and uploads images through X's media pipeline.",
+      strengths: [
+        "Runs directly on x.com/compose/articles — no separate clipboard step",
+        "Code blocks become native X code blocks; tables render to HiDPI images",
+        "Remote and local images are uploaded via X's media path",
+        "Tweet links become embedded cards; drag a .md file in to start a draft",
+      ],
+      bestFor: "Posts with several images, tables or embeds where you publish often.",
+    },
+    {
+      name: "xPoster",
+      url: "https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj",
+      sourceLabel: "Chrome Web Store · Chrome extension",
+      whatItIs:
+        "A Chrome MV3 extension that opens a side panel to paste, choose or drop Markdown, previews the recognized blocks, and writes them into the active X Article draft. Local-first, no backend, no separate account.",
+      strengths: [
+        "Side-panel console with preview of headings, lists, links, tables, code and embeds",
+        "Handles web images and authorized local image folders",
+        "Can queue multiple .md files and write them one by one",
+        "Open source (ginobefun/xposter); no analytics, no xPoster account",
+      ],
+      bestFor: "Drafting several Markdown files and batching them into X Articles.",
+    },
+    {
+      name: "Article Studio",
+      url: "",
+      sourceLabel: "Unverified as of 2026-10-24",
+      whatItIs:
+        "We could not identify a distinct, official product named \"Article Studio\" in the Markdown-to-X-Articles category. The name is used by unrelated entities (e.g. article-studio.com, a UK photography studio, and generic AI article-generation tools). We list no features for an unverified entity.",
+      strengths: [],
+      bestFor: "Not enough verified information to recommend.",
+    },
+  ],
   rows: [
     {
-      capability: "Runs in the browser, no install",
-      md2x: "Yes",
-      carbon: "Yes (web app, PWA)",
-      pandoc: "No — command-line tool",
-      typora: "No — desktop application",
+      capability: "Form factor",
+      values: [
+        "Web app, no install",
+        "Chrome extension, pastes into the X editor",
+        "Chrome extension, side panel",
+        "Unknown",
+      ],
     },
     {
-      capability: "Built for X Articles rich-text clipboard",
-      md2x: "Yes — its core purpose",
-      carbon: "No",
-      pandoc: "No",
-      typora: "No",
+      capability: "Code blocks",
+      values: [
+        "Rendered to PNG image",
+        "Native X code block",
+        "Native X code block",
+        "Unknown",
+      ],
     },
     {
-      capability: "Code blocks as syntax-highlighted images",
-      md2x: "Yes — automatic, in the article",
-      carbon: "Yes — its core purpose",
-      pandoc: "No",
-      typora: "No",
+      capability: "Tables",
+      values: [
+        "Rendered to PNG image",
+        "Rendered to HiDPI image",
+        "Rendered to image",
+        "Unknown",
+      ],
     },
     {
-      capability: "Tables become pasteable images",
-      md2x: "Yes",
-      carbon: "No",
-      pandoc: "Converts tables into document formats",
-      typora: "Edits tables, does not export images",
+      capability: "Images uploaded to X for you",
+      values: [
+        "No — clipboard only; add by hand",
+        "Yes, via X's media pipeline",
+        "Yes, web and authorized local images",
+        "Unknown",
+      ],
     },
     {
       capability: "Mermaid diagrams",
-      md2x: "Renders as a PNG asset",
-      carbon: "No",
-      pandoc: "No",
-      typora: "Renders live in the editor",
+      values: [
+        "Yes, to PNG",
+        "Not listed by the vendor",
+        "Not listed by the vendor",
+        "Unknown",
+      ],
     },
     {
-      capability: "Write and edit Markdown",
-      md2x: "Lightweight editor",
-      carbon: "No",
-      pandoc: "No",
-      typora: "Yes — its core strength",
+      capability: "Tweet / post embeds",
+      values: [
+        "No",
+        "Yes",
+        "Yes",
+        "Unknown",
+      ],
     },
     {
-      capability: "Export to docx / PDF / EPUB",
-      md2x: "No",
-      carbon: "PNG / SVG only",
-      pandoc: "Yes — hundreds of formats",
-      typora: "Yes",
+      capability: "Queue multiple .md drafts",
+      values: [
+        "No",
+        "No",
+        "Yes",
+        "Unknown",
+      ],
     },
     {
-      capability: "Works offline",
-      md2x: "Yes — PWA",
-      carbon: "Yes — installable PWA",
-      pandoc: "Yes",
-      typora: "Yes",
+      capability: "Account / backend",
+      values: [
+        "No account, nothing uploaded",
+        "Uses your X login; extension has no separate account",
+        "No extension account, local-first",
+        "Unknown",
+      ],
     },
   ],
 };
 
 const zh = {
-  metaTitle: "MD2X 与 Carbon、Pandoc、Typora 的诚实对比 | MD2X",
+  metaTitle: "MD2X 与 X Article Markdown Paste、xPoster、Article Studio 对比 | MD2X",
   metaDescription:
-    "基于官方资料核查（2026-10-23）的 MD2X、Carbon、Pandoc、Typora 诚实对比：各自最擅长什么、在哪里重叠、什么场景选哪个。不夸张、不贬低。",
-  heroEyebrow: "诚实对比 · 2026-10-23 核查",
-  heroTitle: "MD2X 与 Carbon、Pandoc、Typora",
+    "基于来源核查（2026-10-24）的对比：MD2X、X Article Markdown Paste、xPoster、Article Studio 如何把 Markdown 放进 X Articles。诚实取舍，不编造。",
+  heroEyebrow: "诚实对比 · 2026-10-24 核查",
+  heroTitle: "MD2X 与把 Markdown 放进 X Articles 的工具",
   heroLead:
-    "这四个工具经常被放在一起讨论，但它们解决的是不同的问题。下面是各自官方资料里的真实定位。",
-  introTitle: "不同的任务，没有唯一赢家",
+    "这些工具都指向同一个终点——一篇排版好的 X Article——但路径不同：一个是把富文本放进剪贴板的网页应用，另两个是直接写入 X 编辑器的浏览器扩展。下面是各自官方资料里的真实做法。",
+  introTitle: "三条路径，同一个终点",
   introBody:
-    "MD2X 把 Markdown 草稿转成可直接粘贴到 X Articles 的富文本；Carbon 把源码转成精美的独立图片；Pandoc 在数百种文档格式之间转换；Typora 是所见即所得的 Markdown 编辑器。怎么选，取决于你要发布什么。",
-  toolsTitle: "每个工具做什么",
+    "MD2X 是网页应用：你在浏览器里写或粘贴 Markdown，它把富文本复制到剪贴板，你再粘进 X。X Article Markdown Paste 和 xPoster 是对着 X 编辑器本身运行的 Chrome 扩展。Article Studio 无法核实为该品类的独立产品，因此按未知处理，不做猜测。",
+  toolsTitle: "每个工具是什么",
   tableTitle: "能力一览",
   whenTitle: "什么时候选哪个",
   whenItems: [
-    "目标是把排版好的长文粘贴到 X Articles 时用 MD2X——代码块自动渲染为图片，表格和 Mermaid 图表作为资源一键复制。",
-    "只需要一张精美的独立代码截图发推文、做幻灯片时用 Carbon——主题和分享链接都很出色。",
-    "要在 Markdown、Word、EPUB、LaTeX、PDF 之间转换整篇文档时用 Pandoc——它是命令行转换器，不是剪贴板工具。",
-    "想要一个安静的桌面写作环境、本地读写 Markdown 文件时用 Typora。",
+    "想要免安装网页、把 Markdown 转成可直接粘贴的富文本，并把代码块/表格/Mermaid 渲染成 PNG，且可离线 PWA 时用 MD2X。",
+    "想要一个直接在 X 编辑器里粘贴、通过 X 媒体通道上传图片、代码块保留为 X 原生代码块的 Chrome 扩展时，用 X Article Markdown Paste。",
+    "想要侧栏控制台、可排队多篇 .md 并写入当前 X Article 草稿时用 xPoster。注意：这里指 Chrome 扩展（ginobefun/xposter），不是 Joe Dolson 的 WordPress 插件“XPoster / WP to Twitter”，那是另一个产品。",
+    "Article Studio：截至 2026-10-24 未能核实为该品类的独立官方产品，因此不作任何断言。",
   ],
   faqTitle: "常见问题",
   faqs: [
     {
-      question: "MD2X 能替代 Carbon 吗？",
+      question: "MD2X 会把我的图片上传进 X 草稿吗？",
       answer:
-        "不能。Carbon 专注于带分享链接和嵌入的独立代码截图，做得非常出色。MD2X 是把代码块作为图片嵌入整篇 X Articles 文章的工作流里。如果只需要一张漂亮的代码图，Carbon 是很好的选择。",
+        "不会。MD2X 在浏览器里运行，只把富文本放到剪贴板，无法把文件推进你的 X 草稿；远程图片需要粘贴后手动从资源面板添加。扩展类工具运行在 X 标签页内，可通过 X 自己的媒体通道上传图片。",
     },
     {
-      question: "能用 Pandoc 发布到 X Articles 吗？",
+      question: "Chrome 的 xPoster 和 WordPress 的 XPoster 是同一个吗？",
       answer:
-        "Pandoc 在 Markdown、docx、EPUB、PDF 等文件格式之间转换。X Articles 需要的是剪贴板上的富文本，而不是导出的文件，所以这一步它并不合适——但在文档转换领域它无可替代。",
+        "不是。这里对比的 xPoster 是把 Markdown 导入 X Articles 的 Chrome 扩展（ginobefun/xposter）。WordPress 的“XPoster”（前身 WP to Twitter，作者 Joe Dolson，xposterpro.com）是把 WordPress 博客同步到 X 的另一款产品，二者同名但无关。",
     },
     {
-      question: "Typora 支持 Mermaid 吗？",
+      question: "本对比里的 Article Studio 是什么？",
       answer:
-        "支持，Typora 写作时可以实时渲染流程图、时序图、甘特图。MD2X 则把这些图表导出为可粘贴的 PNG 图片，用于 X Articles。",
+        "截至 2026-10-24，我们未能在“Markdown 转 X Articles”这一品类中识别出名为 Article Studio 的独立官方产品。该名字被多家无关实体使用（例如英国摄影工作室 article-studio.com，以及通用 AI 文章生成工具）。因此我们按未知处理，不罗列其功能。",
+    },
+    {
+      question: "MD2X 和扩展的代码块处理有何不同？",
+      answer:
+        "MD2X 把代码块渲染成语法高亮 PNG 图片以保留粘贴效果；扩展则直接生成 X 的原生代码块，代码在 X 内仍可选中复制。两者都成立：图片自包含，原生块更轻量。",
     },
   ],
   sourcesTitle: "来源",
-  sourcesNote: "2026-10-23 核查以下官方页面：",
+  sourcesNote: "2026-10-24 核查以下页面：",
   sources: [
-    { label: "Carbon 官方介绍（carbon.vercel.app/about）", url: "https://carbon.vercel.app/about" },
-    { label: "carbon-app/carbon GitHub README", url: "https://github.com/carbon-app/carbon" },
-    { label: "Pandoc 官网（pandoc.org）", url: "https://pandoc.org" },
-    { label: "Typora 官网（typora.io）", url: "https://typora.io" },
+    { label: "MD2X 编辑器（markdown2x.com）", url: "https://markdown2x.com/editor" },
+    { label: "X Article Markdown Paste 官网", url: "https://xmdpaste.icy-cat.com/" },
+    { label: "X Article Markdown Paste 对比页", url: "https://xmdpaste.icy-cat.com/compare.html" },
+    { label: "xPoster Chrome 网上商店", url: "https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj" },
+    { label: "xPoster GitHub（ginobefun/xposter）", url: "https://github.com/ginobefun/xposter" },
+    { label: "xPoster 隐私政策", url: "https://nevertoday.github.io/xposter-privacy/" },
+    { label: "X Articles 官方帮助", url: "https://help.x.com/en/using-x/articles" },
+    { label: "同名辨析：WordPress XPoster / WP to Twitter（另一产品）", url: "https://xposterpro.com" },
   ],
-  md2x: {
-    name: "MD2X",
-    url: "/zh/editor",
-    sourceLabel: "markdown2x.com",
-    whatItIs:
-      "浏览器端的 Markdown 转 X Articles 工具。粘贴 Markdown，复制富文本，再粘贴进 X Articles。",
-    strengths: [
-      "代码块在剪贴板上直接渲染为语法高亮 PNG 图片",
-      "表格和 Mermaid 图表复制为可粘贴的图片资源",
-      "纯浏览器端运行，无需注册，支持 PWA 离线",
-      "内置推文流拆分与 AI 封面图生成",
-    ],
-    bestFor: "把长文发布到 X Articles。",
-  },
-  carbon: {
-    name: "Carbon",
-    url: "https://carbon.now.sh",
-    sourceLabel: "carbon.now.sh · MIT 开源",
-    whatItIs:
-      "网页应用，把源码转成可自定义、可分享的精美图片，支持截图、链接和嵌入。",
-    strengths: [
-      "出色的语法主题、背景、窗口样式和边距自定义",
-      "PNG/SVG 导出、剪贴板复制、保存片段并自动展开链接",
-      "可通过 iframe 把片段嵌入自己的网站",
-      "MIT 开源，提供编辑器插件和 CLI",
-    ],
-    bestFor: "为社交媒体制作精美的独立代码截图。",
-  },
-  pandoc: {
-    name: "Pandoc",
-    url: "https://pandoc.org",
-    sourceLabel: "pandoc.org · 免费命令行工具",
-    whatItIs:
-      "通用文档转换器：命令行程序与 Haskell 库，在数百种标记与文档格式之间转换。",
-    strengths: [
-      "Markdown 转 Word、HTML、EPUB、LaTeX、PDF、PowerPoint 等",
-      "内置引用、参考文献、模板和 Lua 过滤器",
-      "免费开源，成熟且可脚本化",
-    ],
-    bestFor: "在文件格式之间转换整篇文档。",
-  },
-  typora: {
-    name: "Typora",
-    url: "https://typora.io",
-    sourceLabel: "typora.io · 桌面应用",
-    whatItIs:
-      "极简的 Markdown 编辑器与阅读器，真正所见即所得——没有分栏预览，看不到语法符号。",
-    strengths: [
-      "写作时无缝实时预览",
-      "表格、数学公式、Mermaid 图表、目录与 CSS 主题",
-      "支持导入导出 docx、HTML、PDF、EPUB、LaTeX",
-      "作为桌面应用离线可用",
-    ],
-    bestFor: "本地读写 Markdown 文件。",
-  },
+  tools: [
+    {
+      name: "MD2X",
+      url: "/zh/editor",
+      sourceLabel: "markdown2x.com · 网页应用",
+      whatItIs:
+        "浏览器端的 Markdown 转 X Articles 工具。粘贴 Markdown，把富文本复制到剪贴板，再粘进 X Articles 编辑器。",
+      strengths: [
+        "免安装、免注册；草稿留在浏览器，支持离线 PWA",
+        "代码块渲染为语法高亮 PNG 图片",
+        "表格和 Mermaid 图表渲染为可粘贴 PNG",
+        "内置推文流拆分与可选 AI 封面图生成",
+      ],
+      bestFor: "不想安装扩展、走剪贴板工作流的人。",
+    },
+    {
+      name: "X Article Markdown Paste",
+      url: "https://xmdpaste.icy-cat.com/",
+      sourceLabel: "xmdpaste.icy-cat.com · Chrome 扩展",
+      whatItIs:
+        "运行在 X Articles 编辑器内、拦截粘贴的 Chrome 扩展：把 Markdown 转成编辑器自身的块结构，并通过 X 的媒体通道上传图片。",
+      strengths: [
+        "直接在 x.com/compose/articles 上运行，无需额外剪贴板步骤",
+        "代码块成为 X 原生代码块；表格渲染为 HiDPI 图片",
+        "远程与本地图片经 X 媒体通道上传",
+        "推文链接变为嵌入卡片；可拖入 .md 文件新建草稿",
+      ],
+      bestFor: "含较多图片、表格或嵌入、且发布频繁的文章。",
+    },
+    {
+      name: "xPoster",
+      url: "https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj",
+      sourceLabel: "Chrome 网上商店 · Chrome 扩展",
+      whatItIs:
+        "Chrome MV3 扩展，侧栏粘贴/选择/拖入 Markdown，预览识别到的块，再写入当前 X Article 草稿。本地优先，无后端、无独立账号。",
+      strengths: [
+        "侧栏控制台，预览标题、列表、链接、表格、代码与嵌入",
+        "处理网络图片与已授权的本地图片文件夹",
+        "可排队多篇 .md 依次写入",
+        "开源（ginobefun/xposter）；无统计、无 xPoster 账号",
+      ],
+      bestFor: "写多篇 Markdown、批量导入 X Articles。",
+    },
+    {
+      name: "Article Studio",
+      url: "",
+      sourceLabel: "截至 2026-10-24 未核实",
+      whatItIs:
+        "我们未能在“Markdown 转 X Articles”品类中识别出名为 Article Studio 的独立官方产品。该名字被多家无关实体使用（例如英国摄影工作室 article-studio.com，以及通用 AI 文章生成工具）。对未核实实体不列功能。",
+      strengths: [],
+      bestFor: "可用信息不足，无法推荐。",
+    },
+  ],
   rows: [
     {
-      capability: "浏览器运行、无需安装",
-      md2x: "是",
-      carbon: "是（网页应用，PWA）",
-      pandoc: "否——命令行工具",
-      typora: "否——桌面应用",
+      capability: "形态",
+      values: [
+        "网页应用，免安装",
+        "Chrome 扩展，粘贴进 X 编辑器",
+        "Chrome 扩展，侧栏",
+        "未知",
+      ],
     },
     {
-      capability: "为 X Articles 剪贴板而生",
-      md2x: "是——核心目标",
-      carbon: "否",
-      pandoc: "否",
-      typora: "否",
+      capability: "代码块",
+      values: [
+        "渲染为 PNG 图片",
+        "X 原生代码块",
+        "X 原生代码块",
+        "未知",
+      ],
     },
     {
-      capability: "代码块转语法高亮图片",
-      md2x: "是——文章内自动完成",
-      carbon: "是——核心功能",
-      pandoc: "否",
-      typora: "否",
+      capability: "表格",
+      values: [
+        "渲染为 PNG 图片",
+        "渲染为 HiDPI 图片",
+        "渲染为图片",
+        "未知",
+      ],
     },
     {
-      capability: "表格转可粘贴图片",
-      md2x: "是",
-      carbon: "否",
-      pandoc: "把表格转为文档格式",
-      typora: "编辑表格，不导出图片",
+      capability: "替你把图片上传到 X",
+      values: [
+        "否——仅剪贴板，需手动添加",
+        "是，经 X 媒体通道",
+        "是，网络图片与已授权本地图片",
+        "未知",
+      ],
     },
     {
       capability: "Mermaid 图表",
-      md2x: "渲染为 PNG 资源",
-      carbon: "否",
-      pandoc: "否",
-      typora: "在编辑器中实时渲染",
+      values: [
+        "是，导出 PNG",
+        "官方未列出",
+        "官方未列出",
+        "未知",
+      ],
     },
     {
-      capability: "编写和编辑 Markdown",
-      md2x: "轻量编辑器",
-      carbon: "否",
-      pandoc: "否",
-      typora: "是——核心强项",
+      capability: "推文/帖子嵌入",
+      values: [
+        "否",
+        "是",
+        "是",
+        "未知",
+      ],
     },
     {
-      capability: "导出 docx / PDF / EPUB",
-      md2x: "否",
-      carbon: "仅 PNG / SVG",
-      pandoc: "是——数百种格式",
-      typora: "是",
+      capability: "排队多篇 .md 草稿",
+      values: [
+        "否",
+        "否",
+        "是",
+        "未知",
+      ],
     },
     {
-      capability: "离线可用",
-      md2x: "是——PWA",
-      carbon: "是——可安装 PWA",
-      pandoc: "是",
-      typora: "是",
+      capability: "账号 / 后端",
+      values: [
+        "无账号，不上传",
+        "用你的 X 登录；扩展无独立账号",
+        "无扩展账号，本地优先",
+        "未知",
+      ],
     },
   ],
 };

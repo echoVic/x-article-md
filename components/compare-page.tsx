@@ -23,7 +23,7 @@ export function ComparePage({ locale = "en" }: { locale?: CompareLocale }) {
     { name: t.heroTitle, path },
   ];
 
-  const tools: CompareTool[] = [t.md2x, t.carbon, t.pandoc, t.typora];
+  const tools = t.tools;
 
   return (
     <div className="landing">
@@ -77,15 +77,21 @@ export function ComparePage({ locale = "en" }: { locale?: CompareLocale }) {
                     <h3 className="text-lg font-semibold text-[var(--fg)]">
                       {tool.name}
                     </h3>
-                    <a
-                      href={tool.url}
-                      className="inline-flex items-center gap-1 text-xs text-[var(--accent)] no-underline hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {tool.sourceLabel}
-                      <ExternalLink size={12} strokeWidth={1.8} aria-hidden="true" />
-                    </a>
+                    {tool.url ? (
+                      <a
+                        href={tool.url}
+                        className="inline-flex items-center gap-1 text-xs text-[var(--accent)] no-underline hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {tool.sourceLabel}
+                        <ExternalLink size={12} strokeWidth={1.8} aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs text-[var(--muted)]">
+                        {tool.sourceLabel}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
                     {tool.whatItIs}
@@ -124,10 +130,14 @@ export function ComparePage({ locale = "en" }: { locale?: CompareLocale }) {
                     <th className="px-4 py-3 font-semibold text-[var(--fg)]">
                       {locale === "zh" ? "能力" : "Capability"}
                     </th>
-                    <th className="px-4 py-3 font-semibold text-[var(--fg)]">MD2X</th>
-                    <th className="px-4 py-3 font-semibold text-[var(--fg)]">Carbon</th>
-                    <th className="px-4 py-3 font-semibold text-[var(--fg)]">Pandoc</th>
-                    <th className="px-4 py-3 font-semibold text-[var(--fg)]">Typora</th>
+                    {tools.map((tool) => (
+                      <th
+                        key={tool.name}
+                        className="px-4 py-3 font-semibold text-[var(--fg)]"
+                      >
+                        {tool.name}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -136,10 +146,11 @@ export function ComparePage({ locale = "en" }: { locale?: CompareLocale }) {
                       <td className="px-4 py-3 font-medium text-[var(--fg)]">
                         {row.capability}
                       </td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{row.md2x}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{row.carbon}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{row.pandoc}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{row.typora}</td>
+                      {row.values.map((value, i) => (
+                        <td key={i} className="px-4 py-3 text-[var(--muted)]">
+                          {value}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>

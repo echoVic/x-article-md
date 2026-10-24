@@ -33,33 +33,53 @@ describe("compare page metadata", () => {
 describe("compare page content", () => {
   const locales: CompareLocale[] = ["en", "zh"];
 
-  it.each(locales)("covers all four tools in %s", (locale) => {
+  it.each(locales)("covers MD2X plus the three named competitors in %s", (locale) => {
     const t = getCompareContent(locale);
-    expect([t.md2x.name, t.carbon.name, t.pandoc.name, t.typora.name]).toEqual([
+    expect(t.tools.map((tool) => tool.name)).toEqual([
       "MD2X",
-      "Carbon",
-      "Pandoc",
-      "Typora",
+      "X Article Markdown Paste",
+      "xPoster",
+      "Article Studio",
     ]);
     expect(t.rows.length).toBeGreaterThanOrEqual(6);
+    // Every row has one value per tool.
+    for (const row of t.rows) {
+      expect(row.values.length).toBe(t.tools.length);
+    }
   });
 
-  it.each(locales)("never mentions pricing in %s copy", (locale) => {
+  it.each(locales)("no longer compares Carbon/Pandoc/Typora in %s", (locale) => {
+    const blob = JSON.stringify(getCompareContent(locale));
+    expect(blob).not.toMatch(/Carbon|Pandoc|Typora/i);
+  });
+
+  it.each(locales)("marks Article Studio as unknown with no link or strengths in %s", (locale) => {
     const t = getCompareContent(locale);
-    const blob = JSON.stringify(t);
-    // Honest-comparison rule: no price numbers / currency mentions.
-    expect(blob).not.toMatch(/\$\s?\d/);
-    expect(blob).not.toMatch(/14\.99|price|价格|售价/i);
+    const studio = t.tools.find((tool) => tool.name === "Article Studio");
+    expect(studio).toBeDefined();
+    expect(studio!.url).toBe("");
+    expect(studio!.strengths).toHaveLength(0);
   });
 
-  it.each(locales)("cites the four official sources with the check date in %s", (locale) => {
+  it.each(locales)("never mentions pricing, tiers, or character limits in %s", (locale) => {
+    const blob = JSON.stringify(getCompareContent(locale));
+    // Honest-comparison rule: no price numbers / currency / tier words.
+    expect(blob).not.toMatch(/\$\s?\d/);
+    expect(blob).not.toMatch(/14\.99|4\.99|price|价格|售价/i);
+    // No unobserved character-limit number.
+    expect(blob).not.toMatch(/280/);
+  });
+
+  it.each(locales)("cites the real sources and the check date in %s", (locale) => {
     const t = getCompareContent(locale);
     const urls = t.sources.map((s) => s.url);
-    expect(urls).toContain("https://carbon.vercel.app/about");
-    expect(urls).toContain("https://github.com/carbon-app/carbon");
-    expect(urls).toContain("https://pandoc.org");
-    expect(urls).toContain("https://typora.io");
-    expect(compareCheckedDate).toBe("2026-10-23");
+    expect(urls).toContain("https://xmdpaste.icy-cat.com/");
+    expect(urls).toContain("https://chromewebstore.google.com/detail/xposter/iimkimodgdjnnmdopeolboakhjmhfbbj");
+    expect(urls).toContain("https://github.com/ginobefun/xposter");
+    expect(urls).toContain("https://help.x.com/en/using-x/articles");
+    // Same-name disambiguation source is cited.
+    expect(urls).toContain("https://xposterpro.com");
+    expect(compareCheckedDate).toBe("2026-10-24");
   });
 });
 
