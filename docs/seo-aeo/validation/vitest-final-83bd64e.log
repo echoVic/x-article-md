@@ -1,0 +1,60 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90m/Users/bytedance/Documents/GitHub/x-article-md[39m
+
+ [32m✓[39m tests/codemirror-integration.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 229[2mms[22m[39m
+ [32m✓[39m tests/seo.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/llms-txt.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/jszip-lazy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m tests/focus-mode.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 344[2mms[22m[39m
+ [32m✓[39m tests/share-post.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 352[2mms[22m[39m
+ [32m✓[39m tests/preview-blocks-i18n.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 396[2mms[22m[39m
+ [32m✓[39m tests/asset-orchestrator.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 564[2mms[22m[39m
+     [33m[2m✓[22m[39m exposes failure details and source, and succeeds on explicit retry [33m 337[2mms[22m[39m
+ [32m✓[39m tests/cover-image-panel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 282[2mms[22m[39m
+[90mstderr[2m | tests/editor-mobile-cls.test.tsx[2m > [22m[2meditor mobile CLS regression (ee7fd61)[2m > [22m[2mkeeps the same DOM nodes when matchMedia flips desktop→mobile→desktop
+[22m[39mAn update to EditorPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m tests/editor-mobile-cls.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 208[2mms[22m[39m
+ [32m✓[39m tests/table-image-tool.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1337[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the sample table and copies the image with table_tool tracking [33m 441[2mms[22m[39m
+     [33m[2m✓[22m[39m re-renders in dark theme and downloads a PNG [33m 362[2mms[22m[39m
+ [32m✓[39m tests/svg-export.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m tests/social-images.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m tests/compare.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/sitemap-dates.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m tests/google-analytics.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/html-shell.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/polish.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/feature-landing-zh.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/zh-blog.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m tests/translate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/markdown.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/gsc-utils.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/analytics.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/preflight.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/blog-metadata.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m tests/locale-path.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/cover-image.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/robots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/sample.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/import-export.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/favicon.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/scroll-sync.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/security-headers.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/editor-actions.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m35 passed[39m[22m[90m (35)[39m
+[2m      Tests [22m [1m[32m242 passed[39m[22m[90m (242)[39m
+[2m   Start at [22m 19:14:12
+[2m   Duration [22m 6.78s[2m (transform 3.04s, setup 5.57s, import 10.03s, tests 4.44s, environment 43.16s)[22m
+
+VITEST_EXIT=0

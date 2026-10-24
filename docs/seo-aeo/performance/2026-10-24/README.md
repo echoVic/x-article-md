@@ -2,7 +2,9 @@
 
 > **历史基线说明**：本文件记录的是 893c0f4 当时的测量与诊断，数字保留作为对比锚点，**不是最新产品状态**。后续续修见：
 > - editor CLS 已修复：`ee7fd61`（源码）+ `e10a2b6`（回归测试），见 `cls.md` 与 `lh/`。同 LH13.5 throttled 条件下 candidate CLS 6/6 runs = 0（EN 0/0/0，ZH 0/0/0），vs base 0.047。
+> - GA async native 单变量：`184f3fa`，线上 feature-match 已确认。
 > - legacy-javascript-insight 已溯源：Next 内置 polyfill，不可安全删除，见 `legacy.md`。
+> - prefetch=off / landing / intent / Mono 方案历史 rejected，不复活。
 > - Article Studio compare 实体已补官方 snapshot，见 `../compare-competitors.md`。
 > - 当前 source HEAD：见仓库 `git rev-parse HEAD`（本文件落盘时为 83bd64e）。
 

@@ -1,7 +1,7 @@
 # SEO/AEO 审计验收清单（草稿，暂定待最终验收）
 
 - 生成日期：2026-10-24（草稿修订同日）
-- **状态：本地门已通过（build/tsc/eslint/vitest/HTTP 集成），线上待部署复验。** 等部署后线上数据与 Article 链接等外部输入回填证据列；本地已修项按线上复验结果改判。
+- **状态：本地门已通过（build/tsc/eslint/vitest/HTTP 集成，HEAD 83bd64e），线上待部署复验 CLS。** GA async 特征已在线上 feature-match；等部署后线上 LH 复测 editor CLS 与逐篇 frontmatter author 输入。
 - **重要原则：单测绿 ≠ 完成；本地实测通过 ≠ 线上通过。** 代码与本地构建验证已闭环的条目记"本地已修"，但线上部署/最终 HTTP 集成未做前，不得与"线上已验收"混列。
 
 ## 状态定义
@@ -22,7 +22,7 @@
 | --- | --- | --- | --- | --- |
 | **工具独立 OG** | 每个工具/索引路由独立 OG+Twitter 卡片，1200×630，不共用首页通用图 | 19 个非博客路由 colocated `opengraph-image.tsx`+`twitter-image.tsx`（EN+ZH），共享 `components/og-card.tsx` | `15b97b4`；`docs/seo-aeo/verify-og-images.py` + `og-images-verified.json` + `og-contact-sheet.png`：19 路由 HTTP 200、1200×630、**每张图唯一 SHA**、本地 origin 可复现脚本 | 部署后抽查 og:url/canonical 与 sitemap 根形式一致、图片哈希路由可达 |
 | root canonical / sitemap / hreflang URL 一致性 | canonical、sitemap `<loc>`、og:url、hreflang 根形式统一 | `absoluteUrl("/")` 不带尾斜杠，统一为 `https://markdown2x.com` | `f0759d2`（本地验证 origin 说明 + URL 一致性映射）；sitemap/canonical 实际 JSON 快照 | 线上复测 root 无尾斜杠、无跨域回跳 |
-| **指定 compare 内容** | /compare 按指定对象准确陈述，不编功能、不报价 | 四对象核实边界成文；xPoster 同名干扰项已消歧；Article Studio 标 unknown；footer compare label + deep-path locale switcher（`4181058`、`4bbb8b2`）；死代码清理（`e4ca01b`） | `compare-competitors.md`；`c4d5d5c`；`4181058`；`4bbb8b2`；`e4ca01b`；**真浏览器桌面+移动实测通过：`docs/seo-aeo/visual/2026-10-24-content-acceptance.md` + `final-zh-compare-unknown-column.png`、`final-*-compare-table.png`** | 部署后复验 unknown 列在英文页同样渲染 |
+| **指定 compare 内容** | /compare 按指定对象准确陈述，不编功能、不报价 | 四对象核实边界成文；xPoster 同名干扰项已消歧；Article Studio 官方 snapshot 已存、vendor self-stated、无 pricing、无负面，owner/affiliation 未独立确认（仅证据边界，不当 blocker）；footer compare label + deep-path locale switcher（`4181058`、`4bbb8b2`）；死代码清理（`e4ca01b`）；补 privacy/support/CWS 及测具体值（`3af7dc0`、`449e873`） | `compare-competitors.md`；`sources/article-studio-2026-10-24.html`；`3af7dc0`；`449e873`；`4181058`；`4bbb8b2`；`e4ca01b`；**真浏览器桌面+移动实测通过：`docs/seo-aeo/visual/2026-10-24-content-acceptance.md` + `final-*-compare-table.png`** | 部署后复验 compare 表在英文页同样渲染。 |
 | **中文工具落地厚度** | zh 工具页每条示例/限制有源码证据支撑 | 逐条文案 ↔ 源码行号 ↔ 测试对照 | `zh-tool-landing-depth.md`；`842c776`、`51aba3c`；`tests/feature-landing-zh.test.ts`；**真浏览器实测：`final-zh-mermaid-example.png`、`desktop-zh-code-to-image-limitations.png`** | 部署后抽查 zh 页渲染与截图一致 |
 | twitter:site 接线 | 站点级账号关联 @echo_vic，不设全局 creator | `groupBaseMetadata` 设 `twitter:site=@echo_vic`；全站无 creator | `15b97b4`；用户确认记录（`echo-vic-attribution.md`） | 部署后确认各页渲染 `twitter:site=@echo_vic` 且无 `twitter:creator` |
 | robots 显式 AI Allow | 保留基线，对已核实 AI UA 显式 Allow | 多规则数组 7 UA Allow | `d8fbfb0`；`tests/robots.test.ts`（6 项断言）；**本地 HTTP 已验**：`next start` 显式 `-A GPTBot` / `-A ClaudeBot` 拉 `/robots.txt`，`*` + 7 AI UA 全 Allow、零 Disallow | 部署后线上 robots.txt 逐块渲染确认 |
@@ -30,7 +30,7 @@
 | 四个安全响应头 | nosniff / strict-origin-when-cross-origin / DENY / Permissions-Policy 禁 camera·mic·geo | `lib/security-headers.ts` | `ef7972e`；`tests/security-headers.test.ts` | 部署后复测四头 presence（注意 Cloudflare 边缘叠加） |
 | sitemap lastModified | 烘焙静态日期表，/blog 索引取最新文章 frontmatter 日期 | `lib/sitemap-dates.ts`；`5c7c0bc` 按 2026-10-24 实际编辑路由 bump 日期 | `b44958f`；`5c7c0bc`；`tests/sitemap-dates.test.ts` | 部署后复测日期分布 |
 | /~offline 无索引 | 离线页不被索引 | `app/(en)/~offline/layout.tsx` noindex,nofollow | `15b97b4` | 部署后确认 noindex 头/标签 |
-| **最终全量集成门（产品 HEAD 83bd64e）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error；`vitest run` **242/242 通过**（35 files，含新增 `tests/editor-mobile-cls.test.tsx` 3 cases）；`git diff --check origin/main..HEAD` 干净；本地 `next start -p 3458` 复跑 /editor、/zh/editor、/compare、/zh/compare、/robots.txt、/sitemap.xml 全 200 | 本批次落盘；LH throttled mobile 证据见 `performance/2026-10-24/lh/` | 部署后线上复测 og:url/canonical、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator。 |
+| **最终全量集成门（产品 HEAD 83bd64e）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error；`vitest run` **242/242 通过**（35 files，含新增 `tests/editor-mobile-cls.test.tsx` 3 cases）；`git diff --check origin/main..HEAD` 干净；本地 `next start -p 3458` 复跑 /editor、/zh/editor、/compare、/zh/compare、/robots.txt、/sitemap.xml 全 200 | `validation/build-final-83bd64e.log`、`tsc-final-83bd64e.log`、`eslint-final-83bd64e.log`、`vitest-final-83bd64e.log`、`diffcheck-final-83bd64e.log`；LH throttled mobile 证据见 `performance/2026-10-24/lh/` | 部署后线上复测 og:url/canonical、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator。 |
 | **editor mobile CLS 修复** | SSR→hydration 插入 mobile bar 导致 CLS 0.047 | `ee7fd61`：mobile tab strip (h-11) + bottom bar (h-[60px]) 改为始终渲染 + `md:hidden`，不再用 `{!isDesktop && ...}` 条件渲染；`e10a2b6`：回归测试钉住 DOM 节点 identity 在 matchMedia 翻转时不变 | `components/editor-page.tsx`；`tests/editor-mobile-cls.test.tsx`；`performance/2026-10-24/cls.md`；`performance/2026-10-24/lh/`（LH13.5 throttled mobile, n=3 EN + n=3 ZH, CLS 6/6 runs = 0, vs base 0.047） | 部署后线上 LH 复测 /editor 与 /zh/editor CLS。 |
 
 ## 二、未完成（工作未闭环；未出结果前不写绿）
@@ -38,7 +38,7 @@
 | 项 | 原要求 | 现状 | 证据 | 剩余阻塞 |
 | --- | --- | --- | --- | --- |
 | 原审计截图条目复现 | 原截图条目可复现展示 | 截图条目文案保留；**截图 URL 从未获知** | 本清单批次记录 | **原审计报告托管于 pages.grok.bot，访问被认证阻挡（跳转 accounts.x.ai/Cursor）；截图未提供被测 URL/环境，故原条件无法确认。本轮线上首页测试可公开进行（被测站 markdown2x.com 本身不要求登录）。** |
-| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **CLS 已修（`ee7fd61`），GA async 单变量已落地（`184f3fa`）**；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回；legacy-javascript-insight ~12KiB（Lighthouse 估算）已溯源为 Next 内置 polyfill，有据不改；原审计 22KiB 数字不是绿、未修；LCP ~3.3s / TBT 114–281ms / unused JS / 传输体积未整体闭环 | `performance/2026-10-24/`（base/prod 原始 JSON、`legacy.md`、`cls.md`、`lh/` candidate 证据）；`184f3fa`；`ee7fd61` | **GA 单变量 + CLS 本地已修，线上待部署复验；prefetch rejected、legacy、LCP/TBT/unused/transfer 未闭环。** |
+| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **CLS 已修（`ee7fd61`），GA async 单变量已落地（`184f3fa`）且线上 feature-match 已确认**；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回（历史，不复活）；legacy-javascript-insight ~12KiB（Lighthouse 估算）已溯源为 Next 内置 polyfill（Object.fromEntries/Array.at 等生产路径依赖），有据不删；Lighthouse 报告的 12KiB savings 是估算、不是真实 gzip 固定税，指标未消除但无安全 delta；LCP ~3.3s / TBT 114–281ms / unused JS / 传输体积未整体闭环 | `performance/2026-10-24/`（base/prod 原始 JSON、`legacy.md`、`cls.md`、`lh/` candidate 证据）；`184f3fa`；`ee7fd61` | **CLS 本地已修，线上待部署 LH 复验；GA async 线上已 feature-match；prefetch rejected（历史）；legacy 有据不改；LCP/TBT/unused/transfer 未闭环。** |
 
 ## 三、待确认（事实已核到边界，等 owner 或外部条件）
 
@@ -99,7 +99,6 @@ curl -sI "http://localhost:$PORT/llms.txt" | grep -i content-type
 | `zh-tool-landing-depth.md` | 中文工具落地页每条文案 ↔ 源码行号 ↔ 测试证据 |
 | `per-page-og-images.md` | 每页独立 OG/Twitter 卡片拆分、twitter:site 接线（实现沿革） |
 | `verify-og-images.py` + `og-images-verified.json` + `og-contact-sheet.png` | 19 路由 OG 可复现核验脚本、实测 JSON、联系表 |
-| `measurement/` | base/cand 移动端性能原始 JSON（GA 单变量已落地 `184f3fa`；prefetch 方案被拒回退；线上复测与 legacy 22KiB/截图项未闭环） |
-| `performance/` | LCP 诊断脚本、原始审计页 HTML 与说明 |
+| `measurement/` + `performance/2026-10-24/` | base/cand 移动端性能原始 JSON；GA 单变量已落地 `184f3fa` 且线上 feature-match；prefetch 历史 rejected（不复活）；legacy polyfill 有据不删；editor CLS 修复 `ee7fd61` + LH candidate 证据 `lh/` |
 
-> 本文件为草稿：本地门已通过（HEAD `184f3fa` → `44541bb`），等部署到 markdown2x.com 后回填线上复验数据；同时等 Article Studio 官方链接、逐篇 frontmatter author 等外部输入后，把"本地已修"项按线上结果改判。
+> 本文件为验收清单：本地门已通过（HEAD `83bd64e`，日志见 `validation/*-final-83bd64e.log`）；Article Studio 官方 snapshot 已存（`sources/article-studio-2026-10-24.html`），不再等外部链接。等部署到 markdown2x.com 后回填线上 LH CLS 复验数据；剩余外部输入仅逐篇 frontmatter author（twitter:creator 策略）。
