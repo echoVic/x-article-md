@@ -93,18 +93,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
           "x-default": absoluteUrl(`/${def.slug}`),
         },
       };
-      const lastModified = new Date(STATIC_ROUTE_DATES.feature);
+      // Per-route baked dates: zh landings were deepened/corrected on
+      // 2026-10-24; EN markdown-to-x-articles had its strikethrough claim
+      // corrected the same day; other EN landings keep the 2026-10-23 date.
+      const enLastModified = new Date(
+        def.slug === "markdown-to-x-articles"
+          ? STATIC_ROUTE_DATES.featureMarkdownToX
+          : STATIC_ROUTE_DATES.feature,
+      );
+      const zhLastModified = new Date(STATIC_ROUTE_DATES.featureZh);
       return [
         {
           url: absoluteUrl(`/${def.slug}`),
-          lastModified,
+          lastModified: enLastModified,
           changeFrequency: "weekly" as const,
           priority: 0.8,
           alternates,
         },
         {
           url: absoluteUrl(`/zh/${def.slug}`),
-          lastModified,
+          lastModified: zhLastModified,
           changeFrequency: "weekly" as const,
           priority: 0.7,
           alternates,

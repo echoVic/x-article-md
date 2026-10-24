@@ -51,15 +51,26 @@ describe("sitemap lastModified dates", () => {
     expectDate("/thread", STATIC_ROUTE_DATES.thread);
     expectDate("/zh/thread", STATIC_ROUTE_DATES.thread);
     expectDate("/privacy", STATIC_ROUTE_DATES.privacy);
+    expectDate("/compare", STATIC_ROUTE_DATES.compare);
+    expectDate("/zh/compare", STATIC_ROUTE_DATES.compare);
 
+    for (const slug of [
+      "code-to-image",
+      "mermaid-to-png",
+      "markdown-table-to-image",
+    ]) {
+      expectDate(`/${slug}`, STATIC_ROUTE_DATES.feature);
+    }
+    // EN markdown-to-x-articles had its strikethrough claim corrected @51aba3c.
+    expectDate("/markdown-to-x-articles", STATIC_ROUTE_DATES.featureMarkdownToX);
+    // zh tool landings were deepened and corrected on 2026-10-24.
     for (const slug of [
       "markdown-to-x-articles",
       "code-to-image",
       "mermaid-to-png",
       "markdown-table-to-image",
     ]) {
-      expectDate(`/${slug}`, STATIC_ROUTE_DATES.feature);
-      expectDate(`/zh/${slug}`, STATIC_ROUTE_DATES.feature);
+      expectDate(`/zh/${slug}`, STATIC_ROUTE_DATES.featureZh);
     }
   });
 
