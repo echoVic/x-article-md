@@ -37,7 +37,7 @@ const en = {
   tableTitle: "Capability at a glance",
   whenTitle: "When to reach for which",
   whenItems: [
-    "Use MD2X when you want a no-install web page that converts Markdown to clipboard-ready rich text, renders code blocks, tables and Mermaid diagrams as PNG images, and works offline as a PWA.",
+    "Use MD2X when you want a no-install web page that converts Markdown to clipboard-ready rich text, renders tables and Mermaid diagrams to PNG images, and works offline as a PWA.",
     "Use X Article Markdown Paste when you want a Chrome extension that pastes straight into the X editor, uploads images through X's media pipeline, and keeps code blocks as native X code blocks.",
     "Use xPoster when you prefer a side-panel console that queues several .md files and writes them into the active X Article draft. Note this is the Chrome extension (ginobefun/xposter) — not the WordPress \"XPoster / WP to Twitter\" plugin by Joe Dolson, which is a different product.",
     "Article Studio: use it when you want a browser preview that attaches local images and renders Mermaid, plus an optional Chrome companion that creates an X draft with images in place; you still review and publish from X.",
@@ -62,7 +62,7 @@ const en = {
     {
       question: "How do code blocks differ between MD2X and the extensions?",
       answer:
-        "MD2X renders code blocks to syntax-highlighted PNG images so they survive the paste. The extensions instead target X's native code block, which keeps the code as selectable text inside X. Both are valid; images are self-contained, while native blocks are lighter.",
+        "MD2X pastes code as a rich-text quote by default, with an optional mode that renders it to a syntax-highlighted PNG image. The extensions instead target X's native code block, which keeps the code as selectable text inside X. Pick whichever you prefer for your post.",
     },
   ],
   sourcesTitle: "Sources",
@@ -151,7 +151,7 @@ const en = {
     {
       capability: "Code blocks",
       values: [
-        "Rendered to PNG image",
+        "Rich-text code quote by default; optional PNG image mode",
         "Native X code block",
         "Native X code block",
         "Supported; rendering not detailed",
@@ -229,7 +229,7 @@ const zh = {
   tableTitle: "能力一览",
   whenTitle: "什么时候选哪个",
   whenItems: [
-    "想要免安装网页、把 Markdown 转成可直接粘贴的富文本，并把代码块/表格/Mermaid 渲染成 PNG，且可离线 PWA 时用 MD2X。",
+    "想要免安装网页、把 Markdown 转成可直接粘贴的富文本，并把表格/Mermaid 渲染成 PNG，且可离线 PWA 时用 MD2X。",
     "想要一个直接在 X 编辑器里粘贴、通过 X 媒体通道上传图片、代码块保留为 X 原生代码块的 Chrome 扩展时，用 X Article Markdown Paste。",
     "想要侧栏控制台、可排队多篇 .md 并写入当前 X Article 草稿时用 xPoster。注意：这里指 Chrome 扩展（ginobefun/xposter），不是 Joe Dolson 的 WordPress 插件“XPoster / WP to Twitter”，那是另一个产品。",
     "Article Studio：当你想要浏览器预览（挂载本地图片、渲染 Mermaid），并希望可选的 Chrome 伴侣直接生成带图的 X 草稿时使用；发布仍由你在 X 里确认。",
@@ -254,7 +254,7 @@ const zh = {
     {
       question: "MD2X 和扩展的代码块处理有何不同？",
       answer:
-        "MD2X 把代码块渲染成语法高亮 PNG 图片以保留粘贴效果；扩展则直接生成 X 的原生代码块，代码在 X 内仍可选中复制。两者都成立：图片自包含，原生块更轻量。",
+        "MD2X 默认把代码以富文本引用粘贴，也可切换为语法高亮 PNG 图片；扩展则直接生成 X 的原生代码块，代码在 X 内仍可选中复制。按文章需要选择即可。",
     },
   ],
   sourcesTitle: "来源",
@@ -281,7 +281,7 @@ const zh = {
         "浏览器端的 Markdown 转 X Articles 工具。粘贴 Markdown，把富文本复制到剪贴板，再粘进 X Articles 编辑器。",
       strengths: [
         "免安装、免注册；草稿留在浏览器，支持离线 PWA",
-        "代码块渲染为语法高亮 PNG 图片",
+        "默认富文本代码引用，可切换代码图片 PNG",
         "表格和 Mermaid 图表渲染为可粘贴 PNG",
         "内置推文流拆分与可选 AI 封面图生成",
       ],
@@ -343,7 +343,7 @@ const zh = {
     {
       capability: "代码块",
       values: [
-        "渲染为 PNG 图片",
+        "默认富文本代码引用，可切换 PNG",
         "X 原生代码块",
         "X 原生代码块",
         "支持；渲染方式未详述",

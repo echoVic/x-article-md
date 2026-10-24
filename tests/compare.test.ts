@@ -71,6 +71,16 @@ describe("compare page content", () => {
     expect(col(1)).toMatch(/supported|支持/i); // code blocks supported, rendering not detailed
   });
 
+  it.each(locales)("describes MD2X code blocks as default rich-text quote, not always PNG, in %s", (locale) => {
+    const t = getCompareContent(locale);
+    const md2xCode = t.rows[1].values[0];
+    expect(md2xCode).toMatch(/rich-text|富文本/i);
+    expect(md2xCode).toMatch(/optional|可切换/i);
+    // Tables and Mermaid still render to PNG.
+    expect(t.rows[2].values[0]).toMatch(/PNG/i);
+    expect(t.rows[4].values[0]).toMatch(/PNG/i);
+  });
+
   it.each(locales)("never mentions pricing, tiers, or character limits in %s", (locale) => {
     const blob = JSON.stringify(getCompareContent(locale));
     // Honest-comparison rule: no price numbers / currency / tier words.

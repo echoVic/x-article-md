@@ -13,8 +13,8 @@
 // with `md:hidden`. This test pins that contract: bars must be in the
 // initial DOM (so SSR reserves mobile layout space) AND must carry the
 // md:hidden class (so they don't show on desktop).
-import { render, screen } from "@testing-library/react";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Controllable matchMedia. We start on desktop (>=768px matches) to
 // mirror getServerSnapshot=true, then fire a change event to flip to
@@ -78,6 +78,10 @@ vi.mock("@/components/article-preview", () => ({
 import EditorPage from "@/components/editor-page";
 
 describe("editor mobile CLS regression (ee7fd61)", () => {
+  beforeEach(() => {
+    currentMatches = true; // start desktop
+  });
+
   it("renders the manuscript/preview tab strip in the initial DOM with md:hidden", () => {
     render(<EditorPage />);
     const tablist = screen.getByRole("tablist", { name: /live preview|实时预览/i });
@@ -97,33 +101,44 @@ describe("editor mobile CLS regression (ee7fd61)", () => {
     expect(bar.className).toMatch(/h-\[60px\]/);
   });
 
-  it("keeps the same DOM nodes when matchMedia flips desktop→mobile→desktop", () => {
+  it("keeps bar DOM nodes stable while isDesktop flips and grid columns respond", () => {
     // This is the regression that matters: before the fix, flipping
     // isDesktop true→false would UNMOUNT the bars (conditional render)
     // and INSERT them on the next render — that insertion is the CLS.
     // After the fix, the bars are always mounted; only their CSS
-    // (md:hidden) changes. The DOM node identity must be stable.
-    currentMatches = true; // desktop
+    // (md:hidden) toggles, and the main grid's inline gridTemplateColumns
+    // reacts to the viewport change.
     render(<EditorPage />);
+
     const tablistBefore = screen.getByRole("tablist", { name: /live preview|实时预览/i });
     const copyBtnBefore = screen.getByRole("button", { name: /copy body|复制正文/i });
     const barBefore = copyBtnBefore.parentElement as HTMLElement;
+    // The workbench's <main> carries the grid inline style.
+    const mainEl = tablistBefore.parentElement!.querySelector("main") as HTMLElement;
 
-    // Flip to mobile
-    currentMatches = false;
-    changeListener?.({ matches: false });
+    // Desktop (initial): grid is 3-track (left pane / resize handle / right pane).
+    expect(mainEl.style.gridTemplateColumns).toMatch(/%\s+1px\s+/);
 
-    const tablistAfterMobile = screen.getByRole("tablist", { name: /live preview|实时预览/i });
-    const copyBtnAfterMobile = screen.getByRole("button", { name: /copy body|复制正文/i });
-    const barAfterMobile = copyBtnAfterMobile.parentElement as HTMLElement;
+    // Flip to mobile inside act() so React commits synchronously.
+    act(() => {
+      currentMatches = false;
+      changeListener?.({ matches: false });
+    });
 
-    // Same DOM nodes — no unmount/remount = no layout-space insertion.
-    expect(tablistAfterMobile).toBe(tablistBefore);
-    expect(barAfterMobile).toBe(barBefore);
+    // State actually changed: grid collapses to 100% single column.
+    expect(mainEl.style.gridTemplateColumns).toBe("100%");
 
-    // Flip back to desktop
-    currentMatches = true;
-    changeListener?.({ matches: true });
+    // Bar DOM nodes are identical — no unmount/remount = no layout-space insertion.
+    expect(screen.getByRole("tablist", { name: /live preview|实时预览/i })).toBe(tablistBefore);
+    expect(screen.getByRole("button", { name: /copy body|复制正文/i }).parentElement).toBe(barBefore);
+
+    // Flip back to desktop.
+    act(() => {
+      currentMatches = true;
+      changeListener?.({ matches: true });
+    });
+
+    expect(mainEl.style.gridTemplateColumns).toMatch(/%\s+1px\s+/);
     expect(screen.getByRole("tablist", { name: /live preview|实时预览/i })).toBe(tablistBefore);
     expect(screen.getByRole("button", { name: /copy body|复制正文/i }).parentElement).toBe(barBefore);
   });

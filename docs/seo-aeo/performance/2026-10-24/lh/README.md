@@ -3,7 +3,7 @@
 ## Environment
 - Lighthouse: 13.5.0
 - Chrome: 156.0.8078.47 (headless=new)
-- Form factor: mobile (412x823 viewport, DSR=2)
+- Form factor: mobile (412x823 viewport, DPR=1.75)
 - Throttling: simulated (Slow 4G, 4x CPU slowdown) — LH defaults
 - Build: source fix at `ee7fd61` (commit `e10a2b6` added regression test;
   commit `4184311` on top is docs-only). Next.js BUILD_ID
@@ -46,4 +46,4 @@ h-11 tab strip + h-[60px] bottom bar, not CodeMirror mount or fonts.
   unrelated to this CLS fix.
 - Unused JS / legacy polyfill 12.3KiB — already traced in `legacy.md`,
   no safe delta.
-- LCP ~3.3s — CodeMirror mount, not CLS.
+- LCP ~3.3s — cause not closed / not verified (do not attribute to CodeMirror mount).
