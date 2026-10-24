@@ -1,0 +1,87 @@
+# vitest run — 2026-10-24 16:01:01 CST
+# HEAD 5c7c0bce21452cdeddcf093cd9fdb316505251c6
+# dirty: 12 paths
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90m/Users/bytedance/Documents/GitHub/x-article-md[39m
+
+ [32m✓[39m tests/svg-export.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 258[2mms[22m[39m
+ [32m✓[39m tests/codemirror-integration.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 700[2mms[22m[39m
+       [33m[2m✓[22m[39m should have CodeMirror markdown language support [33m 539[2mms[22m[39m
+ [32m✓[39m tests/llms-txt.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 367[2mms[22m[39m
+ [32m✓[39m tests/jszip-lazy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1064[2mms[22m[39m
+     [33m[2m✓[22m[39m no editor-chained module (app/, components/, lib/) statically imports jszip [33m 498[2mms[22m[39m
+     [33m[2m✓[22m[39m produces a real ZIP through the dynamically loaded JSZip [33m 561[2mms[22m[39m
+ [31m❯[39m tests/google-analytics.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 58[2mms[22m[39m
+     [32m✓[39m does not render the Google tag outside production[32m 15[2mms[22m[39m
+[31m     [31m×[31m renders the Google tag in production with the configured measurement id[39m[32m 40[2mms[22m[39m
+     [32m✓[39m does not render the Google tag in production without a measurement id[32m 2[2mms[22m[39m
+ [32m✓[39m tests/focus-mode.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 822[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves unrelated URL state and restores the page after toggling [33m 569[2mms[22m[39m
+ [32m✓[39m tests/share-post.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1136[2mms[22m[39m
+     [33m[2m✓[22m[39m copies edited text, shows a recoverable clipboard error, and resets on URL change [33m 914[2mms[22m[39m
+ [32m✓[39m tests/preview-blocks-i18n.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1178[2mms[22m[39m
+     [33m[2m✓[22m[39m uses English copy in the English UI [33m 706[2mms[22m[39m
+ [32m✓[39m tests/cover-image-panel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 930[2mms[22m[39m
+     [33m[2m✓[22m[39m lets users configure image API settings and generate a cover [33m 824[2mms[22m[39m
+ [32m✓[39m tests/asset-orchestrator.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1612[2mms[22m[39m
+     [33m[2m✓[22m[39m exposes failure details and source, and succeeds on explicit retry [33m 1008[2mms[22m[39m
+     [33m[2m✓[22m[39m shows the failed asset and never downloads an incomplete ZIP [33m 302[2mms[22m[39m
+ [32m✓[39m tests/table-image-tool.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 2387[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the sample table and copies the image with table_tool tracking [33m 1190[2mms[22m[39m
+     [33m[2m✓[22m[39m re-renders in dark theme and downloads a PNG [33m 484[2mms[22m[39m
+     [33m[2m✓[22m[39m explains the expected format and disables actions for invalid input [33m 312[2mms[22m[39m
+ [32m✓[39m tests/social-images.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32m✓[39m tests/compare.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/sitemap-dates.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m tests/polish.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m tests/markdown.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/robots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/seo.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m tests/feature-landing-zh.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/html-shell.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/zh-blog.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 97[2mms[22m[39m
+ [32m✓[39m tests/blog-metadata.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/analytics.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/gsc-utils.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/scroll-sync.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/preflight.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/translate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/editor-actions.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/locale-path.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/cover-image.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/security-headers.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/favicon.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/import-export.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/sample.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/google-analytics.test.tsx[2m > [22mGoogleAnalytics[2m > [22mrenders the Google tag in production with the configured measurement id
+[31m[1mTestingLibraryElementError[22m: Unable to find an element by: [data-testid="external-script"]
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div />[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/google-analytics.test.tsx:[2m52:35[22m[39m
+    [90m 50|[39m     [34mrender[39m([33m<[39m[33mGoogleAnalytics[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 51|[39m
+    [90m 52|[39m     [35mconst[39m externalScript [33m=[39m screen[33m.[39m[34mgetByTestId[39m([32m"external-script"[39m)[33m;[39m
+    [90m   |[39m                                   [31m^[39m
+    [90m 53|[39m     [34mexpect[39m(externalScript)[33m.[39m[34mtoHaveAttribute[39m(
+    [90m 54|[39m       [32m"data-src"[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m33 passed[39m[22m[90m (34)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m236 passed[39m[22m[90m (237)[39m
+[2m   Start at [22m 16:01:03
+[2m   Duration [22m 18.36s[2m (transform 7.28s, setup 16.64s, import 27.02s, tests 11.07s, environment 113.15s)[22m
+
+EXIT=1

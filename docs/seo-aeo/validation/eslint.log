@@ -1,0 +1,38 @@
+# eslint . — 2026-10-24 16:02:06 CST
+# HEAD 5c7c0bce21452cdeddcf093cd9fdb316505251c6
+
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/article-preview.tsx
+  180:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/codemirror-editor.tsx
+  256:8  warning  React Hook useEffect has missing dependencies: 'onKeyDown', 'placeholder', and 'value'. Either include them or remove the dependency array. If 'onKeyDown' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/compare-page.tsx
+  9:8  warning  'CompareTool' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/landing-page.tsx
+  14:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/bytedance/Documents/GitHub/x-article-md/docs/seo-aeo/performance/diag_lcp.cjs
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/bytedance/Documents/GitHub/x-article-md/docs/seo-aeo/performance/nav_test.cjs
+   3:19  error    A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  40:13  warning  'e' is defined but never used            @typescript-eslint/no-unused-vars
+
+/Users/bytedance/Documents/GitHub/x-article-md/docs/seo-aeo/performance/nav_throttle.cjs
+  11:19  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/bytedance/Documents/GitHub/x-article-md/docs/seo-aeo/performance/regression_checks.cjs
+  7:19  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/bytedance/Documents/GitHub/x-article-md/lib/compare-copy.ts
+  405:9  warning  'ogImage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/bytedance/Documents/GitHub/x-article-md/tests/translate.test.ts
+  9:11  warning  'markdown' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 11 problems (4 errors, 7 warnings)
+
+EXIT=1

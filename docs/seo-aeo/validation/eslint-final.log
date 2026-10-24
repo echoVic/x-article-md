@@ -1,0 +1,14 @@
+# eslint . — 2026-10-24 16:15:44 CST
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/article-preview.tsx
+  180:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/bytedance/Documents/GitHub/x-article-md/components/codemirror-editor.tsx
+  256:8  warning  React Hook useEffect has missing dependencies: 'onKeyDown', 'placeholder', and 'value'. Either include them or remove the dependency array. If 'onKeyDown' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/bytedance/Documents/GitHub/x-article-md/tests/translate.test.ts
+  9:11  warning  'markdown' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 3 problems (0 errors, 3 warnings)
+
+EXIT=0

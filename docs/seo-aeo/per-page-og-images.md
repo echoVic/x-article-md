@@ -50,4 +50,4 @@ All MD5s are distinct — no cross-language or cross-page image reuse.
 ## Artifacts
 
 - `og-contact-sheet.png` — 4x5 contact sheet of all 19 images.
-- `og-sheets/*.png` — individual 1200x630 images per route.
+- `og-images-verified.json` — per-route og/twitter URL, HTTP status, dimensions, SHA-256 from `verify-og-images.py` run against a local `next start`. Individual per-route PNGs are reproducible via that script and are not committed to the repo.

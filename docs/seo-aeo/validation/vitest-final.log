@@ -1,0 +1,53 @@
+# vitest run — 2026-10-24 16:15:58 CST
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90m/Users/bytedance/Documents/GitHub/x-article-md[39m
+
+ [32m✓[39m tests/svg-export.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+ [32m✓[39m tests/codemirror-integration.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 343[2mms[22m[39m
+ [32m✓[39m tests/sitemap-dates.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m tests/jszip-lazy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 401[2mms[22m[39m
+ [32m✓[39m tests/google-analytics.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m tests/focus-mode.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1239[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves unrelated URL state and restores the page after toggling [33m 1077[2mms[22m[39m
+ [32m✓[39m tests/share-post.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1005[2mms[22m[39m
+     [33m[2m✓[22m[39m copies edited text, shows a recoverable clipboard error, and resets on URL change [33m 954[2mms[22m[39m
+ [32m✓[39m tests/preview-blocks-i18n.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 877[2mms[22m[39m
+     [33m[2m✓[22m[39m uses English copy in the English UI [33m 684[2mms[22m[39m
+ [32m✓[39m tests/cover-image-panel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 571[2mms[22m[39m
+     [33m[2m✓[22m[39m lets users configure image API settings and generate a cover [33m 490[2mms[22m[39m
+ [32m✓[39m tests/asset-orchestrator.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 909[2mms[22m[39m
+     [33m[2m✓[22m[39m exposes failure details and source, and succeeds on explicit retry [33m 580[2mms[22m[39m
+ [32m✓[39m tests/table-image-tool.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1944[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the sample table and copies the image with table_tool tracking [33m 1002[2mms[22m[39m
+     [33m[2m✓[22m[39m re-renders in dark theme and downloads a PNG [33m 371[2mms[22m[39m
+ [32m✓[39m tests/social-images.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m tests/compare.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m tests/seo.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m tests/favicon.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/markdown.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m tests/feature-landing-zh.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/polish.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+ [32m✓[39m tests/llms-txt.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 410[2mms[22m[39m
+     [33m[2m✓[22m[39m serves both endpoints as text/plain [33m 345[2mms[22m[39m
+ [32m✓[39m tests/blog-metadata.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m tests/zh-blog.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 190[2mms[22m[39m
+ [32m✓[39m tests/import-export.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/locale-path.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/preflight.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/html-shell.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/cover-image.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/translate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/editor-actions.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/analytics.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/gsc-utils.test.mjs [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/security-headers.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/robots.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/sample.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/scroll-sync.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m34 passed[39m[22m[90m (34)[39m
+[2m      Tests [22m [1m[32m237 passed[39m[22m[90m (237)[39m
+[2m   Start at [22m 16:15:59
+[2m   Duration [22m 15.69s[2m (transform 8.26s, setup 12.65s, import 24.85s, tests 8.88s, environment 90.66s)[22m
+
+EXIT=0

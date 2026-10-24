@@ -1,0 +1,94 @@
+# next build --webpack — 2026-10-24 16:02:58 CST
+# HEAD 5c7c0bce21452cdeddcf093cd9fdb316505251c6
+
+▲ Next.js 16.2.6 (webpack)
+- Environments: .env.local
+- Experiments (use with caution):
+  ✓ inlineCss
+
+  Creating an optimized production build ...
+✓ (serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+✓ Compiled successfully in 19.6s
+  Running TypeScript ...
+  Finished TypeScript in 19.2s ...
+  Collecting page data using 11 workers ...
+⚠ Using edge runtime on a page currently disables static generation for that page
+  Generating static pages using 11 workers (0/62) ...
+  Generating static pages using 11 workers (15/62) 
+  Generating static pages using 11 workers (30/62) 
+  Generating static pages using 11 workers (46/62) 
+✓ Generating static pages using 11 workers (62/62) in 2.7s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /~offline
+├ ƒ /api/polish
+├ ƒ /api/thread-split
+├ ƒ /api/translate
+├ ○ /apple-icon
+├ ○ /blog
+├ ● /blog/[slug]
+│ ├ /blog/changelog-v1
+│ ├ /blog/code-to-image-converter
+│ ├ /blog/markdown-table-to-image
+│ └ [+7 more paths]
+├ ƒ /blog/[slug]/opengraph-image-g58prh
+├ ○ /blog/opengraph-image-1mqzm5
+├ ○ /code-to-image
+├ ○ /code-to-image/opengraph-image-2odn5u
+├ ○ /compare
+├ ○ /compare/opengraph-image-1npxh3
+├ ○ /editor
+├ ○ /editor/opengraph-image-1ge4oy
+├ ○ /icon
+├ ƒ /icon-192
+├ ƒ /icon-512
+├ ○ /llms-full.txt
+├ ○ /llms.txt
+├ ○ /manifest.webmanifest
+├ ○ /markdown-table-to-image
+├ ○ /markdown-table-to-image/opengraph-image-kq5gsf
+├ ○ /markdown-to-x-articles
+├ ○ /markdown-to-x-articles/opengraph-image-80zhpf
+├ ○ /mermaid-to-png
+├ ○ /mermaid-to-png/opengraph-image-4qj8fc
+├ ƒ /opengraph-image-35z9bs
+├ ○ /privacy
+├ ƒ /privacy/opengraph-image-1j4gxy
+├ ○ /robots.txt
+├ ○ /sitemap.xml
+├ ○ /thread
+├ ○ /thread/opengraph-image-1q6n1q
+├ ƒ /twitter-image-35z9bs
+├ ○ /zh
+├ ○ /zh/blog
+├ ● /zh/blog/[slug]
+│ ├ /zh/blog/markdown-to-x-articles
+│ └ /zh/blog/paste-code-into-x-articles
+├ ƒ /zh/blog/[slug]/opengraph-image-16n210
+├ ○ /zh/blog/opengraph-image-10zufc
+├ ○ /zh/code-to-image
+├ ○ /zh/code-to-image/opengraph-image-h0cyiq
+├ ○ /zh/compare
+├ ○ /zh/compare/opengraph-image-1g8dhc
+├ ○ /zh/editor
+├ ○ /zh/editor/opengraph-image-fknte6
+├ ○ /zh/markdown-table-to-image
+├ ○ /zh/markdown-table-to-image/opengraph-image-4kpain
+├ ○ /zh/markdown-to-x-articles
+├ ○ /zh/markdown-to-x-articles/opengraph-image-g5bhr7
+├ ○ /zh/mermaid-to-png
+├ ○ /zh/mermaid-to-png/opengraph-image-1fj8be
+├ ○ /zh/opengraph-image-1x1kc8
+├ ○ /zh/thread
+└ ○ /zh/thread/opengraph-image-pd6667
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+EXIT=0

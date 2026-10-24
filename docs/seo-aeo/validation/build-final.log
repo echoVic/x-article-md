@@ -1,0 +1,24 @@
+# next build --webpack — 2026-10-24 16:14:40 CST
+# HEAD 184f3fad1700aed091a0a90b405795e5e247e0ae
+
+├ ○ /zh/code-to-image/opengraph-image-h0cyiq
+├ ○ /zh/compare
+├ ○ /zh/compare/opengraph-image-1g8dhc
+├ ○ /zh/editor
+├ ○ /zh/editor/opengraph-image-fknte6
+├ ○ /zh/markdown-table-to-image
+├ ○ /zh/markdown-table-to-image/opengraph-image-4kpain
+├ ○ /zh/markdown-to-x-articles
+├ ○ /zh/markdown-to-x-articles/opengraph-image-g5bhr7
+├ ○ /zh/mermaid-to-png
+├ ○ /zh/mermaid-to-png/opengraph-image-1fj8be
+├ ○ /zh/opengraph-image-1x1kc8
+├ ○ /zh/thread
+└ ○ /zh/thread/opengraph-image-pd6667
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+EXIT=0
