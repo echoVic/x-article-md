@@ -1,7 +1,7 @@
 # SEO/AEO 审计验收清单（草稿，暂定待最终验收）
 
 - 生成日期：2026-10-24（草稿修订同日）
-- **状态：草稿，未最终验收。** 等最终测试数据回填后逐项定级；**未经用户提供数据前，本文件不 commit**。
+- **状态：本地门已通过（build/tsc/eslint/vitest/HTTP 集成），线上待部署复验。** 等部署后线上数据与 Article 链接等外部输入回填证据列；本地已修项按线上复验结果改判。
 - **重要原则：单测绿 ≠ 完成；本地实测通过 ≠ 线上通过。** 代码与本地构建验证已闭环的条目记"本地已修"，但线上部署/最终 HTTP 集成未做前，不得与"线上已验收"混列。
 
 ## 状态定义
@@ -25,19 +25,19 @@
 | **指定 compare 内容** | /compare 按指定对象准确陈述，不编功能、不报价 | 四对象核实边界成文；xPoster 同名干扰项已消歧；Article Studio 标 unknown；footer compare label + deep-path locale switcher（`4181058`、`4bbb8b2`）；死代码清理（`e4ca01b`） | `compare-competitors.md`；`c4d5d5c`；`4181058`；`4bbb8b2`；`e4ca01b`；**真浏览器桌面+移动实测通过：`docs/seo-aeo/visual/2026-10-24-content-acceptance.md` + `final-zh-compare-unknown-column.png`、`final-*-compare-table.png`** | 部署后复验 unknown 列在英文页同样渲染 |
 | **中文工具落地厚度** | zh 工具页每条示例/限制有源码证据支撑 | 逐条文案 ↔ 源码行号 ↔ 测试对照 | `zh-tool-landing-depth.md`；`842c776`、`51aba3c`；`tests/feature-landing-zh.test.ts`；**真浏览器实测：`final-zh-mermaid-example.png`、`desktop-zh-code-to-image-limitations.png`** | 部署后抽查 zh 页渲染与截图一致 |
 | twitter:site 接线 | 站点级账号关联 @echo_vic，不设全局 creator | `groupBaseMetadata` 设 `twitter:site=@echo_vic`；全站无 creator | `15b97b4`；用户确认记录（`echo-vic-attribution.md`） | 部署后确认各页渲染 `twitter:site=@echo_vic` 且无 `twitter:creator` |
-| robots 显式 AI Allow | 保留基线，对已核实 AI UA 显式 Allow | 多规则数组 7 UA Allow | `d8fbfb0`；`tests/robots.test.ts`（6 项断言） | **最终 HTTP 集成待跑**：线上 robots.txt 逐块渲染确认 |
+| robots 显式 AI Allow | 保留基线，对已核实 AI UA 显式 Allow | 多规则数组 7 UA Allow | `d8fbfb0`；`tests/robots.test.ts`（6 项断言）；**本地 HTTP 已验**：`next start` 显式 `-A GPTBot` / `-A ClaudeBot` 拉 `/robots.txt`，`*` + 7 AI UA 全 Allow、零 Disallow | 部署后线上 robots.txt 逐块渲染确认 |
 | favicon 真实可用 | 构建后 /favicon.ico 可用 | 16/32/48 多尺寸 ico | `ef7972e`；`tests/favicon.test.ts` | 部署后复测 image/x-icon |
 | 四个安全响应头 | nosniff / strict-origin-when-cross-origin / DENY / Permissions-Policy 禁 camera·mic·geo | `lib/security-headers.ts` | `ef7972e`；`tests/security-headers.test.ts` | 部署后复测四头 presence（注意 Cloudflare 边缘叠加） |
 | sitemap lastModified | 烘焙静态日期表，/blog 索引取最新文章 frontmatter 日期 | `lib/sitemap-dates.ts`；`5c7c0bc` 按 2026-10-24 实际编辑路由 bump 日期 | `b44958f`；`5c7c0bc`；`tests/sitemap-dates.test.ts` | 部署后复测日期分布 |
 | /~offline 无索引 | 离线页不被索引 | `app/(en)/~offline/layout.tsx` noindex,nofollow | `15b97b4` | 部署后确认 noindex 头/标签 |
+| **最终全量集成门（HEAD 184f3fa）** | 新 HEAD 全量 build + 本地 HTTP 抽查 | `next build --webpack` EXIT=0（62 routes 静态化）；`tsc --noEmit` EXIT=0；`eslint .` EXIT=0 / 0 error / 3 既有 warning；`vitest run` **237/237 通过**（34 files）；本地 `next start` 复跑 robots/canonical/hreflang/og/twitter:site/sitemap/llms.txt/19 OG 全 200 | `docs/seo-aeo/validation/{build-final,tsc-final,eslint-final,vitest-final}.log`、`README.md`；本地端口实测记录于 validation README | 部署后线上复测：og:url/canonical 根形式、sitemap 日期、四安全头、twitter:site=@echo_vic 且无 creator |
 
 ## 二、未完成（工作未闭环；未出结果前不写绿）
 
 | 项 | 原要求 | 现状 | 证据 | 剩余阻塞 |
 | --- | --- | --- | --- | --- |
 | 原审计截图条目复现 | 原截图条目可复现展示 | 截图条目文案保留；**截图 URL 从未获知** | 本清单批次记录 | **原审计报告托管于 pages.grok.bot，访问被认证阻挡（跳转 accounts.x.ai/Cursor）；截图未提供被测 URL/环境，故原条件无法确认。本轮线上首页测试可公开进行（被测站 markdown2x.com 本身不要求登录）。** |
-| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **已收敛**：GA 改 native async script（去 high-priority preload）落地 `184f3fa`（本地已修）；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回；legacy-javascript 22KiB 未修、原审计截图未闭环 | `measurement/`（base/cand/candfont/candga/gabase 原始 JSON）、`performance/`（diag_lcp.cjs、original-audit-page.html、README.md）；`184f3fa` | **GA 单变量待线上复验；prefetch 已回退不闭环；legacy 22KiB 与截图项未修，保持"未完成"。** |
-| 最终全量集成门 | 新 HEAD 全量 build + 本地/线上 HTTP 抽查 | 旧基线曾 190 单测通过；含 OG/visual 新提交的 HEAD 尚未跑最终门 | 待用户提供测试数据 | 覆盖：/zh lang、博客唯一 H1 与 OG、llms.txt content-type、favicon、四安全头、canonical/hreflang、sitemap 日期、robots 渲染 |
+| 性能补偿实验 | 导航资源、CLS、editReady 性能达标 | **已收敛**：GA 改 native async script（去 high-priority preload）落地 `184f3fa`（本地已修）；`prefetch=off` 因 warm editReady 回退被拒绝、landing/intent/Mono 变更已撤回；legacy-javascript 22KiB 未修、原审计截图未闭环 | `measurement/`（base/cand/candfont/candga/gabase 原始 JSON）、`performance/`（diag_lcp.cjs、original-audit-page.html、README.md）；`184f3fa` | **GA 单变量本地已修（`184f3fa`），但 prefetch rejected、legacy 22KiB 与原审计截图项未修，线上未闭环。** |
 
 ## 三、待确认（事实已核到边界，等 owner 或外部条件）
 
@@ -69,19 +69,20 @@ npx vitest run
 npx next build
 npx tsc --noEmit
 
-# 3. 本地生产预览
-npx next start -p 3456        # 视觉验收报告用的是 3456
-lsof -tiTCP:3456 -sTCP:LISTEN | xargs kill
+# 3. 本地生产预览（端口任选，下方示例用 3457；若占用先 kill）
+PORT=${PORT:-3457}
+npx next start -p "$PORT"
+lsof -tiTCP:$PORT -sTCP:LISTEN | xargs kill
 
 # 4. OG 可复现核验脚本（本地 origin，核对 19 路由 200 / 1200x630 / 唯一 SHA）
-python3 docs/seo-aeo/verify-og-images.py http://localhost:3456
+python3 docs/seo-aeo/verify-og-images.py "http://localhost:$PORT"
 
 # 5. 其他 HTTP 抽查
-curl -sI http://localhost:3456/favicon.ico | grep -i content-type
-curl -sI http://localhost:3456/ | grep -iE 'x-content-type-options|referrer-policy|x-frame-options|permissions-policy'
-curl -s  http://localhost:3456/robots.txt
-curl -s  http://localhost:3456/sitemap.xml
-curl -sI http://localhost:3456/llms.txt | grep -i content-type
+curl -sI "http://localhost:$PORT/favicon.ico" | grep -i content-type
+curl -sI "http://localhost:$PORT/" | grep -iE 'x-content-type-options|referrer-policy|x-frame-options|permissions-policy'
+curl -s  "http://localhost:$PORT/robots.txt"
+curl -s  "http://localhost:$PORT/sitemap.xml"
+curl -sI "http://localhost:$PORT/llms.txt" | grep -i content-type
 ```
 
 ## 目录导航（本文件夹下证据索引）
@@ -97,7 +98,7 @@ curl -sI http://localhost:3456/llms.txt | grep -i content-type
 | `zh-tool-landing-depth.md` | 中文工具落地页每条文案 ↔ 源码行号 ↔ 测试证据 |
 | `per-page-og-images.md` | 每页独立 OG/Twitter 卡片拆分、twitter:site 接线（实现沿革） |
 | `verify-og-images.py` + `og-images-verified.json` + `og-contact-sheet.png` | 19 路由 OG 可复现核验脚本、实测 JSON、联系表 |
-| `measurement/` | base/cand 移动端性能原始 JSON（补偿实验进行中，结论未定稿） |
+| `measurement/` | base/cand 移动端性能原始 JSON（GA 单变量已落地 `184f3fa`；prefetch 方案被拒回退；线上复测与 legacy 22KiB/截图项未闭环） |
 | `performance/` | LCP 诊断脚本、原始审计页 HTML 与说明 |
 
-> 本文件为草稿：等用户提供最终测试数据后回填证据列，并把"本地已修"项按线上复验结果改判。
+> 本文件为草稿：本地门已通过（HEAD `184f3fa` → `44541bb`），等部署到 markdown2x.com 后回填线上复验数据；同时等 Article Studio 官方链接、逐篇 frontmatter author 等外部输入后，把"本地已修"项按线上结果改判。
