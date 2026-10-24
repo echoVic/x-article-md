@@ -27,10 +27,10 @@ Rule applied: only state what an official/vendor source supports; unknowns are m
 - **WordPress "XPoster" / "WP to Twitter"** by Joe Dolson (https://xposterpro.com) crossposts WordPress blog posts to X. It is unrelated to the Chrome extension above. Disambiguated on the page.
 
 ### Article Studio (md2xarticle.com)
-- Verified 2026-10-24 at https://md2xarticle.com/ (self-branded "Article Studio").
+- Verified 2026-10-24 at https://md2xarticle.com/ (self-branded "Article Studio"). Snapshot: `sources/article-studio-2026-10-24.html`; privacy snapshot: `sources/article-studio-privacy-2026-10-24.html`.
 - Web app that previews Markdown locally; attach local images from a chosen folder; Mermaid → PNG at 2x; tables stay native or render to image.
 - Two output paths: (a) Copy title + body for manual paste; (b) optional Chrome companion creates an unpublished X Article draft with images placed; you review and publish from X.
-- Local-first; content stays in the browser until draft creation.
+- Per its privacy policy: article content stays in local browser storage; content is sent to X only when you confirm draft creation.
 - Vendor self-stated; we report it as such. No price numbers quoted.
 - Same-name lookalike (NOT this product): https://www.article-studio.com/ — a UK photography/studio business. Disambiguated on the page.
 

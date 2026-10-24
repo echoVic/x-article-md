@@ -57,7 +57,7 @@ const en = {
     {
       question: "What is Article Studio in this comparison?",
       answer:
-        "Article Studio (md2xarticle.com) is a web app that previews Markdown locally, attaches local images, renders Mermaid to PNG, and can either copy a title and body for manual paste or — via an optional Chrome companion — create an unpublished X Article draft with images placed. You review and publish from X. It is unrelated to the UK photography studio at article-studio.com.",
+        "Article Studio (md2xarticle.com) is a web app that previews Markdown locally, attaches local images, renders Mermaid to PNG, and can either copy a title and body for manual paste or — via an optional Chrome companion — create an unpublished X Article draft with images placed. You review and publish from X. It is unrelated to the UK photography studio at article-studio.com. These descriptions follow the vendor's own site and privacy policy.",
     },
     {
       question: "How do code blocks differ between MD2X and the extensions?",
@@ -75,6 +75,8 @@ const en = {
     { label: "xPoster — GitHub (ginobefun/xposter)", url: "https://github.com/ginobefun/xposter" },
     { label: "xPoster — privacy policy", url: "https://nevertoday.github.io/xposter-privacy/" },
     { label: "Article Studio — md2xarticle.com", url: "https://md2xarticle.com/" },
+    { label: "Article Studio — Chrome companion listing", url: "https://chromewebstore.google.com/detail/ojpjldmiiibgjnbjfiacaoenfgpdhbbh" },
+    { label: "Article Studio — privacy policy", url: "https://md2xarticle.com/privacy" },
     { label: "X Articles — official help", url: "https://help.x.com/en/using-x/articles" },
     { label: "Same-name note: WordPress XPoster / WP to Twitter (different product)", url: "https://xposterpro.com" },
   ],
@@ -152,7 +154,7 @@ const en = {
         "Rendered to PNG image",
         "Native X code block",
         "Native X code block",
-        "Markdown code blocks supported",
+        "Supported; rendering not detailed",
       ],
     },
     {
@@ -247,7 +249,7 @@ const zh = {
     {
       question: "本对比里的 Article Studio 是什么？",
       answer:
-        "Article Studio（md2xarticle.com）是一个网页应用：本地预览 Markdown、挂载本地图片、把 Mermaid 渲染为 PNG，既可复制标题与正文手动粘贴，也可通过可选 Chrome 伴侣生成带图的未发布 X Article 草稿。发布仍由你在 X 里完成。它与英国摄影工作室 article-studio.com 无关。",
+        "Article Studio（md2xarticle.com）是一个网页应用：本地预览 Markdown、挂载本地图片、把 Mermaid 渲染为 PNG，既可复制标题与正文手动粘贴，也可通过可选 Chrome 伴侣生成带图的未发布 X Article 草稿。发布仍由你在 X 里完成。它与英国摄影工作室 article-studio.com 无关。以上描述依据其官网与隐私政策。",
     },
     {
       question: "MD2X 和扩展的代码块处理有何不同？",
@@ -265,6 +267,8 @@ const zh = {
     { label: "xPoster GitHub（ginobefun/xposter）", url: "https://github.com/ginobefun/xposter" },
     { label: "xPoster 隐私政策", url: "https://nevertoday.github.io/xposter-privacy/" },
     { label: "Article Studio 官网（md2xarticle.com）", url: "https://md2xarticle.com/" },
+    { label: "Article Studio Chrome 伴侣商店页", url: "https://chromewebstore.google.com/detail/ojpjldmiiibgjnbjfiacaoenfgpdhbbh" },
+    { label: "Article Studio 隐私政策", url: "https://md2xarticle.com/privacy" },
     { label: "X Articles 官方帮助", url: "https://help.x.com/en/using-x/articles" },
     { label: "同名辨析：WordPress XPoster / WP to Twitter（另一产品）", url: "https://xposterpro.com" },
   ],
@@ -342,7 +346,7 @@ const zh = {
         "渲染为 PNG 图片",
         "X 原生代码块",
         "X 原生代码块",
-        "支持 Markdown 代码块",
+        "支持；渲染方式未详述",
       ],
     },
     {

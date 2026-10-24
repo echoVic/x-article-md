@@ -61,6 +61,16 @@ describe("compare page content", () => {
     expect(studio!.strengths.length).toBeGreaterThan(0);
   });
 
+  it.each(locales)("cites Article Studio capabilities that match the vendor page in %s", (locale) => {
+    const t = getCompareContent(locale);
+    // Rows are fixed in order: form factor, code, tables, images, mermaid, embeds, queue, account.
+    const col = (i: number) => t.rows[i].values[3];
+    expect(col(4)).toMatch(/2x/i); // Mermaid -> 2x PNG
+    expect(col(3)).toMatch(/companion|伴侣/i); // images via Chrome companion
+    expect(col(2)).toMatch(/native|原生/i); // tables native or image
+    expect(col(1)).toMatch(/supported|支持/i); // code blocks supported, rendering not detailed
+  });
+
   it.each(locales)("never mentions pricing, tiers, or character limits in %s", (locale) => {
     const blob = JSON.stringify(getCompareContent(locale));
     // Honest-comparison rule: no price numbers / currency / tier words.
