@@ -1,5 +1,7 @@
 # 2026-10-24 性能基线（只读测量，无产品修复）
 
+> **当前状态（2026-10-24 收尾）**：本文件主要是历史实验记录，最新续修入口见同目录 `cls.md` 与 `lh/`。产品现状：GA native async（`184f3fa`）已在线上 feature-match 部署；editor mobile CLS 修复（`ee7fd61`）本地 LH 已验证归零，待线上部署后 LH 复验；legacy polyfill 有据不删；prefetch/landing/intent/Mono 历史 rejected 不复活。
+>
 > **历史基线说明**：本文件记录的是 893c0f4 当时的测量与诊断，数字保留作为对比锚点，**不是最新产品状态**。后续续修见：
 > - editor CLS 已修复：`ee7fd61`（源码）+ `e10a2b6`（回归测试），见 `cls.md` 与 `lh/`。同 LH13.5 throttled 条件下 candidate CLS 6/6 runs = 0（EN 0/0/0，ZH 0/0/0），vs base 0.047。
 > - GA async native 单变量：`184f3fa`，线上 feature-match 已确认。
