@@ -374,8 +374,10 @@ export default function EditorPage({
       />
 
       {/* ═══ Mobile: manuscript / preview tab strip ═══ */}
-      {!isDesktop && (
-        <div className="flex h-11 shrink-0 border-b border-[var(--border)] bg-[var(--surface)]" role="tablist" aria-label={t.livePreview}>
+      {/* Always rendered; md:hidden removes from layout on desktop.
+          Avoids SSR→hydration CLS where isDesktop flips true→false on mobile
+          and the 44px strip suddenly pushes the grid down. */}
+      <div className="md:hidden flex h-11 shrink-0 border-b border-[var(--border)] bg-[var(--surface)]" role="tablist" aria-label={t.livePreview}>
           {(
             [
               { id: "manuscript", label: t.manuscript },
@@ -403,7 +405,6 @@ export default function EditorPage({
             </button>
           ))}
         </div>
-      )}
 
       {/* ═══ Hidden file input for import ═══ */}
       <input
@@ -512,8 +513,9 @@ export default function EditorPage({
       </main>
 
       {/* ═══ Mobile bottom action bar — 60px thumb zone ═══ */}
-      {!isDesktop && (
-        <div className="flex h-[60px] shrink-0 items-center gap-2 border-t border-[var(--border)] bg-[var(--surface)] px-3">
+      {/* Always rendered; md:hidden removes from layout on desktop.
+          Avoids SSR→hydration CLS where the 60px bar suddenly appears on mobile. */}
+      <div className="md:hidden flex h-[60px] shrink-0 items-center gap-2 border-t border-[var(--border)] bg-[var(--surface)] px-3">
           <button
             type="button"
             onClick={handlePreflight}
@@ -551,7 +553,6 @@ export default function EditorPage({
             {copyState === "body" ? t.copied : t.copyBody}
           </button>
         </div>
-      )}
 
       {/* ═══ Assets & Media Drawer ═══ */}
       <Sheet
