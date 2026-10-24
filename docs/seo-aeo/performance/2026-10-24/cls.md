@@ -9,8 +9,8 @@ strip and the `h-[60px]` bottom action bar — were inserted out of nowhere
 (via `{!isDesktop && (...)}`). That inserted ~104px of layout space and
 pushed the `flex-1` editor grid down.
 
-Lighthouse mobile (390x844) reported a single layout-shift entry at
-top=136, bottom=763, height=627, CLS ≈ 0.047.
+Lighthouse mobile (412x823, slow 4G, 4x CPU slowdown) reported a single
+layout-shift entry at top=136, bottom=763, height=627, CLS ≈ 0.047.
 
 ## Fix (commit ee7fd61)
 Render both bars unconditionally and hide them on desktop with `md:hidden`.
@@ -55,7 +55,7 @@ Synthetic headless traces without Lighthouse CPU/network throttling do
 not reproduce the SSR→hydration shift on **base** (the DOM settles
 between the observer registration and hydration in a way that doesn't
 emit a layout-shift entry). The authoritative base number is the
-Lighthouse run already recorded in `base/` (CLS ≈ 0.047 at 390x844).
+Lighthouse run already recorded in `base/` (CLS ≈ 0.047 at 412x823 throttled).
 The regression test pins the structural contract (bars always in DOM +
 md:hidden) so future refactors can't silently reintroduce the
 conditional insertion.

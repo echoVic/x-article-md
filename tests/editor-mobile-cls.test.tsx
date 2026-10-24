@@ -5,7 +5,9 @@
 // useSyncExternalStore's getServerSnapshot returns `true` (desktop), SSR
 // never rendered those bars; on a mobile client hydration immediately
 // flipped isDesktop=false and inserted ~104px of layout space, pushing
-// the flex-1 grid down (measured layout-shift .047 at 390x844).
+// the flex-1 grid down. Lighthouse 13.5 mobile (412x823, slow 4G, 4x CPU)
+// measured a single layout-shift entry at top=136, bottom=763, height=627,
+// CLS ≈ 0.047 on /editor and /zh/editor.
 //
 // The fix renders both bars unconditionally and hides them on desktop
 // with `md:hidden`. This test pins that contract: bars must be in the
@@ -14,20 +16,23 @@
 import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-// matchMedia — jsdom doesn't implement it. Report desktop (>=768px) to
-// mirror getServerSnapshot=true; the point is the bars must still be in
-// the DOM regardless of isDesktop.
+// Controllable matchMedia. We start on desktop (>=768px matches) to
+// mirror getServerSnapshot=true, then fire a change event to flip to
+// mobile. The bars must NOT unmount/remount in that transition.
+let currentMatches = true;
+let changeListener: ((ev: { matches: boolean }) => void) | null = null;
+
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (query: string) => ({
-      matches: query === "(min-width: 768px)", // desktop
+      get matches() { return currentMatches && query === "(min-width: 768px)"; },
       media: query,
       onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
+      addEventListener: (_ev: string, cb: (ev: { matches: boolean }) => void) => { changeListener = cb; },
+      removeEventListener: () => { changeListener = null; },
+      addListener: () => {},
+      removeListener: () => {},
       dispatchEvent: vi.fn(),
     }),
   });
@@ -92,13 +97,34 @@ describe("editor mobile CLS regression (ee7fd61)", () => {
     expect(bar.className).toMatch(/h-\[60px\]/);
   });
 
-  it("mounts without throwing and keeps the bars stable across a matchMedia change", () => {
-    // If the bars were still {!isDesktop && ...}, toggling matchMedia would
-    // unmount/remount them. Here we just assert the mount succeeds and
-    // the bars are in the tree twice (two separate renders, two containers).
-    const { unmount } = render(<EditorPage />);
-    expect(screen.getByRole("tablist", { name: /live preview|实时预览/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /copy body|复制正文/i })).toBeTruthy();
-    unmount();
+  it("keeps the same DOM nodes when matchMedia flips desktop→mobile→desktop", () => {
+    // This is the regression that matters: before the fix, flipping
+    // isDesktop true→false would UNMOUNT the bars (conditional render)
+    // and INSERT them on the next render — that insertion is the CLS.
+    // After the fix, the bars are always mounted; only their CSS
+    // (md:hidden) changes. The DOM node identity must be stable.
+    currentMatches = true; // desktop
+    render(<EditorPage />);
+    const tablistBefore = screen.getByRole("tablist", { name: /live preview|实时预览/i });
+    const copyBtnBefore = screen.getByRole("button", { name: /copy body|复制正文/i });
+    const barBefore = copyBtnBefore.parentElement as HTMLElement;
+
+    // Flip to mobile
+    currentMatches = false;
+    changeListener?.({ matches: false });
+
+    const tablistAfterMobile = screen.getByRole("tablist", { name: /live preview|实时预览/i });
+    const copyBtnAfterMobile = screen.getByRole("button", { name: /copy body|复制正文/i });
+    const barAfterMobile = copyBtnAfterMobile.parentElement as HTMLElement;
+
+    // Same DOM nodes — no unmount/remount = no layout-space insertion.
+    expect(tablistAfterMobile).toBe(tablistBefore);
+    expect(barAfterMobile).toBe(barBefore);
+
+    // Flip back to desktop
+    currentMatches = true;
+    changeListener?.({ matches: true });
+    expect(screen.getByRole("tablist", { name: /live preview|实时预览/i })).toBe(tablistBefore);
+    expect(screen.getByRole("button", { name: /copy body|复制正文/i }).parentElement).toBe(barBefore);
   });
 });
